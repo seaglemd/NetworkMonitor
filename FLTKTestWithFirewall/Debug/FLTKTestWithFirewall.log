@@ -1,0 +1,19 @@
+﻿Build started 1/10/2015 6:40:27 PM.
+     1>Project "C:\Users\Matt\Google Drive\Misc Programming\FLTK C++\FLTKTestWithFirewall\FLTKTestWithFirewall\FLTKTestWithFirewall.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4996 /analyze- /errorReport:prompt main.cpp tcpTableAccess.cpp
+         tcpTableAccess.cpp
+         Generating Code...
+         Compiling...
+         main.cpp
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Matt\Google Drive\Misc Programming\FLTK C++\FLTKTestWithFirewall\Debug\FLTKTestWithFirewall.exe" /INCREMENTAL /NOLOGO fltk.lib fltkimages.lib fltkjpeg.lib fltkpng.lib fltkzlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Matt\Google Drive\Misc Programming\FLTK C++\FLTKTestWithFirewall\Debug\FLTKTestWithFirewall.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Matt\Google Drive\Misc Programming\FLTK C++\FLTKTestWithFirewall\Debug\FLTKTestWithFirewall.lib" /MACHINE:X86 Debug\main.obj
+         Debug\tcpTableAccess.obj
+         Debug\wfStatusAccess.obj
+         FLTKTestWithFirewall.vcxproj -> C:\Users\Matt\Google Drive\Misc Programming\FLTK C++\FLTKTestWithFirewall\Debug\FLTKTestWithFirewall.exe
+     1>Done Building Project "C:\Users\Matt\Google Drive\Misc Programming\FLTK C++\FLTKTestWithFirewall\FLTKTestWithFirewall\FLTKTestWithFirewall.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.20
