@@ -83,23 +83,23 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 
 	      tabSectionFirewall->end();
 	      tabSectionTCPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "TCP Table");
-		     table = new TCPTable(35, 65, 300, 300);
+		     table = new TCPTable(35, 65, 535, 350);
 
-			 hostNameTextBoxLabel = new Fl_Box(345, 65, 100, 25);
+			 hostNameTextBoxLabel = new Fl_Box(645, 65, 100, 25);
 			 hostNameTextBoxLabel->label("Host Name: ");
-			 hostNameTextBox = new Fl_Box(450, 65, 100, 25);
+			 hostNameTextBox = new Fl_Box(745, 65, 100, 25);
 			 hostNameTextBox->box(FL_DOWN_BOX);
 			 hostNameTextBox->label("Pending...");		
 
-			 domainNameTextBoxLabel = new Fl_Box(345, 100, 100, 25);
+			 domainNameTextBoxLabel = new Fl_Box(645, 100, 100, 25);
 			 domainNameTextBoxLabel->label("Domain Name: ");
-			 domainNameTextBox = new Fl_Box(450, 100, 100, 25);
+			 domainNameTextBox = new Fl_Box(745, 100, 100, 25);
 			 domainNameTextBox->box(FL_DOWN_BOX);
 			 domainNameTextBox->label("Pending...");
 
-			 dnsServerListTextBoxLabel = new Fl_Box(345, 135, 100, 25);
+			 dnsServerListTextBoxLabel = new Fl_Box(645, 135, 100, 25);
 			 dnsServerListTextBoxLabel->label("DNS Servers: ");
-			 dnsServerListTextBox = new Fl_Box(450, 135, 100, 25);
+			 dnsServerListTextBox = new Fl_Box(745, 135, 100, 25);
 			 dnsServerListTextBox->box(FL_DOWN_BOX);
 			 dnsServerListTextBox->label("Pending...");
 
@@ -138,11 +138,10 @@ void MyWindow::getCurrentTCPTableInfo() {
 	hostNameTextBox->label(tcpConnectionInfo->getHostName());	
 	domainNameTextBox->label(tcpConnectionInfo->getDomainName());
 	dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
-
+	table->updateCells();
+	table->redraw();
 	hostNameTextBox->redraw();
 	domainNameTextBox->redraw();
-
-
 }
 void MyWindow::startThread() {
 	_beginthread(MyWindow::enterThread, 0, this);
@@ -156,7 +155,7 @@ void MyWindow::enterThread(void *p)
 void MyWindow::threadBody()
 {
 	redrawBoxes();
-	Sleep(2000);
+	Sleep(7000);
 }
 
 MyWindow::~MyWindow(){}

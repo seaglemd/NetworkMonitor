@@ -29,24 +29,26 @@ class TcpTableAccess
 {
     public:
         void startThread();
-        void getTcpTable();
+        string** getTcpTable();
         void getNetworkParameters();
 		const char *getHostName();
 		const char *getDomainName();
 		const char *getDnsServerList();
-		const char *getSomething();
+		int getTableSize();
         static vector<string> addressVector;
 
     private:
-        int numofcon;		
-        string tcpfname;
-        string tcpfnametemp;
-        string numberOfConnections;
-        string tcpTableInformation;
+        int numofcon;
+		int tcpTableEntryCount = 0;
+		string connectionState;
+		string localIpPort;
+		string remoteIpPort;
 		string hostName;
 		string domainName;
 		string dnsServerList;
+		string errors;
 
+		string **tcpConnectionList = 0;
        // ProgramLogTime tpo;
        // FioLogger ftpo;
 

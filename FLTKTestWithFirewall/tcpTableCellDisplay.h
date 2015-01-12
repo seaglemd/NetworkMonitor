@@ -11,6 +11,8 @@
 #include <FL/fl_draw.H>
 #include <string>
 
+#include "tcpTableAccess.h"
+
 #define MAX_ROWS 30
 #define MAX_COLS 3                // A-Z
 
@@ -19,8 +21,14 @@ using namespace std;
 
 class TCPTable : public Fl_Table {
 	
+	int tableSize;
+
+	const char *cellValue;
 	string data[MAX_ROWS][MAX_COLS];                // data array for cells
 	string headings[MAX_COLS];
+	string **tcpList;
+
+	TcpTableAccess *tcpConnections;
 
 	// Draw the row/col headings
 	//    Make this a dark thin upbox with the text inside.
@@ -63,9 +71,8 @@ class TCPTable : public Fl_Table {
 			sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
 			DrawHeader(s, X, Y, W, H);
 			return;
-		case CONTEXT_CELL:                        // Draw data in cells
-			sprintf(s, &(data[COL][ROW])[0]);
-			DrawData(s, X, Y, W, H);
+		case CONTEXT_CELL:
+			DrawData(tcpList[ROW][COL].c_str(), X, Y, W, H);
 			return;
 		default:
 			return;
@@ -78,23 +85,28 @@ public:
 	//
 	TCPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L) {
 		// Fill data array
-		for (int r = 0; r<MAX_ROWS; r++)
-			for (int c = 0; c<MAX_COLS; c++)
-				data[r][c] = "test test";
-		headings[0] = "Localhost";
-		headings[1] = "Name";
-		headings[2] = "IP";
+		tcpConnections = new TcpTableAccess();
+		tcpList = tcpConnections->getTcpTable();
+		tableSize = tcpConnections->getTableSize();
+		headings[0] = "Local IP:Port";
+		headings[1] = "Remote IP:Port";
+		headings[2] = "State";
 		// Rows
-		rows(MAX_ROWS);             // how many rows
+		rows(tableSize);             // how many rows
 		row_header(0);              // enable row headers (along left)
 		row_height_all(20);         // default height of rows
 		row_resize(0);              // disable row resizing
 		// Cols
 		cols(MAX_COLS);             // how many columns
 		col_header(1);              // enable column headers (along top)
-		col_width_all(80);          // default width of columns
+		col_width_all(165);          // default width of columns
 		col_resize(1);              // enable column resizing
 		end();                        // end the Fl_Table group
+	}
+	void TCPTable::updateCells()
+	{
+		tcpList = tcpConnections->getTcpTable();
+		tableSize = tcpConnections->getTableSize();
 	}
 	~TCPTable() { }
 };

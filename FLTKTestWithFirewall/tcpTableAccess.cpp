@@ -76,7 +76,7 @@ void TcpTableAccess::getNetworkParameters()
 
 }
 //retrieves the tcp table
-void TcpTableAccess::getTcpTable()
+string **TcpTableAccess::getTcpTable()
 {
     FIXED_INFO *pFixedInfo; //object passed to the function
     ULONG ulOutBufLen; //passed to function as well
@@ -106,17 +106,13 @@ void TcpTableAccess::getTcpTable()
         cout << " Getting the ip stats failed with an error" << endl;
     }
     numofcon = pTCPStats->dwNumConns;
-    //numberOfConnections = (string("<font color=darkslategray>Number of connections:</font> ") + string(std::to_string(pTCPStats->dwNumConns)) + string("<br>"));
-   // tcpTableInformation += numberOfConnections;
-
 
     pTcpTable = (MIB_TCPTABLE *) malloc(sizeof (MIB_TCPTABLE));
     if (pTcpTable == NULL) {
         printf("Error allocating memory\n");
 
     }
-
-
+	
     dwSize = sizeof (MIB_TCPTABLE);
     // Make an initial call to GetTcpTable to
     // get the necessary size into the dwSize variable
@@ -124,7 +120,7 @@ void TcpTableAccess::getTcpTable()
         free(pTcpTable);
         pTcpTable = (MIB_TCPTABLE *) malloc(dwSize);
         if (pTcpTable == NULL) {
-            tcpTableInformation += "Error allocating memory<br>";
+            errors += "Error allocating memory<br>";
 
         }
     }
@@ -133,66 +129,77 @@ void TcpTableAccess::getTcpTable()
     // the actual data we require
 
     if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
-       // tcpTableInformation += "<font color=darkslategray>Number of entries: </font>" + string(std::to_string((int)pTcpTable->dwNumEntries)) + "<br><br>";
 
-        for (int i = 0; i < (int)pTcpTable->dwNumEntries; i++) {
+		tcpTableEntryCount = (int)pTcpTable->dwNumEntries;
+		tcpConnectionList = new string *[tcpTableEntryCount];
+		for (int i = 0; i < tcpTableEntryCount; i++){
+			tcpConnectionList[i] = new string[3];
+		}
+        for (int i = 0; i < tcpTableEntryCount; i++) {
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
             strcpy_s(szLocalAddr, sizeof (szLocalAddr), inet_ntoa(IpAddr)); //local address
             IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
             strcpy_s(szRemoteAddr, sizeof (szRemoteAddr), inet_ntoa(IpAddr)); //remote address
 
-         //   tcpTableInformation += "<font color=purple>TCP State: </font> - ";
             switch (pTcpTable->table[i].dwState) { //switch statement gets state of connection
             case MIB_TCP_STATE_CLOSED:
-        //        tcpTableInformation += string("CLOSED<br>");
+					connectionState = "CLOSED";
                 break;
             case MIB_TCP_STATE_LISTEN:
-         //       tcpTableInformation += string("LISTEN<br>");
+				connectionState = "LISTEN";
                 break;
             case MIB_TCP_STATE_SYN_SENT:
-         //       tcpTableInformation += string("SYN-SENT<br>");
+				connectionState = "SYN-SENT";
                 break;
             case MIB_TCP_STATE_SYN_RCVD:
-        //        tcpTableInformation += string("SYN-RECEIVED<br>");
+				connectionState = "SYN-RECEIVED";
                 break;
             case MIB_TCP_STATE_ESTAB:
-         //       tcpTableInformation += string("ESTABLISHED<br>");
+				connectionState = "ESTABLISHED";
                 break;
             case MIB_TCP_STATE_FIN_WAIT1:
-          //      tcpTableInformation += string("FIN-WAIT-1<br>");
+				connectionState = "FIN-WAIT-1";
                 break;
             case MIB_TCP_STATE_FIN_WAIT2:
-          //      tcpTableInformation += string("FIN-WAIT-2<br>");
+				connectionState = "FIN-WAIT-2";
                 break;
             case MIB_TCP_STATE_CLOSE_WAIT:
-         //       tcpTableInformation += string("CLOSE-WAIT<br>");
+				connectionState = "CLOSE-WAIT";
                 break;
             case MIB_TCP_STATE_CLOSING:
-         //       tcpTableInformation += string("CLOSING<br>");
+				connectionState = "CLOSING";
                 break;
             case MIB_TCP_STATE_LAST_ACK:
-          //      tcpTableInformation += string("LAST-ACK<br>");
+				connectionState = "LAST-ACK";
                 break;
             case MIB_TCP_STATE_TIME_WAIT:
-          //      tcpTableInformation += string("TIME-WAIT<br>");
+				connectionState = "TIME-WAIT";
                 break;
             case MIB_TCP_STATE_DELETE_TCB:
-           //     tcpTableInformation += string("DELETE-TCB<br>");
+				connectionState = "DELETE-TCB";
                 break;
             default:
-          //      tcpTableInformation += string("UNKNOWN dwState value<br>");
+				connectionState = "Unknown State";
                 break;
             }
-           // tcpTableInformation += string("<font color=green>TCP Local Addr:</font> ") + string(szLocalAddr) + "<br>";
-           // tcpTableInformation += string("<font color=green>TCP Local Port: </font> ") + std::to_string(ntohs((u_short)pTcpTable->table[i].dwLocalPort)) + "<br>";
-           // tcpTableInformation += string("<font color=blue>TCP Remote Addr:</font> ") + szRemoteAddr + "<br>";
             TcpTableAccess::addressVector.push_back(string(szRemoteAddr));
-           // tcpTableInformation += string("<font color=blue>TCP Remote Port:</font> ") + std::to_string(ntohs((u_short)pTcpTable->table[i].dwRemotePort)) + "<br>";
-          //  tcpTableInformation += "<br>";
+			//issues with inline immediate conversion causing compiler errors.
+			//separate string conversion is then added to a parent string
+			localIpPort = szLocalAddr;
+			localIpPort += ":";
+			localIpPort += std::to_string(ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+			tcpConnectionList[i][0] = localIpPort;
+
+			remoteIpPort = szRemoteAddr;
+			remoteIpPort += ":";
+			remoteIpPort += std::to_string(ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+			tcpConnectionList[i][1] = remoteIpPort; 
+
+			tcpConnectionList[i][2] = connectionState;
         }
     }
     else {
-        tcpTableInformation += string("GetTcpTable failed with <br>") + std::to_string(dwRetVal);
+        errors += "GetTcpTable failed with <br>" + std::to_string(dwRetVal);
         free(pTcpTable);
 
     }
@@ -201,11 +208,7 @@ void TcpTableAccess::getTcpTable()
         free(pTcpTable);
         pTcpTable = NULL;
     }
-  //  tcpfname = "tcptableinfo";
-  //  tcpfnametemp = "temptcptableinfo";
-   // ftpo.writeToTempLog(tcpfnametemp, tcpTableInformation);
-  //  ftpo.writeToLog(tcpfname,tcpTableInformation);
-    
+	return tcpConnectionList;
 }
 
 const char *TcpTableAccess::getHostName()
@@ -224,10 +227,9 @@ const char *TcpTableAccess::getDnsServerList() {
 	return dnsServerList.c_str();
 }
 
-const char *TcpTableAccess::getSomething()
+int TcpTableAccess::getTableSize()
 {
-	getNetworkParameters();
-	return tcpTableInformation.c_str();
+	return tcpTableEntryCount;
 }
 
 void TcpTableAccess::exitThread()
