@@ -34,6 +34,7 @@ class TcpTableAccess
 		const char *getHostName();
 		const char *getDomainName();
 		const char *getDnsServerList();
+		int getNumberOfConnections();
 		int getTableSize();
         static vector<string> addressVector;
 
@@ -49,9 +50,6 @@ class TcpTableAccess
 		string errors;
 
 		string **tcpConnectionList = 0;
-       // ProgramLogTime tpo;
-       // FioLogger ftpo;
-
 
        static void enterThread(void *p);
        void threadBody();

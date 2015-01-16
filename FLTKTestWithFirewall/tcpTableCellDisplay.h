@@ -13,8 +13,8 @@
 
 #include "tcpTableAccess.h"
 
-#define MAX_ROWS 30
-#define MAX_COLS 3                // A-Z
+#define MAX_ROWST 30
+#define MAX_COLST 3                // A-Z
 
 // Derive a class from Fl_Table
 using namespace std;
@@ -24,8 +24,8 @@ class TCPTable : public Fl_Table {
 	int tableSize;
 
 	const char *cellValue;
-	string data[MAX_ROWS][MAX_COLS];                // data array for cells
-	string headings[MAX_COLS];
+	string data[MAX_ROWST][MAX_COLST];                // data array for cells
+	string headings[MAX_COLST];
 	string **tcpList;
 
 	TcpTableAccess *tcpConnections;
@@ -97,7 +97,7 @@ public:
 		row_height_all(20);         // default height of rows
 		row_resize(0);              // disable row resizing
 		// Cols
-		cols(MAX_COLS);             // how many columns
+		cols(MAX_COLST);             // how many columns
 		col_header(1);              // enable column headers (along top)
 		col_width_all(165);          // default width of columns
 		col_resize(1);              // enable column resizing

@@ -3,6 +3,9 @@
 #include "wfStatusAccess.h"
 #include "tcpTableCellDisplay.h"
 #include "tcpTableAccess.h"
+#include "udpTableCellDisplay.h"
+#include "udpTableAccess.h"
+
 
 
 using namespace std;
@@ -18,7 +21,8 @@ class MyWindow : public Fl_Double_Window{
 		*/
 		Fl_Tabs *tabGroup;
 		Fl_Group *tabSectionFirewall;
-		Fl_Group *tabSectionTCPTable;		
+		Fl_Group *tabSectionTCPTable;
+		Fl_Group *tabSectionUDPTable;
 
 		/*
 		Text and image boxes for firewall
@@ -51,12 +55,15 @@ class MyWindow : public Fl_Double_Window{
 		TcpTableAccess *tcpConnectionInfo;
 		//TCPTable
 		TCPTable *table;
+		//UDPTable
+		UDPTable *uTable;
 
 		static void enterThread(void *p);
 		void threadBody();
 		
 		void MyWindow::setCurrentFirewallStatus();
 		void MyWindow::getCurrentTCPTableInfo();
+		void MyWindow::getCurrentUDPTableInfo();
 
 		void MyWindow::redrawBoxes();
 		void MyWindow::initializeObjects();
@@ -104,6 +111,9 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 dnsServerListTextBox->label("Pending...");
 
 	      tabSectionTCPTable->end();
+		  tabSectionUDPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "UDP Table");
+		  uTable = new UDPTable(35, 65, 535, 350);
+		  tabSectionUDPTable->end();
 	   tabGroup->end();
 	end();
 	setCurrentFirewallStatus();
@@ -115,7 +125,9 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 void MyWindow::redrawBoxes() {
 	setCurrentFirewallStatus();
 	getCurrentTCPTableInfo();
+	getCurrentUDPTableInfo();
 	table->redraw();
+	uTable->redraw();
 	this->redraw();
 	startThread();
 }
@@ -138,10 +150,16 @@ void MyWindow::getCurrentTCPTableInfo() {
 	hostNameTextBox->label(tcpConnectionInfo->getHostName());	
 	domainNameTextBox->label(tcpConnectionInfo->getDomainName());
 	dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
+
 	table->updateCells();
 	table->redraw();
+
 	hostNameTextBox->redraw();
 	domainNameTextBox->redraw();
+	dnsServerListTextBox->redraw();
+}
+void MyWindow::getCurrentUDPTableInfo() {
+	uTable->updateCells();
 }
 void MyWindow::startThread() {
 	_beginthread(MyWindow::enterThread, 0, this);

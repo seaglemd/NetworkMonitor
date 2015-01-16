@@ -84,11 +84,15 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="tcpTableAccess.cpp" />
+    <ClCompile Include="udpTableAccess.cpp" />
     <ClCompile Include="wfStatusAccess.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="stringDynamicArrayTest.h" />
     <ClInclude Include="tcpTableAccess.h" />
     <ClInclude Include="tcpTableCellDisplay.h" />
+    <ClInclude Include="udpTableAccess.h" />
+    <ClInclude Include="udpTableCellDisplay.h" />
     <ClInclude Include="wfStatusAccess.h" />
     <ClInclude Include="MyWindow.h" />
   </ItemGroup>

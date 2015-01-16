@@ -6,7 +6,7 @@ using namespace std;
 
 int main()
 {
-	MyWindow win(900, 900, "Tab Window Firewall Test");
+	MyWindow win(900, 900, "Network Monitor");
 	
 	return Fl::run();
 }

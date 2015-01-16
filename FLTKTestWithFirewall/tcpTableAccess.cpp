@@ -227,6 +227,10 @@ const char *TcpTableAccess::getDnsServerList() {
 	return dnsServerList.c_str();
 }
 
+int TcpTableAccess::getNumberOfConnections() {
+	return numofcon;
+}
+
 int TcpTableAccess::getTableSize()
 {
 	return tcpTableEntryCount;

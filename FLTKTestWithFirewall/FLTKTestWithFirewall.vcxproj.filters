@@ -24,18 +24,30 @@
     <ClCompile Include="tcpTableAccess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="udpTableAccess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="wfStatusAccess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tcpTableAccess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="tcpTableCellDisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MyWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tcpTableAccess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stringDynamicArrayTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="udpTableAccess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="udpTableCellDisplay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
