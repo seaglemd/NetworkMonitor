@@ -1,8 +1,9 @@
-﻿Build started 1/18/2015 11:43:54 PM.
+﻿Build started 1/19/2015 1:59:58 AM.
      1>Project "D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\FLTKTestWithFirewall\FLTKTestWithFirewall.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          H:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4996 /analyze- /errorReport:prompt main.cpp
          main.cpp
+     1>d:\users\matthew\desktop\network monitor\networkmonitor\fltktestwithfirewall\tcptableaccess.h(43): warning C4351: new behavior: elements of array 'TcpTableAccess::currentConnectionStatusNums' will be default initialized
        Link:
          H:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\Debug\FLTKTestWithFirewall.exe" /INCREMENTAL /NOLOGO fltk.lib fltkimages.lib fltkjpeg.lib fltkpng.lib fltkzlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\Debug\FLTKTestWithFirewall.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\Debug\FLTKTestWithFirewall.lib" /MACHINE:X86 Debug\main.obj
          Debug\tcpTableAccess.obj
@@ -13,4 +14,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.79
+Time Elapsed 00:00:01.69

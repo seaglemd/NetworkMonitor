@@ -57,62 +57,54 @@ void TcpTableAccess::getNetworkParameters()
 
 }
 //retrieves the tcp table
-string **TcpTableAccess::getTcpTable()
+void TcpTableAccess::getTcpTable()
 {
-    FIXED_INFO *pFixedInfo; //object passed to the function
-    ULONG ulOutBufLen; //passed to function as well
-    //IP_ADDRESS_STRING *pIPAddr; //IP Address to use
+	if (dataState == 0) {
+		FIXED_INFO *pFixedInfo; //object passed to the function
+		ULONG ulOutBufLen; //passed to function as well    
+		PMIB_TCPSTATS pTCPStats;
+		DWORD dwRetVal;
+		PMIB_TCPTABLE pTcpTable;
+		DWORD dwSize = 0;
+		char szLocalAddr[128];
+		char szRemoteAddr[128];
+		struct in_addr IpAddr;
+		int lCurrentConnectionStatusNums[13] = {};
+		int consChanged = 0;
 
-    PMIB_TCPSTATS pTCPStats;
+		pFixedInfo = (FIXED_INFO *)malloc(sizeof(FIXED_INFO));
+		ulOutBufLen = sizeof(FIXED_INFO); //correct the buffer size so it can hold the data;
 
-    DWORD dwRetVal;
-    PMIB_TCPTABLE pTcpTable;
-    DWORD dwSize = 0;
+		pTCPStats = (MIB_TCPSTATS *)malloc(sizeof(MIB_TCPSTATS));
+		if (pTCPStats == NULL)
+			cout << "Error allocating memory for TCP" << endl;
 
-    char szLocalAddr[128];
-    char szRemoteAddr[128];
+		if ((dwRetVal = GetTcpStatistics(pTCPStats)) != NO_ERROR)
+			cout << " Getting the ip stats failed with an error" << endl;
+		if (numofcon != (int)pTCPStats->dwNumConns) {
+			numofcon = (int)pTCPStats->dwNumConns;
+			consChanged = 1;
+		}
 
+		pTcpTable = (MIB_TCPTABLE *)malloc(sizeof(MIB_TCPTABLE));
+		if (pTcpTable == NULL)
+			printf("Error allocating memory\n");
 
-    struct in_addr IpAddr;
+		dwSize = sizeof(MIB_TCPTABLE);
+		// Make an initial call to GetTcpTable to
+		// get the necessary size into the dwSize variable
+		if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == ERROR_INSUFFICIENT_BUFFER) {
+			free(pTcpTable);
+			pTcpTable = (MIB_TCPTABLE *)malloc(dwSize);
+			if (pTcpTable == NULL)
+				errors += "Error allocating memory<br>";
+		}
 
-    pFixedInfo = (FIXED_INFO *)malloc(sizeof(FIXED_INFO));
-    ulOutBufLen = sizeof(FIXED_INFO); //correct the buffer size so it can hold the data;
+		// Make a second call to GetTcpTable to get
+		// the actual data we require
 
-    pTCPStats = (MIB_TCPSTATS *)malloc(sizeof (MIB_TCPSTATS));
-    if (pTCPStats == NULL) {
-        cout << "Error allocating memory for TCP" << endl;
-    }
+		if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
 
-    if ((dwRetVal = GetTcpStatistics(pTCPStats)) != NO_ERROR) {
-        cout << " Getting the ip stats failed with an error" << endl;
-    }
-    numofcon = pTCPStats->dwNumConns;
-
-    pTcpTable = (MIB_TCPTABLE *) malloc(sizeof (MIB_TCPTABLE));
-    if (pTcpTable == NULL) {
-        printf("Error allocating memory\n");
-
-    }
-	
-    dwSize = sizeof (MIB_TCPTABLE);
-    // Make an initial call to GetTcpTable to
-    // get the necessary size into the dwSize variable
-    if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == ERROR_INSUFFICIENT_BUFFER) {
-        free(pTcpTable);
-        pTcpTable = (MIB_TCPTABLE *) malloc(dwSize);
-        if (pTcpTable == NULL) {
-            errors += "Error allocating memory<br>";
-
-        }
-    }
-
-    // Make a second call to GetTcpTable to get
-    // the actual data we require
-
-	if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
-		if (in_thread == 0)
-		{
-			in_thread = 1;
 			if (tcpTableEntryCount > 0){
 				for (int i = 0; i < tcpTableEntryCount; i++){
 					delete[]tcpConnectionList[i];
@@ -134,45 +126,58 @@ string **TcpTableAccess::getTcpTable()
 				switch (pTcpTable->table[i].dwState) { //switch statement gets state of connection
 				case MIB_TCP_STATE_CLOSED:
 					connectionState = "CLOSED";
+					lCurrentConnectionStatusNums[1]++;
 					break;
 				case MIB_TCP_STATE_LISTEN:
 					connectionState = "LISTEN";
+					lCurrentConnectionStatusNums[2]++;
 					break;
 				case MIB_TCP_STATE_SYN_SENT:
 					connectionState = "SYN-SENT";
+					lCurrentConnectionStatusNums[3]++;
 					break;
 				case MIB_TCP_STATE_SYN_RCVD:
 					connectionState = "SYN-RECEIVED";
+					lCurrentConnectionStatusNums[4]++;
 					break;
 				case MIB_TCP_STATE_ESTAB:
 					connectionState = "ESTABLISHED";
+					lCurrentConnectionStatusNums[5]++;
 					break;
 				case MIB_TCP_STATE_FIN_WAIT1:
 					connectionState = "FIN-WAIT-1";
+					lCurrentConnectionStatusNums[6]++;
 					break;
 				case MIB_TCP_STATE_FIN_WAIT2:
 					connectionState = "FIN-WAIT-2";
+					lCurrentConnectionStatusNums[7]++;
 					break;
 				case MIB_TCP_STATE_CLOSE_WAIT:
 					connectionState = "CLOSE-WAIT";
+					lCurrentConnectionStatusNums[8]++;
 					break;
 				case MIB_TCP_STATE_CLOSING:
 					connectionState = "CLOSING";
+					lCurrentConnectionStatusNums[9]++;
 					break;
 				case MIB_TCP_STATE_LAST_ACK:
 					connectionState = "LAST-ACK";
+					lCurrentConnectionStatusNums[10]++;
 					break;
 				case MIB_TCP_STATE_TIME_WAIT:
 					connectionState = "TIME-WAIT";
+					lCurrentConnectionStatusNums[11]++;
 					break;
 				case MIB_TCP_STATE_DELETE_TCB:
 					connectionState = "DELETE-TCB";
+					lCurrentConnectionStatusNums[12]++;
 					break;
 				default:
 					connectionState = "Unknown State";
+					lCurrentConnectionStatusNums[13]++;
 					break;
 				}
-				TcpTableAccess::addressVector.push_back(string(szRemoteAddr));
+
 				//issues with inline immediate conversion causing compiler errors.
 				//separate string conversion is then added to a parent string
 				localIpPort = szLocalAddr;
@@ -188,8 +193,6 @@ string **TcpTableAccess::getTcpTable()
 				tcpConnectionList[i][2] = connectionState;
 
 			}
-			
-		}
 		}
 		else {
 			errors += "GetTcpTable failed with <br>" + std::to_string(dwRetVal);
@@ -201,8 +204,36 @@ string **TcpTableAccess::getTcpTable()
 			free(pTcpTable);
 			pTcpTable = NULL;
 		}
-		in_thread = 0;
-	return tcpConnectionList;
+		
+		for (int z = 0; z < 13 && dataState != 1; z++){
+			if (lCurrentConnectionStatusNums[z] != currentConnectionStatusNums[z]){
+				dataState = 1;
+				currentConnectionStatusNums[z] = lCurrentConnectionStatusNums[z];
+			}
+		}
+		if (consChanged == 1){
+			dataState = 1;
+			consChanged = 0;
+		}
+	}
+	Sleep(2000);
+	startThread();
+}
+void TcpTableAccess::startThread() 
+{
+	_beginthread(TcpTableAccess::enterThread, 0, this);
+}
+
+void TcpTableAccess::enterThread(void *p)
+{
+	((TcpTableAccess *)p)->threadBody();
+	_endthread();
+	return;
+}
+
+void TcpTableAccess::threadBody()
+{
+	getTcpTable();
 }
 
 const char *TcpTableAccess::getHostName()
@@ -221,20 +252,37 @@ const char *TcpTableAccess::getDnsServerList() {
 	return dnsServerList.c_str();
 }
 
-int TcpTableAccess::getNumberOfConnections() {
-	return numofcon;
+const char *TcpTableAccess::getNumberOfConnections() {
+	numberOfConnections = "Test ";
+	numberOfConnections += to_string(numofcon);
+	return numberOfConnections.c_str();
 }
 
 int TcpTableAccess::getTableSize()
 {
 	return tcpTableEntryCount;
 }
-
-void TcpTableAccess::changeThreadState(int threadState){
-	in_thread = threadState;
+string **TcpTableAccess::passTcpTable()
+{
+	if (dataState == 1)
+		return tcpConnectionList;
+	else {
+		emptyList = new string*[tcpTableEntryCount];
+		for (int i = 0; i < tcpTableEntryCount; i++){
+			emptyList[i] = new string[3];
+			emptyList[i][0] = "";
+			emptyList[i][1] = "";
+			emptyList[i][2] = "";
+		}
+		return emptyList;
+	}
+		
 }
-int TcpTableAccess::getThreadState(){
-	return in_thread;
+
+void TcpTableAccess::changeDataState(int nDataState){
+	dataState = nDataState;
+}
+int TcpTableAccess::getDataState(){
+	return dataState;
 }
 
-vector<string> TcpTableAccess::addressVector;

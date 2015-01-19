@@ -24,20 +24,24 @@ using namespace std;
 class TcpTableAccess 
 {
     public:
-        string** getTcpTable();
+
+		void startThread();
+        void getTcpTable();
         void getNetworkParameters();
 		const char *getHostName();
 		const char *getDomainName();
 		const char *getDnsServerList();
-		int getNumberOfConnections();
+		const char *getNumberOfConnections();
 		int getTableSize();
-        static vector<string> addressVector;
-		void changeThreadState(int threadState);
-		int getThreadState();
+		string **passTcpTable();
+		void changeDataState(int nDataState);
+		int getDataState();
 
     private:
-        int numofcon;
+        int numofcon = 0;
 		int tcpTableEntryCount = 0;
+		int currentConnectionStatusNums[13] = { };
+		string numberOfConnections;
 		string connectionState;
 		string localIpPort;
 		string remoteIpPort;
@@ -45,9 +49,12 @@ class TcpTableAccess
 		string domainName;
 		string dnsServerList;
 		string errors;
-
 		string **tcpConnectionList = 0;
-		int in_thread = 0;
+		string **emptyList = 0;
+		int dataState = 0;
+
+		static void enterThread(void *p);
+		void threadBody();
 };
 
 #endif

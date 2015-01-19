@@ -43,6 +43,8 @@ class MyWindow : public Fl_Double_Window{
 
 		Fl_Box *dnsServerListTextBoxLabel;
 		Fl_Box *dnsServerListTextBox;
+		Fl_Box *numberOfConnectionsTextBoxLabel;
+		Fl_Box *numberOfConnectionsTextBox;
 
 		/*
 		Images
@@ -110,6 +112,12 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 dnsServerListTextBox->box(FL_DOWN_BOX);
 			 dnsServerListTextBox->label("Pending...");
 
+			 numberOfConnectionsTextBoxLabel = new Fl_Box(600, 170, 100, 25);
+			 numberOfConnectionsTextBoxLabel->label("Num of Cons: ");
+			 numberOfConnectionsTextBox = new Fl_Box(700, 170, 100, 25);
+			 numberOfConnectionsTextBox->box(FL_DOWN_BOX);
+			 numberOfConnectionsTextBox->label("Pending...");
+
 	      tabSectionTCPTable->end();
 		  tabSectionUDPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "UDP Table");
 		  uTable = new UDPTable(35, 65, 535, 350);
@@ -124,7 +132,9 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 
 void MyWindow::redrawBoxes() {
 	setCurrentFirewallStatus();
-	getCurrentTCPTableInfo();		
+	if (tcpConnectionInfo->getDataState() == 1){
+		getCurrentTCPTableInfo();
+	}
 	uTable->redraw();
 
 	startThread();
@@ -145,17 +155,16 @@ void MyWindow::setCurrentFirewallStatus() {
 	publicFirewallBox->redraw();
 }
 void MyWindow::getCurrentTCPTableInfo() {
-	if (table->getDataThreadState() == 0){				
-		hostNameTextBox->label(tcpConnectionInfo->getHostName());
-		domainNameTextBox->label(tcpConnectionInfo->getDomainName());
-		dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
+	table->updateCells();
+	hostNameTextBox->label(tcpConnectionInfo->getHostName());
+	domainNameTextBox->label(tcpConnectionInfo->getDomainName());
+	dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
+	numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
 
-		table->updateCells();
-
-		hostNameTextBox->redraw();
-		domainNameTextBox->redraw();
-		dnsServerListTextBox->redraw();		
-	}
+	hostNameTextBox->redraw();
+	domainNameTextBox->redraw();
+	dnsServerListTextBox->redraw();
+	numberOfConnectionsTextBox->redraw();
 }
 void MyWindow::getCurrentUDPTableInfo() {
 	uTable->updateCells();
