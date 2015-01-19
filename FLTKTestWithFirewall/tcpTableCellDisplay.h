@@ -10,6 +10,7 @@
 #include <FL/Fl_Table.H>
 #include <FL/fl_draw.H>
 #include <string>
+#include <mutex>
 
 #include "tcpTableAccess.h"
 
@@ -25,7 +26,10 @@ class TCPTable : public Fl_Table {
 	int tableSize;
 
 	const char *cellValue;
-	string **data;                // data array for cells
+
+	mutex m;
+	string **data;  // data array for cells
+
 	string headings[MAX_COLST];
 	string **tcpList;
 
@@ -59,24 +63,30 @@ class TCPTable : public Fl_Table {
 	//     It's up to us to use FLTK's drawing functions to draw the cells the way we want.
 	//
 	void draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0) {
-		static char s[40];
-		switch (context) {
-		case CONTEXT_STARTPAGE:                   // before page is drawn..
-			fl_font(FL_HELVETICA, 16);              // set the font for our drawing operations
-			return;
-		case CONTEXT_COL_HEADER:
-			sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
-			DrawHeader(s, X, Y, W, H);
-			return;
-		case CONTEXT_ROW_HEADER:                  // Draw row headers
-			sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
-			DrawHeader(s, X, Y, W, H);
-			return;
-		case CONTEXT_CELL:
-			DrawData(data[ROW][COL].c_str(), X, Y, W, H);
-			return;
-		default:
-			return;
+		if (tcpConnections->getDataState() != 1){
+			static char s[40];
+			switch (context) {
+			case CONTEXT_STARTPAGE:                   // before page is drawn..
+				fl_font(FL_HELVETICA, 16);              // set the font for our drawing operations
+				return;
+			case CONTEXT_COL_HEADER:
+				sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
+				DrawHeader(s, X, Y, W, H);
+				return;
+			case CONTEXT_ROW_HEADER:                  // Draw row headers
+				sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
+				DrawHeader(s, X, Y, W, H);
+				return;
+			case CONTEXT_CELL:
+				DrawData(data[ROW][COL].c_str(), X, Y, W, H);
+				return;
+			default:
+				return;
+			}
+		}
+		else{
+			ROW = 0;
+			COL = 0;
 		}
 	}
 
@@ -116,15 +126,18 @@ public:
 	}
 
 
-	void TCPTable::fillDataArray(){			
+	void TCPTable::fillDataArray(){	
+		
 		if (tcpConnections->getDataState() == 1 && firstTime != 1){
+			m.lock();
+			for (int i = 0; i < tableSize; i++){
+				delete[]data[i];
+			}
+			delete[] data;
+			m.unlock();
 				tcpList = tcpConnections->passTcpTable();
 				tableSize = tcpConnections->getTableSize();	
-				for (int i = 0; i < tableSize; i++){
-					delete[]data[i];
-				}
-				delete[] data;
-
+				m.lock();
 				data = new string*[tableSize];
 				for (int i = 0; i < tableSize; i++)
 					data[i] = new string[3];
@@ -136,10 +149,11 @@ public:
 				for (int i = 0; i < tableSize; i++)
 					for (int j = 0; j < 3; j++)
 						data[i][j] = tcpList[i][j];
-
+				m.unlock();
 				tcpConnections->changeDataState(0);
 			}
-			else if (firstTime == 1){	
+			else if (firstTime == 1){
+				m.lock();
 				data = new string*[tableSize];
 				for (int i = 0; i < tableSize; i++){
 					data[i] = new string[3];
@@ -153,8 +167,10 @@ public:
 					for (int j = 0; j < 3; j++)
 						data[i][j] = tcpList[i][j];
 				firstTime = 0;
+				m.unlock();
 				tcpConnections->changeDataState(0);
-			}			
+			}
+			
 	}
 	~TCPTable() { }
 };

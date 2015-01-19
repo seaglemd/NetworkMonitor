@@ -218,7 +218,6 @@ void TcpTableAccess::getTcpTable()
 			consChanged = 0;
 		}
 	}
-	Sleep(2000);
 	startThread();
 }
 void TcpTableAccess::startThread() 
@@ -258,6 +257,7 @@ const char *TcpTableAccess::getNumberOfConnections() {
 	numberOfConnections = "";
 	numberOfConnections += to_string(numofcon);
 	numberOfConnections += to_string(numoftimes);
+	numberOfConnections += to_string(dataState);
 	return numberOfConnections.c_str();
 }
 

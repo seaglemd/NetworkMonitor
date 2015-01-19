@@ -136,7 +136,6 @@ void MyWindow::redrawBoxes() {
 		getCurrentTCPTableInfo();
 	}
 	uTable->redraw();
-
 	startThread();
 }
 
@@ -181,7 +180,8 @@ void MyWindow::enterThread(void *p)
 void MyWindow::threadBody()
 {
 	redrawBoxes();
-	Sleep(7000);
+	
+	Sleep(10000);
 }
 
 MyWindow::~MyWindow(){}
