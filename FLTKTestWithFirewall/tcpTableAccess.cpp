@@ -18,25 +18,6 @@ using namespace std;
  *many of the connections are local ones and because of that
  * the address shows up as all zeros
  */
-//starts the thread
-void TcpTableAccess::startThread()
-{
-    _beginthread(TcpTableAccess::enterThread, 0, this);
-}
-
-void TcpTableAccess::enterThread(void *p)
-{
-    ((TcpTableAccess *) p)->threadBody();
-    _endthread();
-    return;
-}
-
-void TcpTableAccess::threadBody()
-{
-	getNetworkParameters();
-	//getTcpTable();
-	exitThread();
-}
 
 //method to get the information about the network
 void TcpTableAccess::getNetworkParameters()
@@ -128,86 +109,98 @@ string **TcpTableAccess::getTcpTable()
     // Make a second call to GetTcpTable to get
     // the actual data we require
 
-    if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
+	if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
+		if (in_thread != 1)
+		{
+			in_thread = 1;
+			if (tcpTableEntryCount > 0){
+				for (int i = 0; i < 3; i++){
+					delete[]tcpConnectionList[i];
+				}
+				delete[]tcpConnectionList;
+			}
 
-		tcpTableEntryCount = (int)pTcpTable->dwNumEntries;
-		tcpConnectionList = new string *[tcpTableEntryCount];
-		for (int i = 0; i < tcpTableEntryCount; i++){
-			tcpConnectionList[i] = new string[3];
-		}
-        for (int i = 0; i < tcpTableEntryCount; i++) {
-            IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
-            strcpy_s(szLocalAddr, sizeof (szLocalAddr), inet_ntoa(IpAddr)); //local address
-            IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
-            strcpy_s(szRemoteAddr, sizeof (szRemoteAddr), inet_ntoa(IpAddr)); //remote address
+			tcpTableEntryCount = (int)pTcpTable->dwNumEntries;
+			tcpConnectionList = new string *[tcpTableEntryCount];
+			for (int i = 0; i < tcpTableEntryCount; i++){
+				tcpConnectionList[i] = new string[3];
+			}
+			for (int i = 0; i < tcpTableEntryCount; i++) {
+				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
+				strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr)); //local address
+				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
+				strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr)); //remote address
 
-            switch (pTcpTable->table[i].dwState) { //switch statement gets state of connection
-            case MIB_TCP_STATE_CLOSED:
+				switch (pTcpTable->table[i].dwState) { //switch statement gets state of connection
+				case MIB_TCP_STATE_CLOSED:
 					connectionState = "CLOSED";
-                break;
-            case MIB_TCP_STATE_LISTEN:
-				connectionState = "LISTEN";
-                break;
-            case MIB_TCP_STATE_SYN_SENT:
-				connectionState = "SYN-SENT";
-                break;
-            case MIB_TCP_STATE_SYN_RCVD:
-				connectionState = "SYN-RECEIVED";
-                break;
-            case MIB_TCP_STATE_ESTAB:
-				connectionState = "ESTABLISHED";
-                break;
-            case MIB_TCP_STATE_FIN_WAIT1:
-				connectionState = "FIN-WAIT-1";
-                break;
-            case MIB_TCP_STATE_FIN_WAIT2:
-				connectionState = "FIN-WAIT-2";
-                break;
-            case MIB_TCP_STATE_CLOSE_WAIT:
-				connectionState = "CLOSE-WAIT";
-                break;
-            case MIB_TCP_STATE_CLOSING:
-				connectionState = "CLOSING";
-                break;
-            case MIB_TCP_STATE_LAST_ACK:
-				connectionState = "LAST-ACK";
-                break;
-            case MIB_TCP_STATE_TIME_WAIT:
-				connectionState = "TIME-WAIT";
-                break;
-            case MIB_TCP_STATE_DELETE_TCB:
-				connectionState = "DELETE-TCB";
-                break;
-            default:
-				connectionState = "Unknown State";
-                break;
-            }
-            TcpTableAccess::addressVector.push_back(string(szRemoteAddr));
-			//issues with inline immediate conversion causing compiler errors.
-			//separate string conversion is then added to a parent string
-			localIpPort = szLocalAddr;
-			localIpPort += ":";
-			localIpPort += std::to_string(ntohs((u_short)pTcpTable->table[i].dwLocalPort));
-			tcpConnectionList[i][0] = localIpPort;
+					break;
+				case MIB_TCP_STATE_LISTEN:
+					connectionState = "LISTEN";
+					break;
+				case MIB_TCP_STATE_SYN_SENT:
+					connectionState = "SYN-SENT";
+					break;
+				case MIB_TCP_STATE_SYN_RCVD:
+					connectionState = "SYN-RECEIVED";
+					break;
+				case MIB_TCP_STATE_ESTAB:
+					connectionState = "ESTABLISHED";
+					break;
+				case MIB_TCP_STATE_FIN_WAIT1:
+					connectionState = "FIN-WAIT-1";
+					break;
+				case MIB_TCP_STATE_FIN_WAIT2:
+					connectionState = "FIN-WAIT-2";
+					break;
+				case MIB_TCP_STATE_CLOSE_WAIT:
+					connectionState = "CLOSE-WAIT";
+					break;
+				case MIB_TCP_STATE_CLOSING:
+					connectionState = "CLOSING";
+					break;
+				case MIB_TCP_STATE_LAST_ACK:
+					connectionState = "LAST-ACK";
+					break;
+				case MIB_TCP_STATE_TIME_WAIT:
+					connectionState = "TIME-WAIT";
+					break;
+				case MIB_TCP_STATE_DELETE_TCB:
+					connectionState = "DELETE-TCB";
+					break;
+				default:
+					connectionState = "Unknown State";
+					break;
+				}
+				TcpTableAccess::addressVector.push_back(string(szRemoteAddr));
+				//issues with inline immediate conversion causing compiler errors.
+				//separate string conversion is then added to a parent string
+				localIpPort = szLocalAddr;
+				localIpPort += ":";
+				localIpPort += std::to_string(ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+				tcpConnectionList[i][0] = localIpPort;
 
-			remoteIpPort = szRemoteAddr;
-			remoteIpPort += ":";
-			remoteIpPort += std::to_string(ntohs((u_short)pTcpTable->table[i].dwRemotePort));
-			tcpConnectionList[i][1] = remoteIpPort; 
+				remoteIpPort = szRemoteAddr;
+				remoteIpPort += ":";
+				remoteIpPort += std::to_string(ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+				tcpConnectionList[i][1] = remoteIpPort;
 
-			tcpConnectionList[i][2] = connectionState;
-        }
-    }
-    else {
-        errors += "GetTcpTable failed with <br>" + std::to_string(dwRetVal);
-        free(pTcpTable);
+				tcpConnectionList[i][2] = connectionState;
 
-    }
+			}
+		}
+		}
+		else {
+			errors += "GetTcpTable failed with <br>" + std::to_string(dwRetVal);
+			free(pTcpTable);
 
-    if (pTcpTable != NULL) {
-        free(pTcpTable);
-        pTcpTable = NULL;
-    }
+		}
+
+		if (pTcpTable != NULL) {
+			free(pTcpTable);
+			pTcpTable = NULL;
+		}
+	
 	return tcpConnectionList;
 }
 
@@ -236,9 +229,11 @@ int TcpTableAccess::getTableSize()
 	return tcpTableEntryCount;
 }
 
-void TcpTableAccess::exitThread()
-{	
-	startThread();
-	Sleep(20000);
+void TcpTableAccess::changeThreadState(int threadState){
+	in_thread = threadState;
 }
+int TcpTableAccess::getThreadState(){
+	return in_thread;
+}
+
 vector<string> TcpTableAccess::addressVector;

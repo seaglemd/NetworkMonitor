@@ -67,11 +67,11 @@ class MyWindow : public Fl_Double_Window{
 
 		void MyWindow::redrawBoxes();
 		void MyWindow::initializeObjects();
+
 };
 
 MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title){
 	firewallStatus = new WFStatus();
-	tcpConnectionInfo = new TcpTableAccess();
 	firewallOn = new Fl_PNG_Image("fWOn.png");
 	firewallOff = new Fl_PNG_Image("fwoff.png");
 	
@@ -91,22 +91,22 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	      tabSectionFirewall->end();
 	      tabSectionTCPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "TCP Table");
 		     table = new TCPTable(35, 65, 535, 350);
-
-			 hostNameTextBoxLabel = new Fl_Box(645, 65, 100, 25);
+			 tcpConnectionInfo = table->getTcpObject();
+			 hostNameTextBoxLabel = new Fl_Box(600, 65, 100, 25);
 			 hostNameTextBoxLabel->label("Host Name: ");
-			 hostNameTextBox = new Fl_Box(745, 65, 100, 25);
+			 hostNameTextBox = new Fl_Box(700, 65, 150, 25);
 			 hostNameTextBox->box(FL_DOWN_BOX);
 			 hostNameTextBox->label("Pending...");		
 
-			 domainNameTextBoxLabel = new Fl_Box(645, 100, 100, 25);
+			 domainNameTextBoxLabel = new Fl_Box(600, 100, 100, 25);
 			 domainNameTextBoxLabel->label("Domain Name: ");
-			 domainNameTextBox = new Fl_Box(745, 100, 100, 25);
+			 domainNameTextBox = new Fl_Box(700, 100, 100, 25);
 			 domainNameTextBox->box(FL_DOWN_BOX);
 			 domainNameTextBox->label("Pending...");
 
-			 dnsServerListTextBoxLabel = new Fl_Box(645, 135, 100, 25);
+			 dnsServerListTextBoxLabel = new Fl_Box(600, 135, 100, 25);
 			 dnsServerListTextBoxLabel->label("DNS Servers: ");
-			 dnsServerListTextBox = new Fl_Box(745, 135, 100, 25);
+			 dnsServerListTextBox = new Fl_Box(700, 135, 100, 25);
 			 dnsServerListTextBox->box(FL_DOWN_BOX);
 			 dnsServerListTextBox->label("Pending...");
 
@@ -125,10 +125,10 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 void MyWindow::redrawBoxes() {
 	setCurrentFirewallStatus();
 	getCurrentTCPTableInfo();
-	getCurrentUDPTableInfo();
-	table->redraw();
+	//getCurrentUDPTableInfo();
+	if (tcpConnectionInfo->getThreadState() == 0)
+		table->redraw();
 	uTable->redraw();
-	this->redraw();
 	startThread();
 }
 
@@ -147,16 +147,18 @@ void MyWindow::setCurrentFirewallStatus() {
 	publicFirewallBox->redraw();
 }
 void MyWindow::getCurrentTCPTableInfo() {
-	hostNameTextBox->label(tcpConnectionInfo->getHostName());	
-	domainNameTextBox->label(tcpConnectionInfo->getDomainName());
-	dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
+	if (tcpConnectionInfo->getThreadState() == 0){
 
-	table->updateCells();
-	table->redraw();
+		hostNameTextBox->label(tcpConnectionInfo->getHostName());
+		domainNameTextBox->label(tcpConnectionInfo->getDomainName());
+		dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
 
-	hostNameTextBox->redraw();
-	domainNameTextBox->redraw();
-	dnsServerListTextBox->redraw();
+		table->updateCells();
+
+		hostNameTextBox->redraw();
+		domainNameTextBox->redraw();
+		dnsServerListTextBox->redraw();
+	}
 }
 void MyWindow::getCurrentUDPTableInfo() {
 	uTable->updateCells();

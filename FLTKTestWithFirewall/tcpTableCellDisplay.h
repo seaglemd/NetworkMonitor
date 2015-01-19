@@ -88,6 +88,7 @@ public:
 		tcpConnections = new TcpTableAccess();
 		tcpList = tcpConnections->getTcpTable();
 		tableSize = tcpConnections->getTableSize();
+		tcpConnections->changeThreadState(0);
 		headings[0] = "Local IP:Port";
 		headings[1] = "Remote IP:Port";
 		headings[2] = "State";
@@ -107,6 +108,11 @@ public:
 	{
 		tcpList = tcpConnections->getTcpTable();
 		tableSize = tcpConnections->getTableSize();
+		tcpConnections->changeThreadState(0);
+	}
+
+	TcpTableAccess *TCPTable::getTcpObject(){
+		return tcpConnections;
 	}
 	~TCPTable() { }
 };
