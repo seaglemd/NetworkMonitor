@@ -110,11 +110,11 @@ string **TcpTableAccess::getTcpTable()
     // the actual data we require
 
 	if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
-		if (in_thread != 1)
+		if (in_thread == 0)
 		{
 			in_thread = 1;
 			if (tcpTableEntryCount > 0){
-				for (int i = 0; i < 3; i++){
+				for (int i = 0; i < tcpTableEntryCount; i++){
 					delete[]tcpConnectionList[i];
 				}
 				delete[]tcpConnectionList;
@@ -188,6 +188,7 @@ string **TcpTableAccess::getTcpTable()
 				tcpConnectionList[i][2] = connectionState;
 
 			}
+			
 		}
 		}
 		else {
@@ -200,7 +201,7 @@ string **TcpTableAccess::getTcpTable()
 			free(pTcpTable);
 			pTcpTable = NULL;
 		}
-	
+		in_thread = 0;
 	return tcpConnectionList;
 }
 

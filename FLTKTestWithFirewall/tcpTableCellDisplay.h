@@ -13,7 +13,7 @@
 
 #include "tcpTableAccess.h"
 
-#define MAX_ROWST 30
+#define MAX_ROWST 400
 #define MAX_COLST 3                // A-Z
 
 // Derive a class from Fl_Table
@@ -22,9 +22,11 @@ using namespace std;
 class TCPTable : public Fl_Table {
 	
 	int tableSize;
+	int dataSize = 0;
+	int dataThreadState = 0;
 
 	const char *cellValue;
-	string data[MAX_ROWST][MAX_COLST];                // data array for cells
+	string **data;                // data array for cells
 	string headings[MAX_COLST];
 	string **tcpList;
 
@@ -72,7 +74,7 @@ class TCPTable : public Fl_Table {
 			DrawHeader(s, X, Y, W, H);
 			return;
 		case CONTEXT_CELL:
-			DrawData(tcpList[ROW][COL].c_str(), X, Y, W, H);
+			DrawData(data[ROW][COL].c_str(), X, Y, W, H);
 			return;
 		default:
 			return;
@@ -85,15 +87,14 @@ public:
 	//
 	TCPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L) {
 		// Fill data array
-		tcpConnections = new TcpTableAccess();
-		tcpList = tcpConnections->getTcpTable();
-		tableSize = tcpConnections->getTableSize();
-		tcpConnections->changeThreadState(0);
+		tcpConnections = new TcpTableAccess();		
+		fillDataArray();
+
 		headings[0] = "Local IP:Port";
 		headings[1] = "Remote IP:Port";
 		headings[2] = "State";
 		// Rows
-		rows(tableSize);             // how many rows
+		rows(MAX_ROWST);             // how many rows
 		row_header(0);              // enable row headers (along left)
 		row_height_all(20);         // default height of rows
 		row_resize(0);              // disable row resizing
@@ -106,13 +107,60 @@ public:
 	}
 	void TCPTable::updateCells()
 	{
-		tcpList = tcpConnections->getTcpTable();
-		tableSize = tcpConnections->getTableSize();
-		tcpConnections->changeThreadState(0);
+		fillDataArray();
 	}
-
 	TcpTableAccess *TCPTable::getTcpObject(){
 		return tcpConnections;
+	}
+	int TCPTable::getDataThreadState(){
+		return dataThreadState;
+	}
+	void TCPTable::changeDataThreadState(int value){
+		dataThreadState = value;
+	}
+	void TCPTable::fillDataArray(){
+			if (dataSize > 0 && dataThreadState == 0 && tcpConnections->getThreadState() == 0){
+				tcpList = tcpConnections->getTcpTable();
+				tableSize = tcpConnections->getTableSize();
+				dataThreadState = 1;
+				for (int i = 0; i < MAX_ROWST; i++){
+					delete[]data[i];
+				}
+				delete[] data;
+
+				dataSize = tableSize;
+				data = new string*[MAX_ROWST];
+				for (int i = 0; i < MAX_ROWST; i++)
+					data[i] = new string[3];
+
+				for (int i = 0; i < MAX_ROWST; i++)
+					for (int j = 0; j < 3; j++)
+						data[i][j] = " ";
+
+				for (int i = 0; i < dataSize; i++)
+					for (int j = 0; j < 3; j++)
+						data[i][j] = tcpList[i][j];
+				dataThreadState = 0;
+			}
+			else if (dataSize == 0 && dataThreadState == 0 && tcpConnections->getThreadState() == 0){
+				dataThreadState = 1;
+				tcpList = tcpConnections->getTcpTable();
+				tableSize = tcpConnections->getTableSize();
+				dataSize = tableSize;
+				data = new string*[MAX_ROWST];
+				for (int i = 0; i < MAX_ROWST; i++){
+					data[i] = new string[3];
+				}
+
+				for (int i = 0; i < MAX_ROWST; i++)
+					for (int j = 0; j < 3; j++)
+						data[i][j] = " ";
+
+				for (int i = 0; i < dataSize; i++)
+					for (int j = 0; j < 3; j++)
+						data[i][j] = tcpList[i][j];
+				dataThreadState = 0;
+			}			
 	}
 	~TCPTable() { }
 };
