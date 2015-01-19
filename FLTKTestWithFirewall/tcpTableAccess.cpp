@@ -208,11 +208,13 @@ void TcpTableAccess::getTcpTable()
 		for (int z = 0; z < 13 && dataState != 1; z++){
 			if (lCurrentConnectionStatusNums[z] != currentConnectionStatusNums[z]){
 				dataState = 1;
+				numoftimes++;
 				currentConnectionStatusNums[z] = lCurrentConnectionStatusNums[z];
 			}
 		}
 		if (consChanged == 1){
 			dataState = 1;
+			numoftimes++;
 			consChanged = 0;
 		}
 	}
@@ -253,8 +255,9 @@ const char *TcpTableAccess::getDnsServerList() {
 }
 
 const char *TcpTableAccess::getNumberOfConnections() {
-	numberOfConnections = "Test ";
+	numberOfConnections = "";
 	numberOfConnections += to_string(numofcon);
+	numberOfConnections += to_string(numoftimes);
 	return numberOfConnections.c_str();
 }
 

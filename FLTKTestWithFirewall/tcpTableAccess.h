@@ -39,6 +39,7 @@ class TcpTableAccess
 
     private:
         int numofcon = 0;
+		int numoftimes = 0;
 		int tcpTableEntryCount = 0;
 		int currentConnectionStatusNums[13] = { };
 		string numberOfConnections;
