@@ -1,5 +1,8 @@
 #ifndef MYWINDOW_H
 #define MYWINDOW_H
+
+#include <thread>
+
 #include "wfStatusAccess.h"
 #include "tcpTableCellDisplay.h"
 #include "tcpTableAccess.h"
@@ -13,9 +16,9 @@ using namespace std;
 class MyWindow : public Fl_Double_Window{
 	public:
 		MyWindow(int w, int h, const char* title);
-		void startThread();
 		~MyWindow();
 	private:
+		//Threads
 		/*
 		Tab group setup and tab sections setup
 		*/
@@ -59,9 +62,6 @@ class MyWindow : public Fl_Double_Window{
 		TCPTable *table;
 		//UDPTable
 		UDPTable *uTable;
-
-		static void enterThread(void *p);
-		void threadBody();
 		
 		void MyWindow::setCurrentFirewallStatus();
 		void MyWindow::getCurrentTCPTableInfo();
@@ -127,16 +127,16 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	setCurrentFirewallStatus();
 	resizable(this);
 	show();
-	startThread();
+	thread first (&MyWindow::redrawBoxes, this);
 }
 
 void MyWindow::redrawBoxes() {
-	setCurrentFirewallStatus();
+	/*setCurrentFirewallStatus();
 	if (tcpConnectionInfo->getDataState() == 1){
 		getCurrentTCPTableInfo();
 	}
 	uTable->redraw();
-	startThread();
+	*/
 }
 
 void MyWindow::setCurrentFirewallStatus() {
@@ -168,21 +168,8 @@ void MyWindow::getCurrentTCPTableInfo() {
 void MyWindow::getCurrentUDPTableInfo() {
 	uTable->updateCells();
 }
-void MyWindow::startThread() {
-	_beginthread(MyWindow::enterThread, 0, this);
-}
-void MyWindow::enterThread(void *p)
-{
-	((MyWindow *)p)->threadBody();
-	_endthread();
-	return;
-}
-void MyWindow::threadBody()
-{
-	redrawBoxes();
-	
-	Sleep(10000);
-}
+
+
 
 MyWindow::~MyWindow(){}
 
