@@ -103,8 +103,7 @@ void TcpTableAccess::getTcpTable()
 		// Make a second call to GetTcpTable to get
 		// the actual data we require
 
-		if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {
-
+		if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {			
 			if (tcpTableEntryCount > 0){
 				for (int i = 0; i < tcpTableEntryCount; i++){
 					delete[]tcpConnectionList[i];
@@ -285,6 +284,7 @@ string **TcpTableAccess::passTcpTable()
 void TcpTableAccess::changeDataState(int nDataState){
 	dataState = nDataState;
 }
+
 int TcpTableAccess::getDataState(){
 	return dataState;
 }

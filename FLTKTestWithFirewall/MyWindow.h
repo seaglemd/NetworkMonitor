@@ -19,6 +19,7 @@ class MyWindow : public Fl_Double_Window{
 		~MyWindow();
 	private:
 		//Threads
+		thread *first;
 		/*
 		Tab group setup and tab sections setup
 		*/
@@ -127,16 +128,16 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	setCurrentFirewallStatus();
 	resizable(this);
 	show();
-	thread first (&MyWindow::redrawBoxes, this);
+	first = new thread(&MyWindow::redrawBoxes, this);
 }
 
 void MyWindow::redrawBoxes() {
-	/*setCurrentFirewallStatus();
-	if (tcpConnectionInfo->getDataState() == 1){
-		getCurrentTCPTableInfo();
-	}
+	setCurrentFirewallStatus();	
+	getCurrentTCPTableInfo();
+	
 	uTable->redraw();
-	*/
+	
+	first = new thread(&MyWindow::redrawBoxes, this);
 }
 
 void MyWindow::setCurrentFirewallStatus() {

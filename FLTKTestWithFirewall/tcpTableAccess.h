@@ -11,6 +11,7 @@
 #include <process.h>
 #include <windows.h>
 #include <vector>
+#include <mutex>
 
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Iphlpapi.lib")
@@ -23,8 +24,7 @@ using namespace std;
 
 class TcpTableAccess 
 {
-    public:
-
+    public:		
 		void startThread();
         void getTcpTable();
         void getNetworkParameters();

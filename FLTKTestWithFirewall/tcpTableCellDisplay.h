@@ -63,6 +63,7 @@ class TCPTable : public Fl_Table {
 	//     It's up to us to use FLTK's drawing functions to draw the cells the way we want.
 	//
 	void draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0) {
+		std::lock_guard<std::mutex> guard(m);
 		if (tcpConnections->getDataState() != 1){
 			static char s[40];
 			switch (context) {
@@ -127,17 +128,14 @@ public:
 
 
 	void TCPTable::fillDataArray(){	
-		
-		if (tcpConnections->getDataState() == 1 && firstTime != 1){
-			m.lock();
+		std::lock_guard<std::mutex> guard(m);
+		if (tcpConnections->getDataState() == 1 && firstTime != 1){			
 			for (int i = 0; i < tableSize; i++){
 				delete[]data[i];
 			}
-			delete[] data;
-			m.unlock();
+			delete[] data;			
 				tcpList = tcpConnections->passTcpTable();
-				tableSize = tcpConnections->getTableSize();	
-				m.lock();
+				tableSize = tcpConnections->getTableSize();					
 				data = new string*[tableSize];
 				for (int i = 0; i < tableSize; i++)
 					data[i] = new string[3];
@@ -149,11 +147,10 @@ public:
 				for (int i = 0; i < tableSize; i++)
 					for (int j = 0; j < 3; j++)
 						data[i][j] = tcpList[i][j];
-				m.unlock();
 				tcpConnections->changeDataState(0);
 			}
 			else if (firstTime == 1){
-				m.lock();
+				
 				data = new string*[tableSize];
 				for (int i = 0; i < tableSize; i++){
 					data[i] = new string[3];
@@ -166,8 +163,7 @@ public:
 				for (int i = 0; i < tableSize; i++)
 					for (int j = 0; j < 3; j++)
 						data[i][j] = tcpList[i][j];
-				firstTime = 0;
-				m.unlock();
+				firstTime = 0;				
 				tcpConnections->changeDataState(0);
 			}
 			
