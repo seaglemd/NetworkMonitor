@@ -172,7 +172,7 @@ public:
 	void TCPTable::getTcpTableWindowForRedraw(TCPTable* curTable)
 	{
 		std::lock_guard<std::mutex> guard(m);
-		curTable->redraw();	
+		curTable->redraw();		
 		somethingIsChanging = 0;
 	}
 	~TCPTable() { }

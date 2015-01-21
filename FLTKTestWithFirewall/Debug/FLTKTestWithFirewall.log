@@ -1,4 +1,4 @@
-﻿Build started 1/20/2015 8:24:07 PM.
+﻿Build started 1/21/2015 11:49:29 AM.
      1>Project "C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\FLTKTestWithFirewall\FLTKTestWithFirewall.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4996 /analyze- /errorReport:prompt main.cpp
@@ -14,4 +14,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.58
+Time Elapsed 00:00:02.79
