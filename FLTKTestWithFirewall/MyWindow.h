@@ -128,15 +128,14 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	setCurrentFirewallStatus();
 	resizable(this);
 	show();
-	first = new thread(&MyWindow::redrawBoxes, this);
+	redrawBoxes();
 }
 
 void MyWindow::redrawBoxes() {
+
 	setCurrentFirewallStatus();	
-	getCurrentTCPTableInfo();
-	
-	uTable->redraw();
-	
+	getCurrentTCPTableInfo();	
+	//uTable->redraw();	
 	first = new thread(&MyWindow::redrawBoxes, this);
 }
 
@@ -165,12 +164,11 @@ void MyWindow::getCurrentTCPTableInfo() {
 	domainNameTextBox->redraw();
 	dnsServerListTextBox->redraw();
 	numberOfConnectionsTextBox->redraw();
+	table->getTcpTableWindowForRedraw(table);
 }
 void MyWindow::getCurrentUDPTableInfo() {
 	uTable->updateCells();
 }
-
-
 
 MyWindow::~MyWindow(){}
 

@@ -204,37 +204,31 @@ void TcpTableAccess::getTcpTable()
 			pTcpTable = NULL;
 		}
 		
-		for (int z = 0; z < 13 && dataState != 1; z++){
+		for (int z = 0; z < 13; z++){
 			if (lCurrentConnectionStatusNums[z] != currentConnectionStatusNums[z]){
-				dataState = 1;
+				changeTheDataState = 1;
 				numoftimes++;
 				currentConnectionStatusNums[z] = lCurrentConnectionStatusNums[z];
 			}
 		}
+		if (changeTheDataState == 1){
+			dataState = 1;
+			curTcpTableEntryCount = tcpTableEntryCount;
+		}
 		if (consChanged == 1){
 			dataState = 1;
 			numoftimes++;
+			curTcpTableEntryCount = tcpTableEntryCount;
 			consChanged = 0;
 		}
 	}
-	startThread();
-}
-void TcpTableAccess::startThread() 
-{
-	_beginthread(TcpTableAccess::enterThread, 0, this);
-}
-
-void TcpTableAccess::enterThread(void *p)
-{
-	((TcpTableAccess *)p)->threadBody();
-	_endthread();
-	return;
+	if (dataState != 0)
+		Sleep(5000);
+	first = new thread(&TcpTableAccess::getTcpTable, this);
+	
 }
 
-void TcpTableAccess::threadBody()
-{
-	getTcpTable();
-}
+
 
 const char *TcpTableAccess::getHostName()
 {
@@ -262,15 +256,15 @@ const char *TcpTableAccess::getNumberOfConnections() {
 
 int TcpTableAccess::getTableSize()
 {
-	return tcpTableEntryCount;
+	return curTcpTableEntryCount;
 }
 string **TcpTableAccess::passTcpTable()
 {
 	if (dataState == 1)
 		return tcpConnectionList;
 	else {
-		emptyList = new string*[tcpTableEntryCount];
-		for (int i = 0; i < tcpTableEntryCount; i++){
+		emptyList = new string*[curTcpTableEntryCount];
+		for (int i = 0; i < curTcpTableEntryCount; i++){
 			emptyList[i] = new string[3];
 			emptyList[i][0] = "";
 			emptyList[i][1] = "";

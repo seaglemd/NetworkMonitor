@@ -12,6 +12,7 @@
 #include <windows.h>
 #include <vector>
 #include <mutex>
+#include <thread>
 
 #pragma comment(lib, "Ws2_32.lib")
 #pragma comment(lib, "Iphlpapi.lib")
@@ -25,7 +26,6 @@ using namespace std;
 class TcpTableAccess 
 {
     public:		
-		void startThread();
         void getTcpTable();
         void getNetworkParameters();
 		const char *getHostName();
@@ -38,8 +38,10 @@ class TcpTableAccess
 		int getDataState();
 
     private:
+		thread *first;
         int numofcon = 0;
 		int numoftimes = 0;
+		int curTcpTableEntryCount = 0;
 		int tcpTableEntryCount = 0;
 		int currentConnectionStatusNums[13] = { };
 		string numberOfConnections;
@@ -53,9 +55,8 @@ class TcpTableAccess
 		string **tcpConnectionList = 0;
 		string **emptyList = 0;
 		int dataState = 0;
+		int changeTheDataState = 0;
 
-		static void enterThread(void *p);
-		void threadBody();
 };
 
 #endif

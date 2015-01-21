@@ -23,7 +23,8 @@ using namespace std;
 class TCPTable : public Fl_Table {
 	
 	int firstTime = 1;
-	int tableSize;
+	int tableSize = 0;;
+	int somethingIsChanging = 0;
 
 	const char *cellValue;
 
@@ -64,7 +65,8 @@ class TCPTable : public Fl_Table {
 	//
 	void draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0) {
 		std::lock_guard<std::mutex> guard(m);
-		if (tcpConnections->getDataState() != 1){
+		if (somethingIsChanging == 0)
+		{
 			static char s[40];
 			switch (context) {
 			case CONTEXT_STARTPAGE:                   // before page is drawn..
@@ -85,16 +87,14 @@ class TCPTable : public Fl_Table {
 				return;
 			}
 		}
-		else{
-			ROW = 0;
-			COL = 0;
-		}
+		return;
 	}
 
 public:
 	// Constructor
 	//     Make our data array, and initialize the table options.
 	//
+	
 	TCPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L) {
 		// Fill data array
 		tcpConnections = new TcpTableAccess();
@@ -129,7 +129,8 @@ public:
 
 	void TCPTable::fillDataArray(){	
 		std::lock_guard<std::mutex> guard(m);
-		if (tcpConnections->getDataState() == 1 && firstTime != 1){			
+		if (tcpConnections->getDataState() == 1 && firstTime != 1){	
+			somethingIsChanging = 1;
 			for (int i = 0; i < tableSize; i++){
 				delete[]data[i];
 			}
@@ -167,6 +168,12 @@ public:
 				tcpConnections->changeDataState(0);
 			}
 			
+	}
+	void TCPTable::getTcpTableWindowForRedraw(TCPTable* curTable)
+	{
+		std::lock_guard<std::mutex> guard(m);
+		curTable->redraw();	
+		somethingIsChanging = 0;
 	}
 	~TCPTable() { }
 };
