@@ -222,8 +222,6 @@ void TcpTableAccess::getTcpTable()
 			consChanged = 0;
 		}
 	}
-	if (dataState != 0)
-		Sleep(5000);
 	first = new thread(&TcpTableAccess::getTcpTable, this);
 	
 }

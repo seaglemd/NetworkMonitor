@@ -38,6 +38,7 @@ class TcpTableAccess
 		int getDataState();
 
     private:
+		int howManyTimes = 0;
 		thread *first;
         int numofcon = 0;
 		int numoftimes = 0;

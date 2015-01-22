@@ -7,12 +7,11 @@ using namespace std;
 //gives time for threads to exit and program to close to prevent
 //unhandled exceptions
 static void window_cb(Fl_Widget* widget, void*) {
-	Fl_Window *myWindow = (Fl_Window*)widget;
+	Fl_Window *myWindow = (Fl_Double_Window*)widget;
 
 	//if (fl_ask("Exit?"))
 	//{
 		myWindow->hide();
-		Sleep(2000);
 		exit(0);
 	//}
 
@@ -20,7 +19,7 @@ static void window_cb(Fl_Widget* widget, void*) {
 
 int main()
 {
-	MyWindow win(900, 900, "Network Monitor");
+	MyWindow win(900, 500, "Network Monitor");
 	win.callback(window_cb);	
 	return Fl::run();
 }

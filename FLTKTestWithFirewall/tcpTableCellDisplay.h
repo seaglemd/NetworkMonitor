@@ -25,6 +25,7 @@ class TCPTable : public Fl_Table {
 	int firstTime = 1;
 	int tableSize = 0;;
 	int somethingIsChanging = 0;
+	int tableChanged = 0;
 
 	const char *cellValue;
 
@@ -65,29 +66,35 @@ class TCPTable : public Fl_Table {
 	//
 	void draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0) {
 		std::lock_guard<std::mutex> guard(m);
-		if (somethingIsChanging == 0)
-		{
-			static char s[40];
-			switch (context) {
-			case CONTEXT_STARTPAGE:                   // before page is drawn..
-				fl_font(FL_HELVETICA, 16);              // set the font for our drawing operations
-				return;
-			case CONTEXT_COL_HEADER:
-				sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
-				DrawHeader(s, X, Y, W, H);
-				return;
-			case CONTEXT_ROW_HEADER:                  // Draw row headers
-				sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
-				DrawHeader(s, X, Y, W, H);
-				return;
-			case CONTEXT_CELL:
-				DrawData(data[ROW][COL].c_str(), X, Y, W, H);
-				return;
-			default:
-				return;
+		//try
+		//{
+			if (somethingIsChanging == 0)
+			{
+				static char s[40];
+				switch (context) {
+				case CONTEXT_STARTPAGE:                   // before page is drawn..
+					fl_font(FL_HELVETICA, 16);              // set the font for our drawing operations
+					return;
+				case CONTEXT_COL_HEADER:
+					sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
+					DrawHeader(s, X, Y, W, H);
+					return;
+				case CONTEXT_ROW_HEADER:                  // Draw row headers
+					sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
+					DrawHeader(s, X, Y, W, H);
+					return;
+				case CONTEXT_CELL:
+					DrawData(data[ROW][COL].c_str(), X, Y, W, H);
+					return;
+				default:
+					return;
+				}
 			}
-		}
-		return;
+			return;
+		//}
+		//catch (const char * message		){
+
+		//}
 	}
 
 public:
@@ -148,6 +155,7 @@ public:
 				for (int i = 0; i < tableSize; i++)
 					for (int j = 0; j < 3; j++)
 						data[i][j] = tcpList[i][j];
+				tableChanged = 1;
 				tcpConnections->changeDataState(0);
 			}
 			else if (firstTime == 1){
@@ -164,7 +172,8 @@ public:
 				for (int i = 0; i < tableSize; i++)
 					for (int j = 0; j < 3; j++)
 						data[i][j] = tcpList[i][j];
-				firstTime = 0;				
+				firstTime = 0;
+				tableChanged = 1;
 				tcpConnections->changeDataState(0);
 			}
 			
@@ -172,8 +181,17 @@ public:
 	void TCPTable::getTcpTableWindowForRedraw(TCPTable* curTable)
 	{
 		std::lock_guard<std::mutex> guard(m);
-		curTable->redraw();		
+		curTable->redraw();
+		
 		somethingIsChanging = 0;
+	}
+	void TCPTable::acknowledgeTableChange(int nTableState)
+	{
+		tableChanged = nTableState;
+	}
+	int TCPTable::getTableChangedState()
+	{
+		return tableChanged;
 	}
 	~TCPTable() { }
 };

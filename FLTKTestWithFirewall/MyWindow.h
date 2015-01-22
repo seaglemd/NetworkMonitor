@@ -17,6 +17,7 @@ class MyWindow : public Fl_Double_Window{
 	public:
 		MyWindow(int w, int h, const char* title);
 		~MyWindow();
+		int refreshCount = 0;
 	private:
 		//Threads
 		thread *first;
@@ -136,7 +137,22 @@ void MyWindow::redrawBoxes() {
 	setCurrentFirewallStatus();	
 	getCurrentTCPTableInfo();	
 	//uTable->redraw();
-	
+	if (table->getTableChangedState() == 1){
+		string localRefresh = "";
+		localRefresh += to_string(refreshCount++);
+		hostNameTextBox->label(localRefresh.c_str());
+		hostNameTextBox->redraw();
+		//numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
+		//numberOfConnectionsTextBox->redraw();
+		Fl::check();
+		table->acknowledgeTableChange(0);
+	}
+	else
+	{
+		refreshCount--;
+	}
+
+
 	first = new thread(&MyWindow::redrawBoxes, this);
 	
 }
@@ -157,15 +173,15 @@ void MyWindow::setCurrentFirewallStatus() {
 }
 void MyWindow::getCurrentTCPTableInfo() {
 	table->updateCells();
-	hostNameTextBox->label(tcpConnectionInfo->getHostName());
+	//hostNameTextBox->label(tcpConnectionInfo->getHostName());
 	domainNameTextBox->label(tcpConnectionInfo->getDomainName());
 	dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
-	numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
+	//numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
 
-	hostNameTextBox->redraw();
+	//hostNameTextBox->redraw();
 	domainNameTextBox->redraw();
 	dnsServerListTextBox->redraw();
-	numberOfConnectionsTextBox->redraw();
+	//numberOfConnectionsTextBox->redraw();
 	table->getTcpTableWindowForRedraw(table);
 }
 void MyWindow::getCurrentUDPTableInfo() {
