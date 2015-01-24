@@ -1,7 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 
-//#include "programLogTime.h"
-//#include "fioLogger.h"
+
 #include "tcpTableAccess.h"
 
 #pragma comment(lib, "Ws2_32.lib")

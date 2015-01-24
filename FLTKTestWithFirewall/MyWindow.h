@@ -9,9 +9,21 @@
 #include "udpTableCellDisplay.h"
 #include "udpTableAccess.h"
 
-
+class MyWindow;
+void redrawBoxes_cb(void *u);
 
 using namespace std;
+
+MyWindow *theWindow;
+TCPTable *table;
+
+Fl_Box *privateFirewallBox;
+Fl_Box *publicFirewallBox;
+Fl_Box *hostNameTextBox;
+Fl_Box *domainNameTextBox;
+Fl_Box *dnsServerListTextBox;
+Fl_Box *numberOfConnectionsTextBox;
+
 
 class MyWindow : public Fl_Double_Window{
 	public:
@@ -19,8 +31,6 @@ class MyWindow : public Fl_Double_Window{
 		~MyWindow();
 		int refreshCount = 0;
 	private:
-		//Threads
-		thread *first;
 		/*
 		Tab group setup and tab sections setup
 		*/
@@ -34,22 +44,16 @@ class MyWindow : public Fl_Double_Window{
 		*/
 		Fl_Box *privateFirewallTextBox;
 		Fl_Box *publicFirewallTextBox;
-		Fl_Box *privateFirewallBox;
-		Fl_Box *publicFirewallBox;
-
+		
 		/*
 		Text boxes for TCP Table information
 		*/
 		Fl_Box *hostNameTextBoxLabel;
-		Fl_Box *hostNameTextBox;
 
 		Fl_Box *domainNameTextBoxLabel;
-		Fl_Box *domainNameTextBox;
 
 		Fl_Box *dnsServerListTextBoxLabel;
-		Fl_Box *dnsServerListTextBox;
 		Fl_Box *numberOfConnectionsTextBoxLabel;
-		Fl_Box *numberOfConnectionsTextBox;
 
 		/*
 		Images
@@ -60,16 +64,18 @@ class MyWindow : public Fl_Double_Window{
 		//Firewall class
 		WFStatus *firewallStatus;
 		TcpTableAccess *tcpConnectionInfo;
-		//TCPTable
-		TCPTable *table;
 		//UDPTable
 		UDPTable *uTable;
+
+		void MyWindow::startThread();
+		void MyWindow::threadBody();
+		MyWindow *MyWindow::getWindow();
+		static void enterThread(void *p);
 		
 		void MyWindow::setCurrentFirewallStatus();
 		void MyWindow::getCurrentTCPTableInfo();
 		void MyWindow::getCurrentUDPTableInfo();
 
-		void MyWindow::redrawBoxes();
 		void MyWindow::initializeObjects();
 
 };
@@ -77,13 +83,11 @@ class MyWindow : public Fl_Double_Window{
 MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title){
 	firewallStatus = new WFStatus();
 	firewallOn = new Fl_PNG_Image("fWOn.png");
-	firewallOff = new Fl_PNG_Image("fwoff.png");
-	
-	
+	firewallOff = new Fl_PNG_Image("fwoff.png");	
 	begin();
 	
-	   tabGroup = new Fl_Tabs(10, 10, 900 - 20, 900 - 20);
-	      tabSectionFirewall = new Fl_Group(30, 55, 900 - 20, 900 - 45, "Firewall");
+	   tabGroup = new Fl_Tabs(10, 10, 900 - 20, 500 - 20);
+	      tabSectionFirewall = new Fl_Group(30, 55, 900 - 20, 500 - 45, "Firewall");
 		  
 		     publicFirewallTextBox = new Fl_Box(50,70,75,25);
 		     publicFirewallTextBox->label("Public Firewall Status: ");
@@ -129,32 +133,8 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	setCurrentFirewallStatus();
 	resizable(this);
 	show();
-	first = new thread(&MyWindow::redrawBoxes, this);
-}
-
-void MyWindow::redrawBoxes() {
-
-	setCurrentFirewallStatus();	
-	getCurrentTCPTableInfo();	
-	//uTable->redraw();
-	if (table->getTableChangedState() == 1){
-		string localRefresh = "";
-		localRefresh += to_string(refreshCount++);
-		hostNameTextBox->label(localRefresh.c_str());
-		hostNameTextBox->redraw();
-		//numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
-		//numberOfConnectionsTextBox->redraw();
-		Fl::check();
-		table->acknowledgeTableChange(0);
-	}
-	else
-	{
-		refreshCount--;
-	}
-
-
-	first = new thread(&MyWindow::redrawBoxes, this);
-	
+	theWindow = this;
+	startThread();
 }
 
 void MyWindow::setCurrentFirewallStatus() {
@@ -167,25 +147,60 @@ void MyWindow::setCurrentFirewallStatus() {
 		publicFirewallBox->image(firewallOff);
 	else
 		publicFirewallBox->image(firewallOn);
-
-	privateFirewallBox->redraw();
-	publicFirewallBox->redraw();
 }
 void MyWindow::getCurrentTCPTableInfo() {
 	table->updateCells();
-	//hostNameTextBox->label(tcpConnectionInfo->getHostName());
+	hostNameTextBox->label(tcpConnectionInfo->getHostName());
 	domainNameTextBox->label(tcpConnectionInfo->getDomainName());
 	dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
-	//numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
-
-	//hostNameTextBox->redraw();
-	domainNameTextBox->redraw();
-	dnsServerListTextBox->redraw();
-	//numberOfConnectionsTextBox->redraw();
-	table->getTcpTableWindowForRedraw(table);
+	numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
 }
 void MyWindow::getCurrentUDPTableInfo() {
 	uTable->updateCells();
+}
+
+void MyWindow::startThread()
+{
+	_beginthread(MyWindow::enterThread, 0, this);
+}
+
+void MyWindow::enterThread(void *p)
+{
+	((MyWindow *)p)->threadBody();
+	_endthread();
+	return;
+}
+
+void MyWindow::threadBody()
+{
+	while (true){
+		setCurrentFirewallStatus();
+		getCurrentTCPTableInfo();
+		Fl::awake();
+		Fl::awake(redrawBoxes_cb);
+	}
+}
+
+MyWindow *MyWindow::getWindow()
+{
+	return this;
+}
+
+void redrawBoxes_cb(void *u)
+{
+	Fl::lock();
+	/*
+	privateFirewallBox->redraw();
+	publicFirewallBox->redraw();
+	hostNameTextBox->redraw();
+	domainNameTextBox->redraw();
+	dnsServerListTextBox->redraw();
+	numberOfConnectionsTextBox->redraw();
+	//table->redraw();*/
+	table->redraw();
+	theWindow->redraw();
+	Fl::unlock();
+	Fl::awake();
 }
 
 MyWindow::~MyWindow(){}

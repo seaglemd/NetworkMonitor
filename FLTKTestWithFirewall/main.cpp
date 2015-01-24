@@ -19,6 +19,7 @@ static void window_cb(Fl_Widget* widget, void*) {
 
 int main()
 {
+	Fl::lock();
 	MyWindow win(900, 500, "Network Monitor");
 	win.callback(window_cb);	
 	return Fl::run();
