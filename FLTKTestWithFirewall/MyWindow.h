@@ -188,16 +188,13 @@ MyWindow *MyWindow::getWindow()
 
 void redrawBoxes_cb(void *u)
 {
+	
+	if (table->getTableChangedState() == 1)
+	{
+		table->getTcpTableWindowForRedraw(table);
+		table->acknowledgeTableChange(0);
+	}
 	Fl::lock();
-	/*
-	privateFirewallBox->redraw();
-	publicFirewallBox->redraw();
-	hostNameTextBox->redraw();
-	domainNameTextBox->redraw();
-	dnsServerListTextBox->redraw();
-	numberOfConnectionsTextBox->redraw();
-	//table->redraw();*/
-	table->redraw();
 	theWindow->redraw();
 	Fl::unlock();
 	Fl::awake();

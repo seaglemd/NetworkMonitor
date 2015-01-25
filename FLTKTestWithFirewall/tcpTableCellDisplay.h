@@ -14,7 +14,7 @@
 
 #include "tcpTableAccess.h"
 
-#define MAX_ROWST 400
+#define MAX_ROWST 10
 #define MAX_COLST 3                // A-Z
 
 // Derive a class from Fl_Table
@@ -23,9 +23,10 @@ using namespace std;
 class TCPTable : public Fl_Table {
 	
 	int firstTime = 1;
-	int tableSize = 0;;
+	int tableSize = 0;
 	int somethingIsChanging = 0;
 	int tableChanged = 0;
+	int drawing = 0;
 
 	const char *cellValue;
 
@@ -66,8 +67,8 @@ class TCPTable : public Fl_Table {
 	//
 	void draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0) {
 		std::lock_guard<std::mutex> guard(m);
-		//try
-		//{
+		drawing = 1;
+		Fl::lock();
 			if (somethingIsChanging == 0)
 			{
 				static char s[40];
@@ -90,11 +91,8 @@ class TCPTable : public Fl_Table {
 					return;
 				}
 			}
+			Fl::unlock();
 			return;
-		//}
-		//catch (const char * message		){
-
-		//}
 	}
 
 public:
@@ -117,7 +115,7 @@ public:
 		rows(tableSize);             // how many rows
 		row_header(0);              // enable row headers (along left)
 		row_height_all(20);         // default height of rows
-		row_resize(0);              // disable row resizing
+		row_resize(1);              // disable row resizing
 		// Cols
 		cols(MAX_COLST);             // how many columns
 		col_header(1);              // enable column headers (along top)
@@ -136,7 +134,7 @@ public:
 
 	void TCPTable::fillDataArray(){	
 		std::lock_guard<std::mutex> guard(m);
-		if (tcpConnections->getDataState() == 1 && firstTime != 1){	
+		if (tcpConnections->getDataState() == 1 && firstTime != 1 && drawing != 1){	
 			somethingIsChanging = 1;
 			for (int i = 0; i < tableSize; i++){
 				delete[]data[i];
@@ -156,9 +154,10 @@ public:
 					for (int j = 0; j < 3; j++)
 						data[i][j] = tcpList[i][j];
 				tableChanged = 1;
+				//this->rows(tableSize);
 				tcpConnections->changeDataState(0);
 			}
-			else if (firstTime == 1){
+			else if (firstTime == 1 && drawing != 1){
 				
 				data = new string*[tableSize];
 				for (int i = 0; i < tableSize; i++){
@@ -180,9 +179,11 @@ public:
 	}
 	void TCPTable::getTcpTableWindowForRedraw(TCPTable* curTable)
 	{
+		Fl::lock();
 		std::lock_guard<std::mutex> guard(m);
 		curTable->redraw();
-		
+		Fl::unlock();
+		drawing = 0;
 		somethingIsChanging = 0;
 	}
 	void TCPTable::acknowledgeTableChange(int nTableState)
