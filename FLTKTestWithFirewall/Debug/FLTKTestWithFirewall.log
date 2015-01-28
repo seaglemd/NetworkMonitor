@@ -1,11 +1,11 @@
-﻿Build started 1/24/2015 4:10:28 PM.
+﻿Build started 1/27/2015 7:52:43 PM.
      1>Project "C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\FLTKTestWithFirewall\FLTKTestWithFirewall.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4996 /analyze- /errorReport:prompt main.cpp
          main.cpp
      1>c:\users\matt\desktop\misc programming\fltk c++\nsm\networkmonitor\fltktestwithfirewall\tcptableaccess.h(47): warning C4351: new behavior: elements of array 'TcpTableAccess::currentConnectionStatusNums' will be default initialized
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.exe" /INCREMENTAL /NOLOGO fltk.lib fltkimages.lib fltkjpeg.lib fltkpng.lib fltkzlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.lib" /MACHINE:X86 Debug\main.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.exe" /INCREMENTAL /NOLOGO fltk.lib fltkimages.lib fltkjpeg.lib fltkpng.lib fltkzlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.lib" /MACHINE:X86 Debug\main.obj
          Debug\tcpTableAccess.obj
          Debug\udpTableAccess.obj
          Debug\wfStatusAccess.obj
@@ -14,4 +14,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.53
+Time Elapsed 00:00:01.56

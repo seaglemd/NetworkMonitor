@@ -18,6 +18,13 @@ using namespace std;
  * the address shows up as all zeros
  */
 
+TcpTableAccess::TcpTableAccess()
+{
+	getNetworkParameters();
+	getTcpTable();
+	startThread();
+}
+
 //method to get the information about the network
 void TcpTableAccess::getNetworkParameters()
 {
@@ -31,8 +38,7 @@ void TcpTableAccess::getNetworkParameters()
 
 
    if(GetNetworkParams(pFixedInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
-        cout << "Made it here";
-        free(pFixedInfo);
+	    free(pFixedInfo);
         pFixedInfo = (FIXED_INFO *)malloc(ulOutBufLen);
         if (pFixedInfo == NULL) {
             cout << "Error Allocating the memory for ulOutBufLen";
@@ -221,8 +227,6 @@ void TcpTableAccess::getTcpTable()
 			consChanged = 0;
 		}
 	}
-	first = new thread(&TcpTableAccess::getTcpTable, this);
-	
 }
 
 
@@ -272,7 +276,26 @@ string **TcpTableAccess::passTcpTable()
 		
 }
 
-void TcpTableAccess::changeDataState(int nDataState){
+void TcpTableAccess::startThread()
+{
+	_beginthread(TcpTableAccess::enterThread, 0, this);
+}
+
+void TcpTableAccess::enterThread(void *p)
+{
+	((TcpTableAccess *)p)->threadBody();
+	_endthread();
+	return;
+}
+
+void TcpTableAccess::threadBody()
+{
+	while (true){
+		getTcpTable();
+	}
+}
+
+void TcpTableAccess::setDataState(int nDataState){
 	dataState = nDataState;
 }
 

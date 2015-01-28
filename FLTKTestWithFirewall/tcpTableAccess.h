@@ -25,7 +25,8 @@ using namespace std;
 
 class TcpTableAccess 
 {
-    public:		
+    public:	
+		TcpTableAccess::TcpTableAccess();
         void getTcpTable();
         void getNetworkParameters();
 		const char *getHostName();
@@ -34,12 +35,11 @@ class TcpTableAccess
 		const char *getNumberOfConnections();
 		int getTableSize();
 		string **passTcpTable();
-		void changeDataState(int nDataState);
+		void setDataState(int nDataState);
 		int getDataState();
 
     private:
 		int howManyTimes = 0;
-		thread *first;
         int numofcon = 0;
 		int numoftimes = 0;
 		int curTcpTableEntryCount = 0;
@@ -55,8 +55,13 @@ class TcpTableAccess
 		string errors;
 		string **tcpConnectionList = 0;
 		string **emptyList = 0;
+		
 		int dataState = 0;
 		int changeTheDataState = 0;
+
+		void TcpTableAccess::startThread();
+		void TcpTableAccess::threadBody();
+		static void enterThread(void *p);
 
 };
 

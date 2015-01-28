@@ -1,7 +1,7 @@
 #ifndef MYWINDOW_H
 #define MYWINDOW_H
 
-#include <thread>
+#include <iostream>
 
 #include "wfStatusAccess.h"
 #include "tcpTableCellDisplay.h"
@@ -148,13 +148,16 @@ void MyWindow::setCurrentFirewallStatus() {
 	else
 		publicFirewallBox->image(firewallOn);
 }
-void MyWindow::getCurrentTCPTableInfo() {
-	table->updateCells();
-	hostNameTextBox->label(tcpConnectionInfo->getHostName());
-	domainNameTextBox->label(tcpConnectionInfo->getDomainName());
-	dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
-	numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
+
+void MyWindow::getCurrentTCPTableInfo() 
+{
+		cout << tcpConnectionInfo->getNumberOfConnections() << endl;
+		hostNameTextBox->label(tcpConnectionInfo->getHostName());
+		domainNameTextBox->label(tcpConnectionInfo->getDomainName());
+		dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
+		numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
 }
+
 void MyWindow::getCurrentUDPTableInfo() {
 	uTable->updateCells();
 }
@@ -176,6 +179,10 @@ void MyWindow::threadBody()
 	while (true){
 		setCurrentFirewallStatus();
 		getCurrentTCPTableInfo();
+		if (tcpConnectionInfo->getDataState() == 1){			
+			table->updateCells();
+			tcpConnectionInfo->setDataState(0);
+		}
 		Fl::awake();
 		Fl::awake(redrawBoxes_cb);
 	}
@@ -188,13 +195,9 @@ MyWindow *MyWindow::getWindow()
 
 void redrawBoxes_cb(void *u)
 {
-	
-	if (table->getTableChangedState() == 1)
-	{
-		table->getTcpTableWindowForRedraw(table);
-		table->acknowledgeTableChange(0);
-	}
+	//cout << "made it here" << endl;
 	Fl::lock();
+	table->redrawTable(table);
 	theWindow->redraw();
 	Fl::unlock();
 	Fl::awake();
