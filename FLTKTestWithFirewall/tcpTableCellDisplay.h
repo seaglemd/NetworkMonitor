@@ -57,6 +57,7 @@ private:
 	string headings[MAX_COLST];
 	string **tcpList;
 	TcpTableAccess *tcpConnections;
+	void TCPTable::fillDataArray();
 
 	void TCPTable::DrawHeader(const char *s, int X, int Y, int W, int H){
 		fl_push_clip(X, Y, W, H);
@@ -102,7 +103,7 @@ private:
 		return;
 	}
 	
-	void TCPTable::fillDataArray();
+	
 };
 
 void TCPTable::updateCells()

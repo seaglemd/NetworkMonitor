@@ -24,16 +24,32 @@ using namespace std;
 class UdpTableAccess
 {
 public:
-	void getUdpTable();
-	string **getUTable();
-	int getTableSize();
+	UdpTableAccess::UdpTableAccess();
+	void UdpTableAccess::getUdpTable();
+	const char *UdpTableAccess::getDatagrams();
+	int UdpTableAccess::getTableSize();
+	string **UdpTableAccess::passUdpTable();
+	void UdpTableAccess::setDataState(int nDataState);
+	int UdpTableAccess::getDataState();
+	
 
 private:
-	int numofcon;
+	int numOfDatagrams;
+	int curUdpTableEntryCount = 0;
+	int udpTableEntryCount = 0;
+	int currentConnectionStatusNums[13] = { };
+	string numberOfDatagrams;
 	string localIp;
 	string localPort;
-	int udpTableEntryCount;
-	string **udpConnectionList;
+	string **udpConnectionList = 0;
+	string **emptyList = 0;
+
+	int dataState = 0;
+	int changeTheDataState = 0;
+
+	void UdpTableAccess::startThread();
+	void UdpTableAccess::threadBody();
+	static void enterThread(void *p);
 };
 
 #endif

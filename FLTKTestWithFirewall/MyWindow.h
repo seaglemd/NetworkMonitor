@@ -16,6 +16,7 @@ using namespace std;
 
 MyWindow *theWindow;
 TCPTable *table;
+UDPTable *uTable;
 
 Fl_Box *privateFirewallBox;
 Fl_Box *publicFirewallBox;
@@ -23,6 +24,7 @@ Fl_Box *hostNameTextBox;
 Fl_Box *domainNameTextBox;
 Fl_Box *dnsServerListTextBox;
 Fl_Box *numberOfConnectionsTextBox;
+Fl_Box *numberOfDatagramsTextBox;
 
 
 class MyWindow : public Fl_Double_Window{
@@ -54,6 +56,10 @@ class MyWindow : public Fl_Double_Window{
 
 		Fl_Box *dnsServerListTextBoxLabel;
 		Fl_Box *numberOfConnectionsTextBoxLabel;
+		/*
+		Text boxes for UDP Table information
+		*/
+		Fl_Box *numberOfDatagramsTextBoxLabel;
 
 		/*
 		Images
@@ -63,9 +69,9 @@ class MyWindow : public Fl_Double_Window{
 		
 		//Firewall class
 		WFStatus *firewallStatus;
+		//Connection information
 		TcpTableAccess *tcpConnectionInfo;
-		//UDPTable
-		UDPTable *uTable;
+		UdpTableAccess *udpConnectionInfo;
 
 		void MyWindow::startThread();
 		void MyWindow::threadBody();
@@ -126,7 +132,14 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 
 	      tabSectionTCPTable->end();
 		  tabSectionUDPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "UDP Table");
-		  uTable = new UDPTable(35, 65, 535, 350);
+		     uTable = new UDPTable(35, 65, 535, 350);
+		     udpConnectionInfo = uTable->getUdpObject();
+		     numberOfDatagramsTextBoxLabel = new Fl_Box(600, 65, 100, 25);
+		     numberOfDatagramsTextBoxLabel->label("Datagrams: ");
+		     numberOfDatagramsTextBox = new Fl_Box(700, 65, 150, 25);
+		     numberOfDatagramsTextBox->box(FL_DOWN_BOX);
+		     numberOfDatagramsTextBox->label("Pending...");
+
 		  tabSectionUDPTable->end();
 	   tabGroup->end();
 	end();
@@ -159,7 +172,7 @@ void MyWindow::getCurrentTCPTableInfo()
 }
 
 void MyWindow::getCurrentUDPTableInfo() {
-	uTable->updateCells();
+	numberOfDatagramsTextBox->label(udpConnectionInfo->getDatagrams());
 }
 
 void MyWindow::startThread()
@@ -179,9 +192,14 @@ void MyWindow::threadBody()
 	while (true){
 		setCurrentFirewallStatus();
 		getCurrentTCPTableInfo();
+		getCurrentUDPTableInfo();
 		if (tcpConnectionInfo->getDataState() == 1){			
 			table->updateCells();
 			tcpConnectionInfo->setDataState(0);
+		}
+		if (udpConnectionInfo->getDataState() == 1){
+			uTable->updateCells();
+			udpConnectionInfo->setDataState(0);
 		}
 		Fl::awake();
 		Fl::awake(redrawBoxes_cb);
@@ -198,6 +216,7 @@ void redrawBoxes_cb(void *u)
 	//cout << "made it here" << endl;
 	Fl::lock();
 	table->redrawTable(table);
+	uTable->redrawTable(uTable);
 	theWindow->redraw();
 	Fl::unlock();
 	Fl::awake();

@@ -1,5 +1,6 @@
 #ifndef UDPTABLECELLDISPLAY_H
 #define UDPTABLECELLDISPLAY_H
+
 #include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Tabs.H>
@@ -19,75 +20,18 @@
 // Derive a class from Fl_Table
 using namespace std;
 
-class UDPTable : public Fl_Table {
-
-
-
-	const char *cellValue;
-	string data[MAX_ROWS][MAX_COLS];                // data array for cells
-	string headings[MAX_COLS];
-	
-
-	// Draw the row/col headings
-	//    Make this a dark thin upbox with the text inside.
-	//
-	void DrawHeader(const char *s, int X, int Y, int W, int H) {
-		fl_push_clip(X, Y, W, H);
-		fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
-		fl_color(FL_BLACK);
-		fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
-		fl_pop_clip();
-	}
-	// Draw the cell data
-	//    Dark gray text on white background with subtle border
-	//
-	void DrawData(const char *s, int X, int Y, int W, int H) {
-		fl_push_clip(X, Y, W, H);
-		// Draw cell bg
-		fl_color(FL_WHITE); fl_rectf(X, Y, W, H);
-		// Draw cell data
-		fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
-		// Draw box border
-		fl_color(color()); fl_rect(X, Y, W, H);
-		fl_pop_clip();
-	}
-	// Handle drawing table's cells
-	//     Fl_Table calls this function to draw each visible cell in the table.
-	//     It's up to us to use FLTK's drawing functions to draw the cells the way we want.
-	//
-	void draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0) {
-		static char s[40];
-		switch (context) {
-		case CONTEXT_STARTPAGE:                   // before page is drawn..
-			fl_font(FL_HELVETICA, 16);              // set the font for our drawing operations
-			return;
-		case CONTEXT_COL_HEADER:
-			sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
-			DrawHeader(s, X, Y, W, H);
-			return;
-		case CONTEXT_ROW_HEADER:                  // Draw row headers
-			sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
-			DrawHeader(s, X, Y, W, H);
-			return;
-		case CONTEXT_CELL:
-			DrawData(udpList[ROW][COL].c_str(), X, Y, W, H);
-			return;
-		default:
-			return;
-		}
-	}
+class UDPTable : public Fl_Table
+{
 
 public:
-	int tableSize;
-	string **udpList;
-	UdpTableAccess *udpConnections;
-	// Constructor
-	//     Make our data array, and initialize the table options.
-	//
-	UDPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L) {
+	UDPTable::UDPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L) {
+		firstTime = 1;
+		tableSize = 0;
 		udpConnections = new UdpTableAccess();
-		udpList = udpConnections->getUTable();
+		udpList = udpConnections->passUdpTable();
 		tableSize = udpConnections->getTableSize();
+		fillDataArray();
+
 		headings[0] = "Local IP";
 		headings[1] = "Port";
 
@@ -102,13 +46,121 @@ public:
 		col_width_all(165);          // default width of columns
 		col_resize(1);              // enable column resizing
 		end();                        // end the Fl_Table group
+	};
+
+	void UDPTable::updateCells();
+	UdpTableAccess *UDPTable::getUdpObject();
+	void UDPTable::redrawTable(UDPTable *curTable);
+	UDPTable::~UDPTable();
+private:
+	int firstTime;
+	int tableSize;
+	string **data;
+	string headings[MAX_COLS];
+	string **udpList;
+	UdpTableAccess *udpConnections;
+	void UDPTable::fillDataArray();
+
+	void UDPTable::DrawHeader(const char *s, int X, int Y, int W, int H) {
+		fl_push_clip(X, Y, W, H);
+		fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
+		fl_color(FL_BLACK);
+		fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+		fl_pop_clip();
 	}
-	void UDPTable::updateCells()
-	{
-		udpList = udpConnections->getUTable();
-		tableSize = udpConnections->getTableSize();
+	void UDPTable::DrawData(const char *s, int X, int Y, int W, int H) {
+		fl_push_clip(X, Y, W, H);
+		// Draw cell bg
+		fl_color(FL_WHITE); fl_rectf(X, Y, W, H);
+		// Draw cell data
+		fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+		// Draw box border
+		fl_color(color()); fl_rect(X, Y, W, H);
+		fl_pop_clip();
 	}
-	~UDPTable() { }
+	void UDPTable::draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0) {
+		Fl::lock();
+		static char s[40];
+		switch (context) {
+		case CONTEXT_STARTPAGE:                   // before page is drawn..
+			fl_font(FL_HELVETICA, 16);              // set the font for our drawing operations
+			return;
+		case CONTEXT_COL_HEADER:
+			sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
+			DrawHeader(s, X, Y, W, H);
+			return;
+		case CONTEXT_ROW_HEADER:                  // Draw row headers
+			sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
+			DrawHeader(s, X, Y, W, H);
+			return;
+		case CONTEXT_CELL:
+			if (ROW <= tableSize)
+				DrawData(data[ROW][COL].c_str(), X, Y, W, H);
+			return;
+		default:
+			return;
+		}
+
+		Fl::unlock();
+		return;
+	}
 };
+
+void UDPTable::updateCells()
+{
+	fillDataArray();
+}
+
+void UDPTable::fillDataArray()
+{
+
+	if (firstTime != 1){
+		for (int i = 0; i < tableSize; i++){
+			delete[]data[i];
+		}
+		delete[] data;
+		udpList = udpConnections->passUdpTable();
+		tableSize = udpConnections->getTableSize();
+		data = new string*[tableSize];
+		for (int i = 0; i < tableSize; i++)
+			data[i] = new string[2];
+
+		for (int i = 0; i < tableSize; i++)
+			for (int j = 0; j < 2; j++)
+				data[i][j] = " ";
+
+		for (int i = 0; i < tableSize; i++)
+			for (int j = 0; j < 2; j++)
+				data[i][j] = udpList[i][j];
+	}
+	else{
+		data = new string*[tableSize];
+		for (int i = 0; i < tableSize; i++){
+			data[i] = new string[3];
+		}
+
+		for (int i = 0; i < tableSize; i++)
+			for (int j = 0; j < 2; j++)
+				data[i][j] = " ";
+
+		for (int i = 0; i < tableSize; i++)
+			for (int j = 0; j < 2; j++)
+				data[i][j] = udpList[i][j];
+		firstTime = 0;
+	}
+}
+
+void UDPTable::redrawTable(UDPTable *curTable)
+{
+	curTable->rows(tableSize);
+	curTable->redraw();
+}
+
+UdpTableAccess *UDPTable::getUdpObject()
+{
+	return udpConnections;
+}
+
+UDPTable::~UDPTable() { }
 
 #endif
