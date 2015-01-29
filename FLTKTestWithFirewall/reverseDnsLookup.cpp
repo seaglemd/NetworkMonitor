@@ -1,5 +1,5 @@
 #define WIN32_LEAN_AND_MEAN
-#include <QObject>
+
 #include <iostream>
 #include <process.h>
 #include <windows.h>
@@ -9,8 +9,6 @@
 #include <stdio.h>
 #include <vector>
 
-#include "programLogTime.h"
-#include "fioLogger.h"
 #include "tcpTableAccess.h"
 #include "reverseDnsLookup.h"
 // link with ws2_32.lib

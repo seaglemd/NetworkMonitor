@@ -1,5 +1,6 @@
-﻿Build started 1/28/2015 5:35:08 PM.
+﻿Build started 1/28/2015 5:57:23 PM.
      1>Project "C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\FLTKTestWithFirewall\FLTKTestWithFirewall.vcxproj" on node 2 (Build target(s)).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(388,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (FLTKTestWithFirewall.vcxproj).  This can lead to incorrect clean and rebuild behavior.
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /wd4996 /analyze- /errorReport:prompt main.cpp tcpTableAccess.cpp udpTableAccess.cpp wfStatusAccess.cpp
          wfStatusAccess.cpp
@@ -16,7 +17,7 @@
        ResourceCompile:
          C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\FLTKTestWithFirewall.res" FLTKTestWithFirewall.rc 
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.exe" /INCREMENTAL /NOLOGO fltk.lib fltkimages.lib fltkjpeg.lib fltkpng.lib fltkzlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.lib" /MACHINE:X86 Debug\FLTKTestWithFirewall.res
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\Network Monitor.exe" /INCREMENTAL /NOLOGO fltk.lib fltkimages.lib fltkjpeg.lib fltkpng.lib fltkzlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\Network Monitor.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\Network Monitor.lib" /MACHINE:X86 Debug\FLTKTestWithFirewall.res
          Debug\main.obj
          Debug\tcpTableAccess.obj
          Debug\udpTableAccess.obj
@@ -116,9 +117,9 @@
      1>fltkzlib.lib(inflate.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkzlib.lib(inflate.obj)' or at 'C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\vc120.pdb'; linking object as if no debug info
      1>fltkzlib.lib(inftrees.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkzlib.lib(inftrees.obj)' or at 'C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\vc120.pdb'; linking object as if no debug info
      1>fltkzlib.lib(zutil.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkzlib.lib(zutil.obj)' or at 'C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\vc120.pdb'; linking object as if no debug info
-         FLTKTestWithFirewall.vcxproj -> C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\FLTKTestWithFirewall.exe
+         FLTKTestWithFirewall.vcxproj -> C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\Debug\Network Monitor.exe
      1>Done Building Project "C:\Users\Matt\Desktop\Misc Programming\FLTK C++\NSM\NetworkMonitor\FLTKTestWithFirewall\FLTKTestWithFirewall.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:06.17
+Time Elapsed 00:00:03.80

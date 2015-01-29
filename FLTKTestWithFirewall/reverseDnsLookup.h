@@ -11,8 +11,6 @@
 #include <stdio.h>
 #include <vector>
 
-#include "programLogTime.h"
-#include "fioLogger.h"
 #include "tcpTableAccess.h"
 // link with ws2_32.lib
 #pragma comment(lib, "Ws2_32.lib")
@@ -30,9 +28,6 @@ private:
     string hostnames;
     string hnfname;
     string hnfnametemp;
-//    ProgramLogTime tpo;
-//    FioLogger ftpo;
-
 
     static void enterThread(void *p);
     void threadBody();

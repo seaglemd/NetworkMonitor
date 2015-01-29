@@ -5,9 +5,9 @@
 
 #include "wfStatusAccess.h"
 #include "tcpTableCellDisplay.h"
-#include "tcpTableAccess.h"
+//#include "tcpTableAccess.h"
 #include "udpTableCellDisplay.h"
-#include "udpTableAccess.h"
+//#include "udpTableAccess.h"
 
 class MyWindow;
 void redrawBoxes_cb(void *u);
@@ -28,7 +28,8 @@ Fl_Box *numberOfUdpTableEntriesTextBox;
 Fl_Box *numberOfDatagramsTextBox;
 
 
-class MyWindow : public Fl_Double_Window{
+class MyWindow : public Fl_Double_Window
+{
 	public:
 		MyWindow(int w, int h, const char* title);
 		~MyWindow();
@@ -88,7 +89,8 @@ class MyWindow : public Fl_Double_Window{
 
 };
 
-MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title){
+MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title)
+{
 	firewallStatus = new WFStatus();
 	firewallOn = new Fl_PNG_Image("fWOn.png");
 	firewallOff = new Fl_PNG_Image("fwoff.png");	
@@ -160,7 +162,8 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	startThread();
 }
 
-void MyWindow::setCurrentFirewallStatus() {
+void MyWindow::setCurrentFirewallStatus() 
+{
 	if (!firewallStatus->getPrivateProfile())
 		privateFirewallBox->image(firewallOff);
 	else
@@ -180,7 +183,8 @@ void MyWindow::getCurrentTCPTableInfo()
 		numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
 }
 
-void MyWindow::getCurrentUDPTableInfo() {
+void MyWindow::getCurrentUDPTableInfo() 
+{
 	numberOfUdpTableEntriesTextBox->label(udpConnectionInfo->getDisplayedTableSize());
 	numberOfDatagramsTextBox->label(udpConnectionInfo->getDatagrams());
 }
@@ -225,9 +229,9 @@ void redrawBoxes_cb(void *u)
 {
 	//cout << "made it here" << endl;
 	Fl::lock();
-	table->redrawTable(table);
-	uTable->redrawTable(uTable);
-	theWindow->redraw();
+	   table->redrawTable(table);
+	   uTable->redrawTable(uTable);
+	   theWindow->redraw();
 	Fl::unlock();
 	Fl::awake();
 }
