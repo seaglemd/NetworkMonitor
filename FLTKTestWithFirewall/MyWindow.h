@@ -154,6 +154,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	end();
 	setCurrentFirewallStatus();
 	resizable(this);
+	this->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(101)));
 	show();
 	theWindow = this;
 	startThread();

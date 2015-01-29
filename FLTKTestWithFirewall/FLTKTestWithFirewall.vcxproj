@@ -57,7 +57,7 @@
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>fltk.lib;fltkimages.lib;fltkjpeg.lib;fltkpng.lib;fltkzlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>libcd.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
@@ -88,6 +88,7 @@
     <ClCompile Include="wfStatusAccess.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stringDynamicArrayTest.h" />
     <ClInclude Include="tcpTableAccess.h" />
     <ClInclude Include="tcpTableCellDisplay.h" />
@@ -99,6 +100,10 @@
   <ItemGroup>
     <Image Include="fwoff.png" />
     <Image Include="fWOn.png" />
+    <Image Include="icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FLTKTestWithFirewall.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
