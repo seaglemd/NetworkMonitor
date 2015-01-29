@@ -24,6 +24,7 @@ Fl_Box *hostNameTextBox;
 Fl_Box *domainNameTextBox;
 Fl_Box *dnsServerListTextBox;
 Fl_Box *numberOfConnectionsTextBox;
+Fl_Box *numberOfUdpTableEntriesTextBox;
 Fl_Box *numberOfDatagramsTextBox;
 
 
@@ -59,6 +60,7 @@ class MyWindow : public Fl_Double_Window{
 		/*
 		Text boxes for UDP Table information
 		*/
+		Fl_Box *numberOfUdpTableEntriesTextBoxLabel;
 		Fl_Box *numberOfDatagramsTextBoxLabel;
 
 		/*
@@ -126,17 +128,24 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 
 			 numberOfConnectionsTextBoxLabel = new Fl_Box(600, 170, 100, 25);
 			 numberOfConnectionsTextBoxLabel->label("Num of Cons: ");
-			 numberOfConnectionsTextBox = new Fl_Box(700, 170, 100, 25);
+			 numberOfConnectionsTextBox = new Fl_Box(700, 170, 75, 25);
 			 numberOfConnectionsTextBox->box(FL_DOWN_BOX);
 			 numberOfConnectionsTextBox->label("Pending...");
 
 	      tabSectionTCPTable->end();
 		  tabSectionUDPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "UDP Table");
-		     uTable = new UDPTable(35, 65, 535, 350);
+		     uTable = new UDPTable(35, 65, 365, 350);
 		     udpConnectionInfo = uTable->getUdpObject();
-		     numberOfDatagramsTextBoxLabel = new Fl_Box(600, 65, 100, 25);
+
+			 numberOfUdpTableEntriesTextBoxLabel = new Fl_Box(400, 65, 100, 25);
+			 numberOfUdpTableEntriesTextBoxLabel->label("Udp Entries: ");
+			 numberOfUdpTableEntriesTextBox = new Fl_Box(500, 65, 50, 25);
+			 numberOfUdpTableEntriesTextBox->box(FL_DOWN_BOX);
+			 numberOfUdpTableEntriesTextBox->label("Pending...");
+
+		     numberOfDatagramsTextBoxLabel = new Fl_Box(400, 100, 100, 25);
 		     numberOfDatagramsTextBoxLabel->label("Datagrams: ");
-		     numberOfDatagramsTextBox = new Fl_Box(700, 65, 150, 25);
+		     numberOfDatagramsTextBox = new Fl_Box(500, 100, 75, 25);
 		     numberOfDatagramsTextBox->box(FL_DOWN_BOX);
 		     numberOfDatagramsTextBox->label("Pending...");
 
@@ -164,7 +173,6 @@ void MyWindow::setCurrentFirewallStatus() {
 
 void MyWindow::getCurrentTCPTableInfo() 
 {
-		cout << tcpConnectionInfo->getNumberOfConnections() << endl;
 		hostNameTextBox->label(tcpConnectionInfo->getHostName());
 		domainNameTextBox->label(tcpConnectionInfo->getDomainName());
 		dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
@@ -172,6 +180,7 @@ void MyWindow::getCurrentTCPTableInfo()
 }
 
 void MyWindow::getCurrentUDPTableInfo() {
+	numberOfUdpTableEntriesTextBox->label(udpConnectionInfo->getDisplayedTableSize());
 	numberOfDatagramsTextBox->label(udpConnectionInfo->getDatagrams());
 }
 

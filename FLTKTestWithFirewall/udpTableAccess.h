@@ -28,6 +28,7 @@ public:
 	void UdpTableAccess::getUdpTable();
 	const char *UdpTableAccess::getDatagrams();
 	int UdpTableAccess::getTableSize();
+	const char *UdpTableAccess::getDisplayedTableSize();
 	string **UdpTableAccess::passUdpTable();
 	void UdpTableAccess::setDataState(int nDataState);
 	int UdpTableAccess::getDataState();
@@ -39,6 +40,7 @@ private:
 	int udpTableEntryCount = 0;
 	int currentConnectionStatusNums[13] = { };
 	string numberOfDatagrams;
+	string displayTableSize;
 	string localIp;
 	string localPort;
 	string **udpConnectionList = 0;

@@ -250,8 +250,7 @@ const char *TcpTableAccess::getDnsServerList() {
 const char *TcpTableAccess::getNumberOfConnections() {
 	numberOfConnections = "";
 	numberOfConnections += to_string(numofcon);
-	numberOfConnections += to_string(numoftimes);
-	numberOfConnections += to_string(dataState);
+
 	return numberOfConnections.c_str();
 }
 

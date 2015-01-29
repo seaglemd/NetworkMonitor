@@ -113,6 +113,13 @@ int UdpTableAccess::getTableSize()
 {
 	return curUdpTableEntryCount;
 }
+const char *UdpTableAccess::getDisplayedTableSize()
+{
+	displayTableSize = "";
+	displayTableSize += to_string(getTableSize());
+
+	return displayTableSize.c_str();
+}
 string **UdpTableAccess::passUdpTable()
 {
 	if (dataState == 1)
