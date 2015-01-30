@@ -17,12 +17,16 @@
 using namespace std;
 
 
-string *ReverseDnsLookup::getHostList(string **tcpList, int listSize)
+string *ReverseDnsLookup::getHostList(TcpTableAccess *curConnectons)
 {
-	if (hostNameListSize > 0)
-		delete[]tcpHostList;
-
-	tcpHostList = new string[listSize];
+	tcpListSize = curConnectons->getTableSize();
+	string *tempHostNameList = new string[tcpListSize];
+	tcpList = curConnectons->passTcpTable();
+	if (hostNameListSize > 0){
+		delete[]tcpHostList;		
+	}
+	hostNameListSize = 0;
+	tcpHostList = new string[tcpListSize];
     WSADATA wsaData = {0};
     int iResult = 0;
 
@@ -42,35 +46,48 @@ string *ReverseDnsLookup::getHostList(string **tcpList, int listSize)
 
     }
 	size_t found;
-    for(int i = 0; i < listSize;i++) {
-		found = tcpList[i][0].find(':');
-		c = tcpList[i][0].substr(0, found).c_str();
-        if(string(c).compare(0,1,"0") != 0 &&
-                string(c).compare(0,3,"127") != 0 &&
-                string(c).compare(0,3,"192") != 0 &&
-                string(c).compare(0,2,"10") != 0) {
+	for (int i = 0; i < tcpListSize; i++) {
+		if (tcpListSize == curConnectons->getTableSize()){
+			found = tcpList[i][1].find(':');
+			//cout << (tcpList[i][1].substr(0, (found))).c_str() << endl;
+			if (string((tcpList[i][1].substr(0, (found))).c_str()).compare(0, 1, "0") != 0 &&
+				string((tcpList[i][1].substr(0, (found))).c_str()).compare(0, 3, "127") != 0 &&
+				string((tcpList[i][1].substr(0, (found))).c_str()).compare(0, 3, "192") != 0 &&
+				string((tcpList[i][1].substr(0, (found))).c_str()).compare(0, 2, "10") != 0) {
 
-                        saGNI.sin_family = AF_INET;
-                        saGNI.sin_addr.s_addr = inet_addr(c);
-                        saGNI.sin_port = htons(port);
-        }
+				saGNI.sin_family = AF_INET;
+				saGNI.sin_addr.s_addr = inet_addr((tcpList[i][1].substr(0, (found))).c_str());
+				saGNI.sin_port = htons(port);
+			}
 
-        //-----------------------------------------
-        // Call getnameinfo
-    dwRetval = getnameinfo((struct sockaddr *) &saGNI,
-                               sizeof (struct sockaddr),
-                               hostname,
-                               NI_MAXHOST, servInfo, NI_MAXSERV, NI_NUMERICSERV);
+			//-----------------------------------------
+			// Call getnameinfo
+			dwRetval = getnameinfo((struct sockaddr *) &saGNI,
+				sizeof(struct sockaddr),
+				hostname,
+				NI_MAXHOST, servInfo, NI_MAXSERV, NI_NUMERICSERV);
 
-        if (dwRetval != 0) {
-			tcpHostList[i] = "";
-        }
-		else {
-			tcpHostList[i] = hostname;
+			if (dwRetval != 0) {
+				tempHostNameList[i] = "unreachable";
+			}
+			else {
+				tempHostNameList[i] = hostname;
+				cout << hostname << endl;
+			}
+
 		}
-			
+		else
+		{
+			tcpHostList = new string[1];
+			tcpHostList[1] = "";
+			hostNameListSize = 1;
+			return tcpHostList;
+		}
 	}
-	hostNameListSize = listSize;
+		for (int i = 0; i < tcpListSize; i++){
+			if (tempHostNameList[i].find("unreachable") == string::npos)
+				tcpHostList[hostNameListSize++] = tempHostNameList[i];
+		}
 	return tcpHostList;
 }
 int ReverseDnsLookup::getTableSize()

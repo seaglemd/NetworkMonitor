@@ -20,14 +20,16 @@ using namespace std;
 class ReverseDnsLookup
 {
 public:
-	string *ReverseDnsLookup::getHostList(string **tcpList, int listSize);
+	string *ReverseDnsLookup::getHostList(TcpTableAccess *curConnections);
 	int ReverseDnsLookup::getTableSize();
 
 private:
+	int tcpListSize = 0;
 	int hostNameListSize = 0;
 	const char *c;
 	string hostNames;
 	string *tcpHostList;
+	string **tcpList;
 };
 
 #endif // REVERSEDNSLOOKUP_H

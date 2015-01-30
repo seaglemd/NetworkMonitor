@@ -28,9 +28,10 @@ public:
 		tcpConnections = curTable->getTcpObject();
 		tcpList = tcpConnections->passTcpTable();
 		tableSize = tcpConnections->getTableSize();
-		rDNS = new ReverseDnsLookup();		
+		rDNS = new ReverseDnsLookup();
+		
 		fillDataArray();
-
+		tableSize = rDNS->getTableSize();
 		headings[0] = "Remote Host";
 
 		rows(tableSize);
@@ -40,7 +41,7 @@ public:
 
 		cols(MAX_COLSR);             // how many columns
 		col_header(1);              // enable column headers (along top)
-		col_width_all(165);          // default width of columns
+		col_width_all(270);          // default width of columns
 		col_resize(1);              // enable column resizing
 		end();                        // end the Fl_Table group
 	};
@@ -117,16 +118,16 @@ void RDNSTable::fillDataArray()
 		tcpList = tcpConnections->passTcpTable();
 		tableSize = tcpConnections->getTableSize();
 		data = new string[tableSize];
-		data = rDNS->getHostList(tcpList, tableSize);
-
+		data = rDNS->getHostList(tcpConnections);
+		tableSize = rDNS->getTableSize();
 		//for (int i = 0; i < tableSize; i++)
 			//for (int j = 0; j < 1; j++)
 				//data[i][j] = " ";
 	}
 	else{
 		data = new string[tableSize];
-		data = rDNS->getHostList(tcpList, tableSize);
-
+		data = rDNS->getHostList(tcpConnections);
+		tableSize = rDNS->getTableSize();
 		//for (int i = 0; i < tableSize; i++)
 			//for (int j = 0; j < 1; j++)
 				//data[i][j] = " ";

@@ -15,6 +15,8 @@ void redrawBoxes_cb(void *u);
 
 using namespace std;
 
+int redrawRDNSTable;
+
 MyWindow *theWindow;
 TCPTable *table;
 UDPTable *uTable;
@@ -77,12 +79,19 @@ class MyWindow : public Fl_Double_Window
 		//Connection information
 		TcpTableAccess *tcpConnectionInfo;
 		UdpTableAccess *udpConnectionInfo;
-
+		//thread for regular update intervals
 		void MyWindow::startThread();
-		void MyWindow::threadBody();
-		MyWindow *MyWindow::getWindow();
+		void MyWindow::threadBody();		
 		static void enterThread(void *p);
+		//reverse dns thread
+		//reverse dns has it's own thread because of conflicts
+		//with the time it takes to get the results and 
+		//the speed at which the ui should react.
+		void MyWindow::startRDNSThread();
+		void MyWindow::rdnsThreadBody();
+		static void enterRDNSThread(void *p);
 		
+		MyWindow *MyWindow::getWindow();
 		void MyWindow::setCurrentFirewallStatus();
 		void MyWindow::getCurrentTCPTableInfo();
 		void MyWindow::getCurrentUDPTableInfo();
@@ -93,6 +102,7 @@ class MyWindow : public Fl_Double_Window
 
 MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title)
 {
+	redrawRDNSTable = 0;
 	firewallStatus = new WFStatus();
 	firewallOn = new Fl_PNG_Image("fWOn.png");
 	firewallOff = new Fl_PNG_Image("fwoff.png");	
@@ -112,7 +122,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	      tabSectionTCPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "TCP Table");
 		     table = new TCPTable(35, 65, 535, 350);
 			 tcpConnectionInfo = table->getTcpObject();
-			 rTable = new RDNSTable(table, 600, 200, 200, 100);
+			 rTable = new RDNSTable(table, 600, 200, 270, 215);
 			 hostNameTextBoxLabel = new Fl_Box(600, 65, 100, 25);
 			 hostNameTextBoxLabel->label("Host Name: ");
 			 hostNameTextBox = new Fl_Box(700, 65, 150, 25);
@@ -163,6 +173,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	show();
 	theWindow = this;
 	startThread();
+	startRDNSThread();
 }
 
 void MyWindow::setCurrentFirewallStatus() 
@@ -212,7 +223,6 @@ void MyWindow::threadBody()
 		getCurrentUDPTableInfo();
 		if (tcpConnectionInfo->getDataState() == 1){			
 			table->updateCells();
-			//rTable->updateCells();
 			tcpConnectionInfo->setDataState(0);
 		}
 		if (udpConnectionInfo->getDataState() == 1){
@@ -234,11 +244,37 @@ void redrawBoxes_cb(void *u)
 	//cout << "made it here" << endl;
 	Fl::lock();
 	   table->redrawTable(table);
-	   //rTable->redrawTable(rTable);
+	   if (redrawRDNSTable == 1)
+	      rTable->redrawTable(rTable);
+
 	   uTable->redrawTable(uTable);
 	   theWindow->redraw();
 	Fl::unlock();
 	Fl::awake();
+}
+
+void MyWindow::startRDNSThread()
+{
+	_beginthread(MyWindow::enterRDNSThread, 0, this);
+}
+
+void MyWindow::enterRDNSThread(void *p)
+{
+	((MyWindow *)p)->rdnsThreadBody();
+	_endthread();
+	return;
+}
+
+void MyWindow::rdnsThreadBody()
+{
+	while (true){
+		Sleep(30000);
+		if (tcpConnectionInfo->getDataState() != 1){
+			rTable->updateCells();
+		}
+		
+		redrawRDNSTable = 1;
+	}
 }
 
 MyWindow::~MyWindow(){}
