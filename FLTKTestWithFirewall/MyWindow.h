@@ -5,6 +5,7 @@
 
 #include "wfStatusAccess.h"
 #include "tcpTableCellDisplay.h"
+#include "reverseDnsCellDisplay.h"
 //#include "tcpTableAccess.h"
 #include "udpTableCellDisplay.h"
 //#include "udpTableAccess.h"
@@ -17,6 +18,7 @@ using namespace std;
 MyWindow *theWindow;
 TCPTable *table;
 UDPTable *uTable;
+RDNSTable *rTable;
 
 Fl_Box *privateFirewallBox;
 Fl_Box *publicFirewallBox;
@@ -110,6 +112,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	      tabSectionTCPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "TCP Table");
 		     table = new TCPTable(35, 65, 535, 350);
 			 tcpConnectionInfo = table->getTcpObject();
+			 rTable = new RDNSTable(table, 600, 200, 200, 100);
 			 hostNameTextBoxLabel = new Fl_Box(600, 65, 100, 25);
 			 hostNameTextBoxLabel->label("Host Name: ");
 			 hostNameTextBox = new Fl_Box(700, 65, 150, 25);
@@ -209,6 +212,7 @@ void MyWindow::threadBody()
 		getCurrentUDPTableInfo();
 		if (tcpConnectionInfo->getDataState() == 1){			
 			table->updateCells();
+			//rTable->updateCells();
 			tcpConnectionInfo->setDataState(0);
 		}
 		if (udpConnectionInfo->getDataState() == 1){
@@ -230,6 +234,7 @@ void redrawBoxes_cb(void *u)
 	//cout << "made it here" << endl;
 	Fl::lock();
 	   table->redrawTable(table);
+	   //rTable->redrawTable(rTable);
 	   uTable->redrawTable(uTable);
 	   theWindow->redraw();
 	Fl::unlock();

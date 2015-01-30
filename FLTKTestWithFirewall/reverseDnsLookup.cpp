@@ -16,37 +16,13 @@
 
 using namespace std;
 
-/*
- * class for doing reverse dns lookups
- */
 
-//starts a new process thread
-void ReverseDnsLookup::startThread()
+string *ReverseDnsLookup::getHostList(string **tcpList, int listSize)
 {
-    _beginthread(ReverseDnsLookup::enterThread, 0, this);
-}
+	if (hostNameListSize > 0)
+		delete[]tcpHostList;
 
-void ReverseDnsLookup::enterThread(void *p)
-{
-    //threads are used to monitor for changes, in this case dns lookup updates
-    ((ReverseDnsLookup *) p)->threadBody();
-    _endthread();
-    return;
-}
-
-void ReverseDnsLookup::threadBody()
-{
-    //rechecks all the current active connections
-    recheckConnections();
-}
-
-void ReverseDnsLookup::getHostnameString()
-{
-    //if there is a hostname string to retrieve this function finds them
-    //then compiles the information into a string for long writing
-    //formatting is done in html
-
-    hostnames = "<font color=red>Currently connected to: </font>";
+	tcpHostList = new string[listSize];
     WSADATA wsaData = {0};
     int iResult = 0;
 
@@ -62,12 +38,13 @@ void ReverseDnsLookup::getHostnameString()
         // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) {
-        hostnames = iResult;
+        hostNames = iResult;
 
     }
-    int size = TcpTableAccess::addressVector.size();
-    for(int i = 0; i < size;i++) {
-        c = TcpTableAccess::addressVector[i].c_str();
+	size_t found;
+    for(int i = 0; i < listSize;i++) {
+		found = tcpList[i][0].find(':');
+		c = tcpList[i][0].substr(0, found).c_str();
         if(string(c).compare(0,1,"0") != 0 &&
                 string(c).compare(0,3,"127") != 0 &&
                 string(c).compare(0,3,"192") != 0 &&
@@ -86,32 +63,17 @@ void ReverseDnsLookup::getHostnameString()
                                NI_MAXHOST, servInfo, NI_MAXSERV, NI_NUMERICSERV);
 
         if (dwRetval != 0) {
-            hostnames += "";
-        } else {
-            if(string(hostname).compare("trust")!= 0){
-            hostnames += "<br>" + string(hostname);
-            }
+			tcpHostList[i] = "";
         }
-    }
-    hnfname = "hostnameinfo";
-    hnfnametemp = "temphostnameinfo";
-    ftpo.writeToTempLog(hnfnametemp,"<font color=red><h2>" + tpo.getCurrentDate() + "</h2></font>"
-                        + "<font color=blue>" + hostnames + "</font>");
-    ftpo.writeToLog(hnfname,"<br><font color=red>" + tpo.getCurrentDate() + "</font><br><br>"
-                    + "<font color=blue>" + hostnames + "</font>");
-    //sleep times are to prevent overload in threads
-    Sleep(5000);
-    hostnames = "";
-    startThread();
+		else {
+			tcpHostList[i] = hostname;
+		}
+			
+	}
+	hostNameListSize = listSize;
+	return tcpHostList;
 }
-void ReverseDnsLookup::recheckConnections()
+int ReverseDnsLookup::getTableSize()
 {
-    connectionsUpdated();
-
-}
-//signals are emitted to make the program aware of changes
-void ReverseDnsLookup::connectionsUpdated()
-{
-    getHostnameString();
-    emit hostnameChange();
+	return hostNameListSize;
 }
