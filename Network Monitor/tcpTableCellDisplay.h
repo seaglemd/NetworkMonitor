@@ -188,7 +188,7 @@ TcpTableAccess *TCPTable::getTcpObject()
 /*string **TCPTable::getTableCopy()
 {
 	noRefill = 1;
-	string ** listCopy = new string*[tableSize];
+	string **listCopy = new string*[tableSize];
 	for (int i = 0; i < tableSize; i++){
 		listCopy[i] = new string[3];
 	}

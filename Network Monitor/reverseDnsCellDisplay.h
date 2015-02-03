@@ -12,7 +12,7 @@
 #include <FL/fl_draw.H>
 #include <string>
 
-#include "reverseDnsLookup.h"
+//#include "reverseDnsLookup.h"
 
 #define MAX_COLSR 1
 
@@ -30,10 +30,10 @@ public:
 
 		//tcpList = curTable->getTableCopy();
 		//tableSize = curTable->getDataTableSize(); //could cause problems if size changes between last call
-		rDNS = new ReverseDnsLookup();
+		//rDNS = new ReverseDnsLookup();
 		
 		fillDataArray();
-		tableSize = rDNS->getTableSize();
+		//tableSize = rDNS->getTableSize();
 		headings[0] = "Remote Host";
 
 		rows(tableSize);
@@ -59,7 +59,7 @@ private:
 	string headings[MAX_COLSR];
 	string **tcpList;
 	TCPTable *curTable;
-	ReverseDnsLookup *rDNS;
+	//ReverseDnsLookup *rDNS;
 	void RDNSTable::waitForData();
 	void RDNSTable::fillDataArray();
 
@@ -134,16 +134,16 @@ void RDNSTable::fillDataArray()
 		//tcpList = curTable->getTableCopy();
 		//tableSize = curTable->getDataTableSize();
 		data = new string[tableSize];
-		data = rDNS->getHostList(tcpList, tableSize);
-		tableSize = rDNS->getTableSize();
+		//data = rDNS->getHostList(tcpList, tableSize);
+		//tableSize = rDNS->getTableSize();
 		//for (int i = 0; i < tableSize; i++)
 			//for (int j = 0; j < 1; j++)
 				//data[i][j] = " ";
 	}
 	else{
 		data = new string[tableSize];
-		data = rDNS->getHostList(tcpList,tableSize);
-		tableSize = rDNS->getTableSize();
+		//data = rDNS->getHostList(tcpList,tableSize);
+		//tableSize = rDNS->getTableSize();
 		//for (int i = 0; i < tableSize; i++)
 			//for (int j = 0; j < 1; j++)
 				//data[i][j] = " ";

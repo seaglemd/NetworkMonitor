@@ -1,34 +1,22 @@
-﻿Build started 2/2/2015 8:43:10 PM.
+﻿Build started 2/2/2015 8:56:02 PM.
      1>Project "C:\Users\Matt\Desktop\NSM\Network Monitor\Network Monitor\Network Monitor.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp tcpTableAccess.cpp udpTableAccess.cpp wfStatusAccess.cpp
-         wfStatusAccess.cpp
-     1>c:\users\matt\desktop\nsm\network monitor\network monitor\wfstatusaccess.cpp(84): warning C4101: 'action' : unreferenced local variable
-     1>c:\users\matt\desktop\nsm\network monitor\network monitor\wfstatusaccess.cpp(99): warning C4101: 'action' : unreferenced local variable
-         udpTableAccess.cpp
-     1>c:\users\matt\desktop\nsm\network monitor\network monitor\udptableaccess.h(41): warning C4351: new behavior: elements of array 'UdpTableAccess::currentConnectionStatusNums' will be default initialized
-     1>c:\users\matt\desktop\nsm\network monitor\network monitor\udptableaccess.cpp(58): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-                 c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1868) : see declaration of 'inet_ntoa'
-         tcpTableAccess.cpp
-     1>c:\users\matt\desktop\nsm\network monitor\network monitor\tcptableaccess.h(47): warning C4351: new behavior: elements of array 'TcpTableAccess::currentConnectionStatusNums' will be default initialized
-     1>c:\users\matt\desktop\nsm\network monitor\network monitor\tcptableaccess.cpp(126): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-                 c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1868) : see declaration of 'inet_ntoa'
-     1>c:\users\matt\desktop\nsm\network monitor\network monitor\tcptableaccess.cpp(128): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-                 c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1868) : see declaration of 'inet_ntoa'
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
      1>c:\users\matt\desktop\nsm\network monitor\network monitor\tcptableaccess.h(47): warning C4351: new behavior: elements of array 'TcpTableAccess::currentConnectionStatusNums' will be default initialized
      1>c:\users\matt\desktop\nsm\network monitor\network monitor\tcptablecelldisplay.h(94): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
      1>c:\users\matt\desktop\nsm\network monitor\network monitor\tcptablecelldisplay.h(98): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
+     1>c:\users\matt\desktop\nsm\network monitor\network monitor\reversednscelldisplay.h(91): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
+     1>c:\users\matt\desktop\nsm\network monitor\network monitor\reversednscelldisplay.h(95): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
      1>c:\users\matt\desktop\nsm\network monitor\network monitor\udptableaccess.h(41): warning C4351: new behavior: elements of array 'UdpTableAccess::currentConnectionStatusNums' will be default initialized
      1>c:\users\matt\desktop\nsm\network monitor\network monitor\udptablecelldisplay.h(90): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
      1>c:\users\matt\desktop\nsm\network monitor\network monitor\udptablecelldisplay.h(94): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-         Generating Code...
-       ResourceCompile:
-         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\Network Monitor.res" "Network Monitor.rc" 
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Matt\Desktop\NSM\Network Monitor\Debug\Network Monitor.exe" /INCREMENTAL /NOLOGO fltk.lib fltkimages.lib fltkjpeg.lib fltkpng.lib fltkzlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Matt\Desktop\NSM\Network Monitor\Debug\Network Monitor.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Matt\Desktop\NSM\Network Monitor\Debug\Network Monitor.lib" /MACHINE:X86 "Debug\Network Monitor.res"
          Debug\main.obj
@@ -134,4 +122,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.97
+Time Elapsed 00:00:01.71

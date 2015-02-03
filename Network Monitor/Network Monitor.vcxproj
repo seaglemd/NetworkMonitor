@@ -87,6 +87,7 @@
   <ItemGroup>
     <ClInclude Include="MyWindow.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="reverseDnsCellDisplay.h" />
     <ClInclude Include="tcpTableAccess.h" />
     <ClInclude Include="tcpTableCellDisplay.h" />
     <ClInclude Include="udpTableAccess.h" />

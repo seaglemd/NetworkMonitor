@@ -5,7 +5,7 @@
 
 #include "wfStatusAccess.h"
 #include "tcpTableCellDisplay.h"
-//#include "reverseDnsCellDisplay.h"
+#include "reverseDnsCellDisplay.h"
 //#include "tcpTableAccess.h"
 #include "udpTableCellDisplay.h"
 //#include "udpTableAccess.h"
