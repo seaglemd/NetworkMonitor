@@ -124,7 +124,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	         privateFirewallBox = new Fl_Box(150, 100, 100, 100);	         
 
 	      tabSectionFirewall->end();
-	      tabSectionTCPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "TCP Table");
+	      tabSectionTCPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "TCP Table");
 		     table = new TCPTable(35, 65, 535, 350);
 			 tcpConnectionInfo = table->getTcpObject();
 			 //rTable = new RDNSTable(table, 600, 200, 270, 215);
@@ -152,12 +152,12 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 numberOfConnectionsTextBox->box(FL_DOWN_BOX);
 			 numberOfConnectionsTextBox->label("Pending...");
 
-			 refreshButtonBox = new Fl_Button(825, 225, 25, 25, "re");
-			 //refreshButtonBox->image(refreshImage);
+			 refreshButtonBox = new Fl_Button(825, 225, 25, 25);
+			 refreshButtonBox->image(refreshImage);
 			 refreshButtonBox->callback(button_cb);
 
 	      tabSectionTCPTable->end();
-		  tabSectionUDPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "UDP Table");
+		  tabSectionUDPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "UDP Table");
 		     uTable = new UDPTable(35, 65, 365, 350);
 		     udpConnectionInfo = uTable->getUdpObject();
 
@@ -184,19 +184,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	startThread();
 	//startRDNSThread();
 }
-/*
-int MyWindow::handle(int e)
-{/*
-	if (e == FL_PUSH){
-		if (Fl::event_button() == FL_LEFT_MOUSE)
-		{
-			button_cb();
-			return 1;
-		}
-	}
-	return 0;
-}
-*/
+
 void MyWindow::setCurrentFirewallStatus() 
 {
 	if (!firewallStatus->getPrivateProfile())
@@ -263,14 +251,14 @@ MyWindow *MyWindow::getWindow()
 void redrawBoxes_cb(void *u)
 {
 	cout << button << endl;
-	//Fl::lock();
+	Fl::lock();
 	   table->redrawTable(table);
 	   //if (redrawRDNSTable == 1)
 	      //rTable->redrawTable(rTable);
 
 	   uTable->redrawTable(uTable);
 	   theWindow->redraw();
-	//Fl::unlock();
+	Fl::unlock();
 	Fl::awake();
 }
 
