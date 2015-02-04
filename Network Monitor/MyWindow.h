@@ -12,10 +12,11 @@
 
 class MyWindow;
 void redrawBoxes_cb(void *u);
-
+void button_cb(Fl_Widget *widget, void *u);
 using namespace std;
 
 int redrawRDNSTable;
+int button = 0;
 
 MyWindow *theWindow;
 TCPTable *table;
@@ -28,6 +29,7 @@ Fl_Box *hostNameTextBox;
 Fl_Box *domainNameTextBox;
 Fl_Box *dnsServerListTextBox;
 Fl_Box *numberOfConnectionsTextBox;
+Fl_Button *refreshButtonBox;
 Fl_Box *numberOfUdpTableEntriesTextBox;
 Fl_Box *numberOfDatagramsTextBox;
 
@@ -36,6 +38,7 @@ class MyWindow : public Fl_Double_Window
 {
 	public:
 		MyWindow(int w, int h, const char* title);
+		//int MyWindow::handle(int e);
 		~MyWindow();
 		int refreshCount = 0;
 	private:
@@ -73,6 +76,7 @@ class MyWindow : public Fl_Double_Window
 		*/
 		Fl_PNG_Image *firewallOn;
 		Fl_PNG_Image *firewallOff;
+		Fl_PNG_Image *refreshImage;
 		
 		//Firewall class
 		WFStatus *firewallStatus;
@@ -105,7 +109,8 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	redrawRDNSTable = 0;
 	firewallStatus = new WFStatus();
 	firewallOn = new Fl_PNG_Image("fWOn.png");
-	firewallOff = new Fl_PNG_Image("fwoff.png");	
+	firewallOff = new Fl_PNG_Image("fwoff.png");
+	refreshImage = new Fl_PNG_Image("refresh.png");
 	begin();
 	
 	   tabGroup = new Fl_Tabs(10, 10, 900 - 20, 500 - 20);
@@ -147,6 +152,10 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 numberOfConnectionsTextBox->box(FL_DOWN_BOX);
 			 numberOfConnectionsTextBox->label("Pending...");
 
+			 refreshButtonBox = new Fl_Button(825, 225, 25, 25, "re");
+			 //refreshButtonBox->image(refreshImage);
+			 refreshButtonBox->callback(button_cb);
+
 	      tabSectionTCPTable->end();
 		  tabSectionUDPTable = new Fl_Group(30, 55, 500 - 20, 200 - 45, "UDP Table");
 		     uTable = new UDPTable(35, 65, 365, 350);
@@ -175,7 +184,19 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	startThread();
 	//startRDNSThread();
 }
-
+/*
+int MyWindow::handle(int e)
+{/*
+	if (e == FL_PUSH){
+		if (Fl::event_button() == FL_LEFT_MOUSE)
+		{
+			button_cb();
+			return 1;
+		}
+	}
+	return 0;
+}
+*/
 void MyWindow::setCurrentFirewallStatus() 
 {
 	if (!firewallStatus->getPrivateProfile())
@@ -241,16 +262,21 @@ MyWindow *MyWindow::getWindow()
 
 void redrawBoxes_cb(void *u)
 {
-	//cout << "made it here" << endl;
-	Fl::lock();
+	cout << button << endl;
+	//Fl::lock();
 	   table->redrawTable(table);
 	   //if (redrawRDNSTable == 1)
 	      //rTable->redrawTable(rTable);
 
 	   uTable->redrawTable(uTable);
 	   theWindow->redraw();
-	Fl::unlock();
+	//Fl::unlock();
 	Fl::awake();
+}
+
+void button_cb(Fl_Widget *widget, void *u)
+{
+	button++;
 }
 
 void MyWindow::startRDNSThread()

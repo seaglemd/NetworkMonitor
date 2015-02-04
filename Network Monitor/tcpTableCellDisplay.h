@@ -84,7 +84,7 @@ private:
 		fl_pop_clip();
 	}
 	void TCPTable::draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0){
-		Fl::lock();
+		//Fl::lock();
 		static char s[40];
 		switch (context) {
 		case CONTEXT_STARTPAGE:                   // before page is drawn..
@@ -106,7 +106,7 @@ private:
 			return;
 		}
 
-		Fl::unlock();
+		//Fl::unlock();
 		return;
 	}
 	
