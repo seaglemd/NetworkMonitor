@@ -1,6 +1,7 @@
 #ifndef REVERSEDNSCELLDISPLAY_H
 #define REVERSEDNSCELLDISPLAY_H
-
+#define WIN32_LEAN_AND_MEAN
+/*
 #include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Tabs.H>
@@ -11,8 +12,8 @@
 #include <FL/Fl_Table.H>
 #include <FL/fl_draw.H>
 #include <string>
-
-//#include "reverseDnsLookup.h"
+*/
+#include "reverseDnsLookup.h"
 
 #define MAX_COLSR 1
 
@@ -27,13 +28,7 @@ public:
 		tableSize = 0;
 		curTable = nCurTable;
 		waitForData();
-
-		//tcpList = curTable->getTableCopy();
-		//tableSize = curTable->getDataTableSize(); //could cause problems if size changes between last call
-		//rDNS = new ReverseDnsLookup();
-		
-		fillDataArray();
-		//tableSize = rDNS->getTableSize();
+		rDNS = new ReverseDnsLookup();
 		headings[0] = "Remote Host";
 
 		rows(tableSize);
@@ -43,7 +38,7 @@ public:
 
 		cols(MAX_COLSR);             // how many columns
 		col_header(1);              // enable column headers (along top)
-		col_width_all(270);          // default width of columns
+		col_width_all(265);          // default width of columns
 		col_resize(1);              // enable column resizing
 		end();                        // end the Fl_Table group
 	};
@@ -54,12 +49,13 @@ public:
 private:
 	int firstTime;
 	int tableSize;
+	int tcpListSize;
 	int noDraw;
 	string *data;  // data array for cells
 	string headings[MAX_COLSR];
 	string **tcpList;
 	TCPTable *curTable;
-	//ReverseDnsLookup *rDNS;
+	ReverseDnsLookup *rDNS;
 	void RDNSTable::waitForData();
 	void RDNSTable::fillDataArray();
 
@@ -113,42 +109,28 @@ private:
 void RDNSTable::updateCells()
 {
 	noDraw = 1;
-	fillDataArray();
+	waitForData();
 	noDraw = 0;
 }
 void RDNSTable::waitForData()
 {
+	noDraw = 1;
 	int haveData = 0;
 	while (haveData == 0)
 	{
-		if (curTable->getDrawState() == 0){
 			fillDataArray();
 			haveData = 1;
-		}
+		
 	}
+	noDraw = 0;
 }
 void RDNSTable::fillDataArray()
 {
-	if (firstTime != 1){
-		delete[] data;
-		//tcpList = curTable->getTableCopy();
-		//tableSize = curTable->getDataTableSize();
-		data = new string[tableSize];
-		//data = rDNS->getHostList(tcpList, tableSize);
-		//tableSize = rDNS->getTableSize();
-		//for (int i = 0; i < tableSize; i++)
-			//for (int j = 0; j < 1; j++)
-				//data[i][j] = " ";
-	}
-	else{
-		data = new string[tableSize];
-		//data = rDNS->getHostList(tcpList,tableSize);
-		//tableSize = rDNS->getTableSize();
-		//for (int i = 0; i < tableSize; i++)
-			//for (int j = 0; j < 1; j++)
-				//data[i][j] = " ";
-		firstTime = 0;
-	}
+	cout << "hair" << endl;
+	tcpList = curTable->getTableCopy();
+	tcpListSize = curTable->getCopyTableSize();
+	data = rDNS->getHostList(tcpList, tcpListSize);
+	tableSize = rDNS->getTableSize();
 }
 
 void RDNSTable::redrawTable(RDNSTable *curTable)

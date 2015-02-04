@@ -80,6 +80,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="reverseDnsLookup.cpp" />
     <ClCompile Include="tcpTableAccess.cpp" />
     <ClCompile Include="udpTableAccess.cpp" />
     <ClCompile Include="wfStatusAccess.cpp" />
@@ -88,6 +89,7 @@
     <ClInclude Include="MyWindow.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="reverseDnsCellDisplay.h" />
+    <ClInclude Include="reverseDnsLookup.h" />
     <ClInclude Include="tcpTableAccess.h" />
     <ClInclude Include="tcpTableCellDisplay.h" />
     <ClInclude Include="udpTableAccess.h" />

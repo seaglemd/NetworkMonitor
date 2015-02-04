@@ -21,7 +21,7 @@ int button = 0;
 MyWindow *theWindow;
 TCPTable *table;
 UDPTable *uTable;
-//RDNSTable *rTable;
+RDNSTable *rTable;
 
 Fl_Box *privateFirewallBox;
 Fl_Box *publicFirewallBox;
@@ -127,7 +127,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	      tabSectionTCPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "TCP Table");
 		     table = new TCPTable(35, 65, 535, 350);
 			 tcpConnectionInfo = table->getTcpObject();
-			 //rTable = new RDNSTable(table, 600, 200, 270, 215);
+			 rTable = new RDNSTable(table, 600, 200, 270, 215);
 			 hostNameTextBoxLabel = new Fl_Box(600, 65, 100, 25);
 			 hostNameTextBoxLabel->label("Host Name: ");
 			 hostNameTextBox = new Fl_Box(700, 65, 150, 25);
@@ -152,7 +152,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 numberOfConnectionsTextBox->box(FL_DOWN_BOX);
 			 numberOfConnectionsTextBox->label("Pending...");
 
-			 refreshButtonBox = new Fl_Button(825, 225, 25, 25);
+			 refreshButtonBox = new Fl_Button(845, 420, 25, 25);
 			 refreshButtonBox->image(refreshImage);
 			 refreshButtonBox->callback(button_cb);
 
@@ -182,7 +182,6 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	show();
 	theWindow = this;
 	startThread();
-	//startRDNSThread();
 }
 
 void MyWindow::setCurrentFirewallStatus() 

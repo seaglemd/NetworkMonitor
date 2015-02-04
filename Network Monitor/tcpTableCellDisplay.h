@@ -26,6 +26,7 @@ public:
 	TCPTable::TCPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L){
 		firstTime = 1;
 		tableSize = 0;
+		copyTableSize = 0;
 		tcpConnections = new TcpTableAccess();
 		tcpList = tcpConnections->passTcpTable();
 		tableSize = tcpConnections->getTableSize();
@@ -50,13 +51,15 @@ public:
 	TcpTableAccess *TCPTable::getTcpObject();
 	void TCPTable::redrawTable(TCPTable *curTable);
 	int TCPTable::getDrawState();
-	//string **TCPTable::getDataTable();
-	//int TCPTable::getDataTableSize();
-	//string **TCPTable::getTableCopy();
+	string **TCPTable::getDataTable();
+	int TCPTable::getDataTableSize();
+	string **TCPTable::getTableCopy();
+	int TCPTable::getCopyTableSize();
 	TCPTable::~TCPTable();
 private:
 	int firstTime;
 	int tableSize;
+	int copyTableSize;
 	int noDraw;
 	int noRefill;
 	string **data;  // data array for cells
@@ -116,7 +119,8 @@ private:
 void TCPTable::updateCells()
 {
 	noDraw = 1;
-	fillDataArray();
+	if (noRefill == 0)
+		fillDataArray();
 	noDraw = 0;
 }
 
@@ -169,7 +173,7 @@ int TCPTable::getDrawState()
 {
 	return noDraw;
 }
-/*
+
 int TCPTable::getDataTableSize()
 {
 	return tableSize;
@@ -179,15 +183,16 @@ string **TCPTable::getDataTable()
 {
 	return data;
 }
-*/
+
 TcpTableAccess *TCPTable::getTcpObject()
 {
 	return tcpConnections;
 }
 
-/*string **TCPTable::getTableCopy()
+string **TCPTable::getTableCopy()
 {
 	noRefill = 1;
+	copyTableSize = tableSize;
 	string **listCopy = new string*[tableSize];
 	for (int i = 0; i < tableSize; i++){
 		listCopy[i] = new string[3];
@@ -198,7 +203,11 @@ TcpTableAccess *TCPTable::getTcpObject()
 	noRefill = 0;
 
 	return listCopy;
-}*/
+}
+int TCPTable::getCopyTableSize()
+{
+	return copyTableSize;
+}
 TCPTable::~TCPTable() { }
 
 #endif

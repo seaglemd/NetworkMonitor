@@ -1,15 +1,5 @@
 #define WIN32_LEAN_AND_MEAN
 
-#include <iostream>
-#include <process.h>
-#include <windows.h>
-#include <string>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <stdio.h>
-#include <vector>
-
-#include "tcpTableAccess.h"
 #include "reverseDnsLookup.h"
 // link with ws2_32.lib
 #pragma comment(lib, "Ws2_32.lib")
@@ -18,7 +8,7 @@ using namespace std;
 
 
 string *ReverseDnsLookup::getHostList(string **nTcpList, int nTcpListSize)
-{/*
+{
 	tcpListSize = nTcpListSize;
 	string *tempHostNameList = new string[tcpListSize];
 	tcpList = nTcpList;
@@ -79,10 +69,10 @@ string *ReverseDnsLookup::getHostList(string **nTcpList, int nTcpListSize)
 			if (tempHostNameList[i].find("unreachable") == string::npos)
 				tcpHostList[hostNameListSize++] = tempHostNameList[i];
 		}
-	return tcpHostList;*/
+	return tcpHostList;
 }
 int ReverseDnsLookup::getTableSize()
-{/*
+{
 	return hostNameListSize;
-	*/
+	
 }
