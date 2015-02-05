@@ -1,7 +1,7 @@
 #ifndef REVERSEDNSCELLDISPLAY_H
 #define REVERSEDNSCELLDISPLAY_H
 #define WIN32_LEAN_AND_MEAN
-/*
+
 #include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Tabs.H>
@@ -11,8 +11,8 @@
 #include <FL/Fl_PNG_Image.H>
 #include <FL/Fl_Table.H>
 #include <FL/fl_draw.H>
-#include <string>
-*/
+
+
 #include "reverseDnsLookup.h"
 
 #define MAX_COLSR 1
@@ -27,8 +27,9 @@ public:
 		firstTime = 1;
 		tableSize = 0;
 		curTable = nCurTable;
-		waitForData();
 		rDNS = new ReverseDnsLookup();
+		updateCells();
+		
 		headings[0] = "Remote Host";
 
 		rows(tableSize);
@@ -114,7 +115,6 @@ void RDNSTable::updateCells()
 }
 void RDNSTable::waitForData()
 {
-	noDraw = 1;
 	int haveData = 0;
 	while (haveData == 0)
 	{
@@ -122,21 +122,21 @@ void RDNSTable::waitForData()
 			haveData = 1;
 		
 	}
-	noDraw = 0;
 }
 void RDNSTable::fillDataArray()
 {
-	cout << "hair" << endl;
 	tcpList = curTable->getTableCopy();
 	tcpListSize = curTable->getCopyTableSize();
 	data = rDNS->getHostList(tcpList, tcpListSize);
 	tableSize = rDNS->getTableSize();
+	//rows(tableSize);
 }
 
 void RDNSTable::redrawTable(RDNSTable *curTable)
-{
-	curTable->rows(tableSize);
-	curTable->redraw();
+{ 
+	int tempzero = 0;
+	rows(tempzero); //to force a redraw from rows table size needs to change
+	rows(tableSize);
 }
 
 RDNSTable::~RDNSTable() { }

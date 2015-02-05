@@ -10,7 +10,6 @@
 #include <FL/Fl_PNG_Image.H>
 #include <FL/Fl_Table.H>
 #include <FL/fl_draw.H>
-#include <string>
 #include "udpTableAccess.h"
 //#include "stringDynamicArrayTest.h"
 

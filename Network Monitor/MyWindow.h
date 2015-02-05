@@ -1,14 +1,11 @@
 #ifndef MYWINDOW_H
 #define MYWINDOW_H
 
-#include <iostream>
-
 #include "wfStatusAccess.h"
 #include "tcpTableCellDisplay.h"
 #include "reverseDnsCellDisplay.h"
-//#include "tcpTableAccess.h"
 #include "udpTableCellDisplay.h"
-//#include "udpTableAccess.h"
+
 
 class MyWindow;
 void redrawBoxes_cb(void *u);
@@ -38,7 +35,7 @@ class MyWindow : public Fl_Double_Window
 {
 	public:
 		MyWindow(int w, int h, const char* title);
-		//int MyWindow::handle(int e);
+		void MyWindow::startRDNSThread();
 		~MyWindow();
 		int refreshCount = 0;
 	private:
@@ -91,7 +88,7 @@ class MyWindow : public Fl_Double_Window
 		//reverse dns has it's own thread because of conflicts
 		//with the time it takes to get the results and 
 		//the speed at which the ui should react.
-		void MyWindow::startRDNSThread();
+		
 		void MyWindow::rdnsThreadBody();
 		static void enterRDNSThread(void *p);
 		
@@ -249,22 +246,20 @@ MyWindow *MyWindow::getWindow()
 
 void redrawBoxes_cb(void *u)
 {
-	cout << button << endl;
 	Fl::lock();
+	
+	if (redrawRDNSTable == 1){
+		rTable->redrawTable(rTable);
+		redrawRDNSTable = 0;
+	}
 	   table->redrawTable(table);
-	   //if (redrawRDNSTable == 1)
-	      //rTable->redrawTable(rTable);
-
 	   uTable->redrawTable(uTable);
 	   theWindow->redraw();
 	Fl::unlock();
 	Fl::awake();
 }
 
-void button_cb(Fl_Widget *widget, void *u)
-{
-	button++;
-}
+
 
 void MyWindow::startRDNSThread()
 {
@@ -280,16 +275,13 @@ void MyWindow::enterRDNSThread(void *p)
 
 void MyWindow::rdnsThreadBody()
 {
-	while (true){
-		Sleep(30000);
-		if (tcpConnectionInfo->getDataState() != 1){
-			//rTable->updateCells();
-		}
-		
-		redrawRDNSTable = 1;
-	}
+	rTable->updateCells();
+	redrawRDNSTable = 1;
 }
-
+void button_cb(Fl_Widget *widget, void *u)
+{
+	theWindow->startRDNSThread();
+}
 MyWindow::~MyWindow(){}
 
 #endif
