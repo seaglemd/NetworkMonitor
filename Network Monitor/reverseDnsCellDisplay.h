@@ -28,7 +28,7 @@ public:
 		tableSize = 0;
 		curTable = nCurTable;
 		rDNS = new ReverseDnsLookup();
-		updateCells();
+		//updateCells();
 		
 		headings[0] = "Remote Host";
 
@@ -39,7 +39,7 @@ public:
 
 		cols(MAX_COLSR);             // how many columns
 		col_header(1);              // enable column headers (along top)
-		col_width_all(265);          // default width of columns
+		col_width_all(450);          // default width of columns
 		col_resize(1);              // enable column resizing
 		end();                        // end the Fl_Table group
 	};
@@ -64,7 +64,7 @@ private:
 		fl_push_clip(X, Y, W, H);
 		fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
 		fl_color(FL_BLACK);
-		fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+		fl_draw(s, X, Y, W, H, FL_ALIGN_LEFT);
 		fl_pop_clip();
 	}
 	void RDNSTable::DrawData(const char *s, int X, int Y, int W, int H) {

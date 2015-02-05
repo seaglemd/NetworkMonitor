@@ -26,6 +26,7 @@ Fl_Box *hostNameTextBox;
 Fl_Box *domainNameTextBox;
 Fl_Box *dnsServerListTextBox;
 Fl_Box *numberOfConnectionsTextBox;
+Fl_Box *refreshButtonTextLabel;
 Fl_Button *refreshButtonBox;
 Fl_Box *numberOfUdpTableEntriesTextBox;
 Fl_Box *numberOfDatagramsTextBox;
@@ -153,6 +154,9 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 refreshButtonBox->image(refreshImage);
 			 refreshButtonBox->callback(button_cb);
 
+			 refreshButtonTextLabel = new Fl_Box(775, 420, 40, 25);
+			 refreshButtonTextLabel->label("");
+
 	      tabSectionTCPTable->end();
 		  tabSectionUDPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "UDP Table");
 		     uTable = new UDPTable(35, 65, 365, 350);
@@ -249,6 +253,7 @@ void redrawBoxes_cb(void *u)
 	Fl::lock();
 	
 	if (redrawRDNSTable == 1){
+		refreshButtonTextLabel->label("Complete");
 		rTable->redrawTable(rTable);
 		redrawRDNSTable = 0;
 	}
@@ -280,6 +285,7 @@ void MyWindow::rdnsThreadBody()
 }
 void button_cb(Fl_Widget *widget, void *u)
 {
+	refreshButtonTextLabel->label("Refreshing...");
 	theWindow->startRDNSThread();
 }
 MyWindow::~MyWindow(){}
