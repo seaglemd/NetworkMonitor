@@ -38,7 +38,7 @@ private:
 	int numOfDatagrams;
 	int curUdpTableEntryCount = 0;
 	int udpTableEntryCount = 0;
-	int currentConnectionStatusNums[13] = { };
+	int currentConnectionStatusNums[13];
 	string numberOfDatagrams;
 	string displayTableSize;
 	string localIp;

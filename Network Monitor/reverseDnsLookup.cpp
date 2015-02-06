@@ -45,7 +45,8 @@ string *ReverseDnsLookup::getHostList(string **nTcpList, int nTcpListSize)
 				string((tcpList[i][1].substr(0, (found))).c_str()).compare(0, 2, "10") != 0) {
 
 				saGNI.sin_family = AF_INET;
-				saGNI.sin_addr.s_addr = inet_addr((tcpList[i][1].substr(0, (found))).c_str());
+				inet_pton(2, (tcpList[i][1].substr(0, (found))).c_str(), &(saGNI.sin_addr.s_addr));
+				//saGNI.sin_addr.s_addr = inet_addr((tcpList[i][1].substr(0, (found))).c_str());
 				saGNI.sin_port = htons(port);
 			}
 

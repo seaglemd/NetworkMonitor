@@ -81,7 +81,6 @@ Cleanup:
 void WFStatus::Get_FirewallSettings_PrivateProfileType(NET_FW_PROFILE_TYPE2 ProfileTypePassed, INetFwPolicy2* pNetFwPolicy2)
 {
     VARIANT_BOOL bIsEnabled = FALSE;
-    NET_FW_ACTION action;
 
     if(SUCCEEDED(pNetFwPolicy2->get_FirewallEnabled(ProfileTypePassed, &bIsEnabled)))
     {
@@ -96,7 +95,6 @@ void WFStatus::Get_FirewallSettings_PrivateProfileType(NET_FW_PROFILE_TYPE2 Prof
 void WFStatus::Get_FirewallSettings_PublicProfileType(NET_FW_PROFILE_TYPE2 ProfileTypePassed, INetFwPolicy2* pNetFwPolicy2)
 {
     VARIANT_BOOL bIsEnabled = FALSE;
-    NET_FW_ACTION action;
 
     if(SUCCEEDED(pNetFwPolicy2->get_FirewallEnabled(ProfileTypePassed, &bIsEnabled)))
     {

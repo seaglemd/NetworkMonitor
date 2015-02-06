@@ -72,7 +72,7 @@ private:
 		// Draw cell bg
 		fl_color(FL_WHITE); fl_rectf(X, Y, W, H);
 		// Draw cell data
-		fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+		fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_LEFT);
 		// Draw box border
 		fl_color(color()); fl_rect(X, Y, W, H);
 		fl_pop_clip();
@@ -85,12 +85,12 @@ private:
 			fl_font(FL_HELVETICA, 16);              // set the font for our drawing operations
 			return;
 		case CONTEXT_COL_HEADER:
-			sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
-			DrawHeader(s, X, Y, W, H);
+              // "A", "B", "C", etc.
+			DrawHeader(headings[COL].c_str(), X, Y, W, H);
 			return;
 		case CONTEXT_ROW_HEADER:                  // Draw row headers
-			sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
-			DrawHeader(s, X, Y, W, H);
+			//sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
+			//DrawHeader(s, X, Y, W, H);
 			return;
 		case CONTEXT_CELL:
 			if (ROW <= tableSize && noDraw == 0)

@@ -4,6 +4,9 @@
 
 UdpTableAccess::UdpTableAccess()
 {
+	for (int i = 0; i < 13; i++){
+		currentConnectionStatusNums[i] = 0;
+	}
 	getDatagrams();
 	getUdpTable();
 	startThread();
@@ -16,7 +19,7 @@ void UdpTableAccess::getUdpTable()
 		DWORD dwRetVal;
 		PMIB_UDPTABLE pUdpTable;
 		DWORD dwSize = 0;
-		char szLocalAddr[128];
+		char szLocalAddr[INET6_ADDRSTRLEN];
 		struct in_addr IpAddr;
 
 		pUdpTable = (MIB_UDPTABLE *)malloc(sizeof(MIB_UDPTABLE));
@@ -55,7 +58,7 @@ void UdpTableAccess::getUdpTable()
 
 			for (int i = 0; i < udpTableEntryCount; i++) {
 				IpAddr.S_un.S_addr = (u_long)pUdpTable->table[i].dwLocalAddr;
-				strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr));
+				inet_ntop(2, &IpAddr, (PSTR)szLocalAddr, sizeof(szLocalAddr));
 
 				localIp = szLocalAddr;
 				udpConnectionList[i][0] = localIp;

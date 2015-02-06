@@ -20,6 +20,9 @@ using namespace std;
 
 TcpTableAccess::TcpTableAccess()
 {
+	for (int i = 0; i < 13; i++){
+		currentConnectionStatusNums[i] = 0;
+	}
 	getNetworkParameters();
 	getTcpTable();
 	startThread();
@@ -71,8 +74,8 @@ void TcpTableAccess::getTcpTable()
 		DWORD dwRetVal;
 		PMIB_TCPTABLE pTcpTable;
 		DWORD dwSize = 0;
-		char szLocalAddr[128];
-		char szRemoteAddr[128];
+		char szLocalAddr[INET6_ADDRSTRLEN];
+		char szRemoteAddr[INET6_ADDRSTRLEN];
 		struct in_addr IpAddr;
 		int lCurrentConnectionStatusNums[13] = {};
 		int consChanged = 0;
@@ -123,9 +126,11 @@ void TcpTableAccess::getTcpTable()
 			}
 			for (int i = 0; i < tcpTableEntryCount; i++) {
 				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
-				strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr)); //local address
+				//strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr)); //local address
+				inet_ntop(2, &IpAddr, (PSTR)szLocalAddr, sizeof(szLocalAddr));
 				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
-				strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr)); //remote address
+				inet_ntop(2, &IpAddr, (PSTR)szRemoteAddr, sizeof(szRemoteAddr));
+				//strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr)); //remote address
 
 				switch (pTcpTable->table[i].dwState) { //switch statement gets state of connection
 				case MIB_TCP_STATE_CLOSED:

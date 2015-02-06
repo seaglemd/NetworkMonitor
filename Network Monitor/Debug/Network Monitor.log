@@ -1,38 +1,12 @@
-﻿Build started 2/4/2015 6:10:20 PM.
+﻿Build started 2/5/2015 7:28:00 PM.
      1>Project "C:\Users\Matt\Desktop\NSM\NetworkMonitor\Network Monitor\Network Monitor.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp reverseDnsLookup.cpp tcpTableAccess.cpp udpTableAccess.cpp wfStatusAccess.cpp
          wfStatusAccess.cpp
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\wfstatusaccess.cpp(84): warning C4101: 'action' : unreferenced local variable
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\wfstatusaccess.cpp(99): warning C4101: 'action' : unreferenced local variable
          udpTableAccess.cpp
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\udptableaccess.h(41): warning C4351: new behavior: elements of array 'UdpTableAccess::currentConnectionStatusNums' will be default initialized
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\udptableaccess.cpp(58): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-                 c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1868) : see declaration of 'inet_ntoa'
          tcpTableAccess.cpp
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\tcptableaccess.h(47): warning C4351: new behavior: elements of array 'TcpTableAccess::currentConnectionStatusNums' will be default initialized
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\tcptableaccess.cpp(126): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-                 c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1868) : see declaration of 'inet_ntoa'
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\tcptableaccess.cpp(128): warning C4996: 'inet_ntoa': Use inet_ntop() or InetNtop() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-                 c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1868) : see declaration of 'inet_ntoa'
          reverseDnsLookup.cpp
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\reversednslookup.cpp(48): warning C4996: 'inet_addr': Use inet_pton() or InetPton() instead or define _WINSOCK_DEPRECATED_NO_WARNINGS to disable deprecated API warnings
-                 c:\program files (x86)\windows kits\8.1\include\um\winsock2.h(1850) : see declaration of 'inet_addr'
          main.cpp
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\tcptableaccess.h(47): warning C4351: new behavior: elements of array 'TcpTableAccess::currentConnectionStatusNums' will be default initialized
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\tcptablecelldisplay.h(97): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\tcptablecelldisplay.h(101): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\reversednscelldisplay.h(88): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\reversednscelldisplay.h(92): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\udptableaccess.h(41): warning C4351: new behavior: elements of array 'UdpTableAccess::currentConnectionStatusNums' will be default initialized
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\udptablecelldisplay.h(89): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
-     1>c:\users\matt\desktop\nsm\networkmonitor\network monitor\udptablecelldisplay.h(93): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 c:\program files (x86)\microsoft visual studio 12.0\vc\include\stdio.h(356) : see declaration of 'sprintf'
          Generating Code...
        ResourceCompile:
          C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\Network Monitor.res" "Network Monitor.rc" 
@@ -143,4 +117,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.62
+Time Elapsed 00:00:10.36

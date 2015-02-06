@@ -94,12 +94,12 @@ private:
 			fl_font(FL_HELVETICA, 16);              // set the font for our drawing operations
 			return;
 		case CONTEXT_COL_HEADER:
-			sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
-			DrawHeader(s, X, Y, W, H);
+			//sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
+			DrawHeader(headings[COL].c_str(), X, Y, W, H);
 			return;
 		case CONTEXT_ROW_HEADER:                  // Draw row headers
-			sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
-			DrawHeader(s, X, Y, W, H);
+			//sprintf(s, "%03d:", ROW);                 // "001:", "002:", etc
+			//DrawHeader(s, X, Y, W, H);
 			return;
 		case CONTEXT_CELL:
 			if (ROW <= tableSize && noDraw == 0)
