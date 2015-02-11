@@ -32,7 +32,8 @@ public:
 	string **UdpTableAccess::passUdpTable();
 	void UdpTableAccess::setDataState(int nDataState);
 	int UdpTableAccess::getDataState();
-	
+	void UdpTableAccess::stopUpdates();
+	void UdpTableAccess::startUpdates();
 
 private:
 	int numOfDatagrams;
@@ -48,6 +49,7 @@ private:
 
 	int dataState = 0;
 	int changeTheDataState = 0;
+	int stop = 0;
 
 	void UdpTableAccess::startThread();
 	void UdpTableAccess::threadBody();

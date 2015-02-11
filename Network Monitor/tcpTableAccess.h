@@ -38,6 +38,9 @@ class TcpTableAccess
 		void setDataState(int nDataState);
 		int getDataState();
 
+		void stopUpdates();
+		void startUpdates();
+
     private:
 		int howManyTimes = 0;
         int numofcon = 0;
@@ -58,6 +61,7 @@ class TcpTableAccess
 		
 		int dataState = 0;
 		int changeTheDataState = 0;
+		int stop = 0;
 
 		void TcpTableAccess::startThread();
 		void TcpTableAccess::threadBody();

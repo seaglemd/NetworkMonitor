@@ -294,7 +294,7 @@ void TcpTableAccess::enterThread(void *p)
 
 void TcpTableAccess::threadBody()
 {
-	while (true){
+	while (stop == 0){
 		getTcpTable();
 	}
 }
@@ -305,5 +305,15 @@ void TcpTableAccess::setDataState(int nDataState){
 
 int TcpTableAccess::getDataState(){
 	return dataState;
+}
+
+void TcpTableAccess::stopUpdates()
+{
+	stop = 1;
+}
+void TcpTableAccess::startUpdates()
+{
+	stop = 0;
+	startThread();
 }
 

@@ -154,7 +154,7 @@ void UdpTableAccess::enterThread(void *p)
 
 void UdpTableAccess::threadBody()
 {
-	while (true){
+	while (stop == 0){
 		getUdpTable();
 	}
 }
@@ -165,4 +165,14 @@ void UdpTableAccess::setDataState(int nDataState){
 
 int UdpTableAccess::getDataState(){
 	return dataState;
+}
+
+void UdpTableAccess::stopUpdates()
+{
+	stop = 1;
+}
+void UdpTableAccess::startUpdates()
+{
+	stop = 0;
+	startThread();
 }

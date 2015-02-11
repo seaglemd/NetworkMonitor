@@ -9,11 +9,20 @@
 
 class MyWindow;
 void redrawBoxes_cb(void *u);
-void button_cb(Fl_Widget *widget, void *u);
+void rdns_button_cb(Fl_Widget *widget, void *u);
+void stop_button_tcp_cb(Fl_Widget *widget, void *u);
+void resume_button_tcp_cb(Fl_Widget *widget, void *u);
+void stop_button_udp_cb(Fl_Widget *widget, void *u);
+void resume_button_udp_cb(Fl_Widget *widget, void *u);
+
 using namespace std;
 
 int redrawRDNSTable;
 int button = 0;
+int stopTcp;
+int startTcp;
+int stopUdp;
+int startUdp;
 
 MyWindow *theWindow;
 TCPTable *table;
@@ -27,7 +36,13 @@ Fl_Box *domainNameTextBox;
 Fl_Box *dnsServerListTextBox;
 Fl_Box *numberOfConnectionsTextBox;
 Fl_Box *refreshButtonTextLabel;
+
 Fl_Button *refreshButtonBox;
+Fl_Button *stopButtonTcp;
+Fl_Button *resumeButtonTcp;
+Fl_Button *stopButtonUdp;
+Fl_Button *resumeButtonUdp;
+
 Fl_Box *numberOfUdpTableEntriesTextBox;
 Fl_Box *numberOfDatagramsTextBox;
 
@@ -94,6 +109,7 @@ class MyWindow : public Fl_Double_Window
 		static void enterRDNSThread(void *p);
 		
 		MyWindow *MyWindow::getWindow();
+		void MyWindow::checkControlStatus();
 		void MyWindow::setCurrentFirewallStatus();
 		void MyWindow::getCurrentTCPTableInfo();
 		void MyWindow::getCurrentUDPTableInfo();
@@ -104,6 +120,10 @@ class MyWindow : public Fl_Double_Window
 
 MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title)
 {
+	stopTcp = 0;
+	startTcp = 0;
+	stopUdp = 0;
+	startUdp = 0;
 	redrawRDNSTable = 0;
 	firewallStatus = new WFStatus();
 	firewallOn = new Fl_PNG_Image("fWOn.png");
@@ -124,7 +144,23 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	      tabSectionFirewall->end();
 	      tabSectionTCPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "TCP Table");
 		     table = new TCPTable(35, 65, 535, 350);
+
+			 stopButtonTcp = new Fl_Button(35, 420, 25, 25);
+			 stopButtonTcp->labelcolor(FL_RED);
+			 stopButtonTcp->labeltype(FL_SHADOW_LABEL);
+			 stopButtonTcp->label("@square");
+			 stopButtonTcp->callback(stop_button_tcp_cb);
+
+			 resumeButtonTcp = new Fl_Button(65, 420, 25, 25);
+			 resumeButtonTcp->labelcolor(FL_GRAY);
+			 resumeButtonTcp->labeltype(FL_SHADOW_LABEL);
+			 resumeButtonTcp->label("@+2>");
+			 resumeButtonTcp->deactivate();
+			 resumeButtonTcp->callback(resume_button_tcp_cb);
+
 			 tcpConnectionInfo = table->getTcpObject();
+
+
 			 rTable = new RDNSTable(table, 600, 200, 270, 215);
 			 hostNameTextBoxLabel = new Fl_Box(600, 65, 100, 25);
 			 hostNameTextBoxLabel->label("Host Name: ");
@@ -152,7 +188,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 
 			 refreshButtonBox = new Fl_Button(845, 420, 25, 25);
 			 refreshButtonBox->image(refreshImage);
-			 refreshButtonBox->callback(button_cb);
+			 refreshButtonBox->callback(rdns_button_cb);
 
 			 refreshButtonTextLabel = new Fl_Box(775, 420, 40, 25);
 			 refreshButtonTextLabel->label("");
@@ -160,6 +196,19 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	      tabSectionTCPTable->end();
 		  tabSectionUDPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "UDP Table");
 		     uTable = new UDPTable(35, 65, 365, 350);
+
+			 stopButtonUdp = new Fl_Button(35, 420, 25, 25);
+			 stopButtonUdp->labelcolor(FL_RED);
+			 stopButtonUdp->labeltype(FL_SHADOW_LABEL);
+			 stopButtonUdp->label("@square");
+			 stopButtonUdp->callback(stop_button_udp_cb);
+
+			 resumeButtonUdp = new Fl_Button(65, 420, 25, 25);
+			 resumeButtonUdp->labelcolor(FL_GRAY);
+			 resumeButtonUdp->labeltype(FL_SHADOW_LABEL);
+			 resumeButtonUdp->label("@+2>");
+			 resumeButtonUdp->callback(resume_button_udp_cb);
+			 resumeButtonUdp->deactivate();
 		     udpConnectionInfo = uTable->getUdpObject();
 
 			 numberOfUdpTableEntriesTextBoxLabel = new Fl_Box(400, 65, 100, 25);
@@ -227,6 +276,7 @@ void MyWindow::enterThread(void *p)
 void MyWindow::threadBody()
 {
 	while (true){
+		checkControlStatus();
 		setCurrentFirewallStatus();
 		getCurrentTCPTableInfo();
 		getCurrentUDPTableInfo();
@@ -248,6 +298,41 @@ MyWindow *MyWindow::getWindow()
 	return this;
 }
 
+void MyWindow::checkControlStatus()
+{
+	if (stopTcp == 1){
+		tcpConnectionInfo->stopUpdates();
+		stopButtonTcp->labelcolor(FL_GRAY);
+		stopButtonTcp->deactivate();
+		resumeButtonTcp->labelcolor(FL_GREEN);
+		resumeButtonTcp->activate();
+		stopTcp = 0;
+	}
+	if (startTcp == 1){
+		tcpConnectionInfo->startUpdates();
+		resumeButtonTcp->labelcolor(FL_GRAY);
+		resumeButtonTcp->deactivate();
+		stopButtonTcp->labelcolor(FL_RED);
+		stopButtonTcp->activate();
+		startTcp = 0;
+	}
+	if (stopUdp == 1){
+		udpConnectionInfo->stopUpdates();
+		stopButtonUdp->labelcolor(FL_GRAY);
+		stopButtonUdp->deactivate();
+		resumeButtonUdp->labelcolor(FL_GREEN);
+		resumeButtonUdp->activate();
+		stopUdp = 0;
+	}
+	if (startUdp == 1){
+		udpConnectionInfo->startUpdates();
+		resumeButtonUdp->labelcolor(FL_GRAY);
+		resumeButtonUdp->deactivate();
+		stopButtonUdp->labelcolor(FL_RED);
+		stopButtonUdp->activate();
+		startUdp = 0;
+	}
+}
 void redrawBoxes_cb(void *u)
 {
 	Fl::lock();
@@ -283,10 +368,26 @@ void MyWindow::rdnsThreadBody()
 	rTable->updateCells();
 	redrawRDNSTable = 1;
 }
-void button_cb(Fl_Widget *widget, void *u)
+void rdns_button_cb(Fl_Widget *widget, void *u)
 {
 	refreshButtonTextLabel->label("Refreshing...");
 	theWindow->startRDNSThread();
+}
+void stop_button_tcp_cb(Fl_Widget *widget, void *u)
+{
+	stopTcp = 1;
+}
+void resume_button_tcp_cb(Fl_Widget *widget, void *u)
+{
+	startTcp = 1;
+}
+void stop_button_udp_cb(Fl_Widget *widget, void *u)
+{
+	stopUdp = 1;
+}
+void resume_button_udp_cb(Fl_Widget *widget, void *u)
+{
+	startUdp = 1;
 }
 MyWindow::~MyWindow(){}
 
