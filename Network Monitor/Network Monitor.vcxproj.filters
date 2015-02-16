@@ -30,6 +30,9 @@
     <ClCompile Include="reverseDnsLookup.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BlacklistIpChecker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyWindow.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="reverseDnsLookup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BlacklistIpChecker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

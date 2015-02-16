@@ -14,6 +14,7 @@ void stop_button_tcp_cb(Fl_Widget *widget, void *u);
 void resume_button_tcp_cb(Fl_Widget *widget, void *u);
 void stop_button_udp_cb(Fl_Widget *widget, void *u);
 void resume_button_udp_cb(Fl_Widget *widget, void *u);
+void iplookup_button_cb(Fl_Widget *widget, void *u);
 
 using namespace std;
 
@@ -23,6 +24,7 @@ int stopTcp;
 int startTcp;
 int stopUdp;
 int startUdp;
+int startIpLookup;
 
 MyWindow *theWindow;
 TCPTable *table;
@@ -42,6 +44,7 @@ Fl_Button *stopButtonTcp;
 Fl_Button *resumeButtonTcp;
 Fl_Button *stopButtonUdp;
 Fl_Button *resumeButtonUdp;
+Fl_Button *ipLookupButton;
 
 Fl_Box *numberOfUdpTableEntriesTextBox;
 Fl_Box *numberOfDatagramsTextBox;
@@ -157,6 +160,13 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 resumeButtonTcp->label("@+2>");
 			 resumeButtonTcp->deactivate();
 			 resumeButtonTcp->callback(resume_button_tcp_cb);
+
+			 ipLookupButton = new Fl_Button(95, 420, 25, 25);
+			 ipLookupButton->labelcolor(FL_GRAY);
+			 ipLookupButton->labeltype(FL_SHADOW_LABEL);
+			 ipLookupButton->label("@+28>");
+			 ipLookupButton->deactivate();
+			 ipLookupButton->callback(iplookup_button_cb);
 
 			 tcpConnectionInfo = table->getTcpObject();
 
@@ -302,18 +312,24 @@ void MyWindow::checkControlStatus()
 {
 	if (stopTcp == 1){
 		tcpConnectionInfo->stopUpdates();
+		table->stopTableRefill();
 		stopButtonTcp->labelcolor(FL_GRAY);
 		stopButtonTcp->deactivate();
 		resumeButtonTcp->labelcolor(FL_GREEN);
 		resumeButtonTcp->activate();
+		ipLookupButton->labelcolor(FL_BLUE);
+		ipLookupButton->activate();
 		stopTcp = 0;
 	}
 	if (startTcp == 1){
+		table->startTableRefill();
 		tcpConnectionInfo->startUpdates();
 		resumeButtonTcp->labelcolor(FL_GRAY);
 		resumeButtonTcp->deactivate();
 		stopButtonTcp->labelcolor(FL_RED);
 		stopButtonTcp->activate();
+		ipLookupButton->labelcolor(FL_GRAY);
+		ipLookupButton->deactivate();
 		startTcp = 0;
 	}
 	if (stopUdp == 1){
@@ -331,6 +347,16 @@ void MyWindow::checkControlStatus()
 		stopButtonUdp->labelcolor(FL_RED);
 		stopButtonUdp->activate();
 		startUdp = 0;
+	}
+	if (startIpLookup == 1){
+		startIpLookup = 0;
+		table->stopTableRefill();
+		tcpConnectionInfo->stopUpdates();
+		resumeButtonTcp->labelcolor(FL_GRAY);
+		resumeButtonTcp->deactivate();
+		table->blacklistChecker();
+		resumeButtonTcp->labelcolor(FL_GREEN);
+		resumeButtonTcp->activate();		
 	}
 }
 void redrawBoxes_cb(void *u)
@@ -388,6 +414,10 @@ void stop_button_udp_cb(Fl_Widget *widget, void *u)
 void resume_button_udp_cb(Fl_Widget *widget, void *u)
 {
 	startUdp = 1;
+}
+void iplookup_button_cb(Fl_Widget *widget, void *u)
+{
+	startIpLookup = 1;
 }
 MyWindow::~MyWindow(){}
 

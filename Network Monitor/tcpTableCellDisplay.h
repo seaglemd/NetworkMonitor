@@ -13,6 +13,7 @@
 #include <string>
 
 #include "tcpTableAccess.h"
+#include "BlacklistIpChecker.h"
 
 #define MAX_ROWST 10
 #define MAX_COLST 3
@@ -27,7 +28,12 @@ public:
 		firstTime = 1;
 		tableSize = 0;
 		copyTableSize = 0;
+		haveStatusList = 0;
+		drawStatusList = 0;
+		ipStatusListSize = 0;
+		curDrawRow = 0;
 		tcpConnections = new TcpTableAccess();
+		blipl = new BlacklistIpChecker();
 		tcpList = tcpConnections->passTcpTable();
 		tableSize = tcpConnections->getTableSize();
 		fillDataArray();
@@ -55,6 +61,9 @@ public:
 	int TCPTable::getDataTableSize();
 	string **TCPTable::getTableCopy();
 	int TCPTable::getCopyTableSize();
+	void TCPTable::stopTableRefill();
+	void TCPTable::startTableRefill();
+	void TCPTable::blacklistChecker();
 	TCPTable::~TCPTable();
 private:
 	int firstTime;
@@ -62,10 +71,16 @@ private:
 	int copyTableSize;
 	int noDraw;
 	int noRefill;
+	int haveStatusList;
+	int drawStatusList;
+	int ipStatusListSize;
+	int curDrawRow;
+	int *ipStatusList;
 	string **data;  // data array for cells
 	string headings[MAX_COLST];
 	string **tcpList;
 	TcpTableAccess *tcpConnections;
+	BlacklistIpChecker *blipl;
 	void TCPTable::fillDataArray();
 	
 
@@ -81,7 +96,21 @@ private:
 		// Draw cell bg
 		fl_color(FL_WHITE); fl_rectf(X, Y, W, H);
 		// Draw cell data
-		fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+		if (haveStatusList == 1)
+		{
+			if (ipStatusList[curDrawRow] == 0){				
+				fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+			}
+			else if(ipStatusList[curDrawRow] == 1){
+				fl_color(FL_GREEN); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+			}
+			else if(ipStatusList[curDrawRow] == 2){
+				fl_color(FL_RED); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+			}
+		}
+		else if (haveStatusList == 0){
+			fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+		}
 		// Draw box border
 		fl_color(color()); fl_rect(X, Y, W, H);
 		fl_pop_clip();
@@ -102,8 +131,10 @@ private:
 			//DrawHeader(s, X, Y, W, H);
 			return;
 		case CONTEXT_CELL:
+			if (haveStatusList == 1)
+				curDrawRow = ROW;
 			if (ROW <= tableSize && noDraw == 0)
-				DrawData(data[ROW][COL].c_str(), X, Y, W, H);
+				DrawData(data[ROW][COL].c_str(), X, Y, W, H);			
 			return;
 		default:
 			return;
@@ -204,9 +235,31 @@ string **TCPTable::getTableCopy()
 
 	return listCopy;
 }
+
+void TCPTable::stopTableRefill()
+{
+	noRefill = 1;
+}
+
+void TCPTable::startTableRefill()
+{
+	noRefill = 0;
+	haveStatusList = 0;
+}
 int TCPTable::getCopyTableSize()
 {
 	return copyTableSize;
+}
+
+void TCPTable::blacklistChecker()
+{
+	getTableCopy();
+	blipl->getBlacklistResult(getTableCopy(), getCopyTableSize());
+	noRefill = 1;	
+	ipStatusList = blipl->getStatusList();
+	ipStatusListSize = blipl->getStatusListSize();
+	haveStatusList = 1;
+	noRefill = 1;
 }
 TCPTable::~TCPTable() { }
 
