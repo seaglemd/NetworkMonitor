@@ -28,7 +28,6 @@ public:
 		tableSize = 0;
 		curTable = nCurTable;
 		rDNS = new ReverseDnsLookup();
-		//updateCells();
 		
 		headings[0] = "Remote Host";
 
@@ -129,7 +128,6 @@ void RDNSTable::fillDataArray()
 	tcpListSize = curTable->getCopyTableSize();
 	data = rDNS->getHostList(tcpList, tcpListSize);
 	tableSize = rDNS->getTableSize();
-	//rows(tableSize);
 }
 
 void RDNSTable::redrawTable(RDNSTable *curTable)

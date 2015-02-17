@@ -20,7 +20,6 @@ BlacklistIpChecker::BlacklistIpChecker()
 
 void BlacklistIpChecker::getBlacklistResult(string **nTcpList, int nTcpListSize)
 {
-	cout << "in getBlacklistResult()" << endl;
 	string ip = "";
 	size_t found;
 
@@ -46,13 +45,10 @@ void BlacklistIpChecker::getBlacklistResult(string **nTcpList, int nTcpListSize)
 	curl_easy_setopt(curl, CURLOPT_URL, "http://www.projecthoneypot.org/account_login.php");
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
 	result = curl_easy_perform(curl);
-	cout << "hair!" << endl;
 	if(htmlReturned.find("Dashboard") != string::npos){
 		htmlReturned.clear();
-		cout << ipStatusListSize << endl;
 		for (int i = 0; i < ipStatusListSize; i++){
 			found =nTcpList[i][1].find(':');
-			cout << found << "heh" << endl;
 			if (string((nTcpList[i][1].substr(0, (found))).c_str()).compare(0, 1, "0") != 0 &&
 				string((nTcpList[i][1].substr(0, (found))).c_str()).compare(0, 3, "127") != 0 &&
 				string((nTcpList[i][1].substr(0, (found))).c_str()).compare(0, 3, "192") != 0 &&
@@ -82,7 +78,6 @@ void BlacklistIpChecker::getBlacklistResult(string **nTcpList, int nTcpListSize)
 			else
 			{
 				ipStatusList[i] = 0;
-				cout << i << endl;
 				htmlReturned.clear();
 			}			
 		}
@@ -91,7 +86,6 @@ void BlacklistIpChecker::getBlacklistResult(string **nTcpList, int nTcpListSize)
 	{
 		for (int i = 0; i < ipStatusListSize; i++)
 			ipStatusList[i] = 0;
-		cout << ":(" << endl;
 	}
 	htmlReturned.clear();
 	curl_easy_cleanup(curl);

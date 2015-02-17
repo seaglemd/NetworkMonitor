@@ -15,6 +15,7 @@ void resume_button_tcp_cb(Fl_Widget *widget, void *u);
 void stop_button_udp_cb(Fl_Widget *widget, void *u);
 void resume_button_udp_cb(Fl_Widget *widget, void *u);
 void iplookup_button_cb(Fl_Widget *widget, void *u);
+void event_cb(void*);
 
 using namespace std;
 
@@ -25,29 +26,22 @@ int startTcp;
 int stopUdp;
 int startUdp;
 int startIpLookup;
+int changeStopTcpLabel;
+int changeResumeTcpLabel;
+int changeIpLookupLabel;
+int changeRDNSLabel;
 
 MyWindow *theWindow;
 TCPTable *table;
 UDPTable *uTable;
 RDNSTable *rTable;
-
-Fl_Box *privateFirewallBox;
-Fl_Box *publicFirewallBox;
-Fl_Box *hostNameTextBox;
-Fl_Box *domainNameTextBox;
-Fl_Box *dnsServerListTextBox;
-Fl_Box *numberOfConnectionsTextBox;
 Fl_Box *refreshButtonTextLabel;
+Fl_Box *textStatusBox;
 
-Fl_Button *refreshButtonBox;
 Fl_Button *stopButtonTcp;
+Fl_Button *refreshButtonBox;
 Fl_Button *resumeButtonTcp;
-Fl_Button *stopButtonUdp;
-Fl_Button *resumeButtonUdp;
 Fl_Button *ipLookupButton;
-
-Fl_Box *numberOfUdpTableEntriesTextBox;
-Fl_Box *numberOfDatagramsTextBox;
 
 
 class MyWindow : public Fl_Double_Window
@@ -66,9 +60,16 @@ class MyWindow : public Fl_Double_Window
 		Fl_Group *tabSectionTCPTable;
 		Fl_Group *tabSectionUDPTable;
 
+		Fl_Box *hostNameTextBox;
+		Fl_Box *domainNameTextBox;
+		Fl_Box *dnsServerListTextBox;
+		Fl_Box *numberOfConnectionsTextBox;
+
 		/*
 		Text and image boxes for firewall
 		*/
+		Fl_Box *privateFirewallBox;
+		Fl_Box *publicFirewallBox;
 		Fl_Box *privateFirewallTextBox;
 		Fl_Box *publicFirewallTextBox;
 		
@@ -87,12 +88,22 @@ class MyWindow : public Fl_Double_Window
 		Fl_Box *numberOfUdpTableEntriesTextBoxLabel;
 		Fl_Box *numberOfDatagramsTextBoxLabel;
 
+		Fl_Box *numberOfUdpTableEntriesTextBox;
+		Fl_Box *numberOfDatagramsTextBox;
+
+		/*
+		Text Box for Status
+		*/
+		
 		/*
 		Images
 		*/
 		Fl_PNG_Image *firewallOn;
 		Fl_PNG_Image *firewallOff;
-		Fl_PNG_Image *refreshImage;
+		Fl_PNG_Image *refreshImage;		
+
+		Fl_Button *stopButtonUdp;
+		Fl_Button *resumeButtonUdp;		
 		
 		//Firewall class
 		WFStatus *firewallStatus;
@@ -128,6 +139,10 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	stopUdp = 0;
 	startUdp = 0;
 	redrawRDNSTable = 0;
+	changeStopTcpLabel = 0;
+	changeResumeTcpLabel = 0;
+	changeIpLookupLabel = 0;
+	changeRDNSLabel = 0;
 	firewallStatus = new WFStatus();
 	firewallOn = new Fl_PNG_Image("fWOn.png");
 	firewallOff = new Fl_PNG_Image("fwoff.png");
@@ -203,6 +218,11 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 refreshButtonTextLabel = new Fl_Box(775, 420, 40, 25);
 			 refreshButtonTextLabel->label("");
 
+			 textStatusBox = new Fl_Box(35, 450, 450, 25);
+			 textStatusBox->box(FL_DOWN_BOX);
+			 textStatusBox->align(FL_ALIGN_INSIDE);
+			 textStatusBox->label("");
+
 	      tabSectionTCPTable->end();
 		  tabSectionUDPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "UDP Table");
 		     uTable = new UDPTable(35, 65, 365, 350);
@@ -241,6 +261,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	this->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(101)));
 	show();
 	theWindow = this;
+	Fl::add_check(event_cb);
 	startThread();
 }
 
@@ -358,6 +379,38 @@ void MyWindow::checkControlStatus()
 		resumeButtonTcp->labelcolor(FL_GREEN);
 		resumeButtonTcp->activate();		
 	}
+	if (changeStopTcpLabel == 1){
+		textStatusBox->label("Stops Watching for TCP table updates.");
+		changeStopTcpLabel = 0;
+	}
+	if (changeStopTcpLabel == 2){
+		textStatusBox->label("");
+		changeStopTcpLabel = 0;
+	}
+	if (changeResumeTcpLabel == 1){
+		textStatusBox->label("Begins watching for TCP table updates.");
+		changeResumeTcpLabel = 0;
+	}
+	if (changeResumeTcpLabel == 2){
+		textStatusBox->label("");
+		changeResumeTcpLabel = 0;
+	}
+	if (changeIpLookupLabel == 1){
+		textStatusBox->label("Begins lookup of IP's for blacklistings.");
+		changeIpLookupLabel = 0;
+	}
+	if (changeIpLookupLabel == 2){
+		textStatusBox->label("");
+		changeIpLookupLabel = 0;
+	}
+	if (changeRDNSLabel == 1){
+		textStatusBox->label("Begins reverse dns lookup from a snapshot of the current TCP table.");
+		changeRDNSLabel = 0;
+	}
+	if (changeRDNSLabel == 2){
+		textStatusBox->label("");
+		changeRDNSLabel = 0;
+	}
 }
 void redrawBoxes_cb(void *u)
 {
@@ -418,6 +471,45 @@ void resume_button_udp_cb(Fl_Widget *widget, void *u)
 void iplookup_button_cb(Fl_Widget *widget, void *u)
 {
 	startIpLookup = 1;
+}
+void event_cb(void*)
+{
+	if (Fl::event_inside(stopButtonTcp) != 0){
+		changeStopTcpLabel = 1;
+	}
+	if (Fl::event_inside(stopButtonTcp) == 0
+		&& Fl::event_inside(resumeButtonTcp) == 0
+		&& Fl::event_inside(ipLookupButton) == 0
+		&& Fl::event_inside(refreshButtonBox) == 0){
+		changeStopTcpLabel = 2;
+	}
+	if (Fl::event_inside(resumeButtonTcp) != 0){
+		changeResumeTcpLabel = 1;
+	}
+	if (Fl::event_inside(resumeButtonTcp) == 0
+		&& Fl::event_inside(stopButtonTcp) == 0
+		&& Fl::event_inside(ipLookupButton) == 0
+		&& Fl::event_inside(refreshButtonBox) == 0){
+		changeResumeTcpLabel = 2;
+	}
+	if (Fl::event_inside(ipLookupButton) != 0){
+		changeIpLookupLabel = 1;
+	}
+	if (Fl::event_inside(ipLookupButton) == 0
+		&& Fl::event_inside(stopButtonTcp) == 0
+		&& Fl::event_inside(resumeButtonTcp) == 0
+		&& Fl::event_inside(refreshButtonBox) == 0){
+		changeIpLookupLabel = 2;
+	}
+	if (Fl::event_inside(refreshButtonBox) != 0){
+		changeRDNSLabel = 1;
+	}
+	if (Fl::event_inside(refreshButtonBox) == 0
+		&& Fl::event_inside(ipLookupButton) == 0
+		&& Fl::event_inside(stopButtonTcp) == 0
+		&& Fl::event_inside(resumeButtonTcp) == 0){
+		changeRDNSLabel = 2;
+	}
 }
 MyWindow::~MyWindow(){}
 
