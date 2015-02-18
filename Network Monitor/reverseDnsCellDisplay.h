@@ -1,3 +1,7 @@
+/*****************************************************************
+*Sets up the table for the reverse dns lookups that take place   *
+*and displays the information                                    *
+*****************************************************************/
 #ifndef REVERSEDNSCELLDISPLAY_H
 #define REVERSEDNSCELLDISPLAY_H
 #define WIN32_LEAN_AND_MEAN
@@ -18,16 +22,16 @@
 #define MAX_COLSR 1
 
 using namespace std;
-
+//Extending Fl_Table is how tables are made in FLTK
 class RDNSTable : public Fl_Table
 {
-
 public:
+	//inline constructor declartion is typcal for inherited classes in this way
 	RDNSTable::RDNSTable(TCPTable *nCurTable, int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L){
 		firstTime = 1;
 		tableSize = 0;
-		curTable = nCurTable;
-		rDNS = new ReverseDnsLookup();
+		curTable = nCurTable; //current table reference for moving out of local scope
+		rDNS = new ReverseDnsLookup();//creates a rdns object
 		
 		headings[0] = "Remote Host";
 
@@ -42,23 +46,23 @@ public:
 		col_resize(1);              // enable column resizing
 		end();                        // end the Fl_Table group
 	};
-	void RDNSTable::updateCells();
-	void RDNSTable::redrawTable(RDNSTable *curTable);
-	int RDNSTable::getTableSize();
+	void RDNSTable::updateCells(); //will update the cells usually by filling the array
+	void RDNSTable::redrawTable(RDNSTable *curTable); //tells the table to redraw
+	int RDNSTable::getTableSize(); //returns the size of the table
 	RDNSTable::~RDNSTable();
 private:
-	int firstTime;
-	int tableSize;
-	int tcpListSize;
-	int noDraw;
+	int firstTime; //checks to know if this is the first time all this is happening
+	int tableSize; //size of table
+	int tcpListSize; //list size of the tcp table
+	int noDraw; //guards for not drawing during array fill (reading/writing at the same time is bad)
 	string *data;  // data array for cells
 	string headings[MAX_COLSR];
 	string **tcpList;
 	TCPTable *curTable;
 	ReverseDnsLookup *rDNS;
-	void RDNSTable::waitForData();
-	void RDNSTable::fillDataArray();
-
+	void RDNSTable::waitForData(); //used for calling the fill functions
+	void RDNSTable::fillDataArray(); //fills the array so the data can be drawn
+	//table header, inline as normal
 	void RDNSTable::DrawHeader(const char *s, int X, int Y, int W, int H){
 		fl_push_clip(X, Y, W, H);
 		fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
@@ -66,6 +70,7 @@ private:
 		fl_draw(s, X, Y, W, H, FL_ALIGN_LEFT);
 		fl_pop_clip();
 	}
+	//draws a cell's data, inline as normal
 	void RDNSTable::DrawData(const char *s, int X, int Y, int W, int H) {
 		fl_push_clip(X, Y, W, H);
 		// Draw cell bg
@@ -76,6 +81,7 @@ private:
 		fl_color(color()); fl_rect(X, Y, W, H);
 		fl_pop_clip();
 	}
+	//for drawing the cells, inline as normal
 	void RDNSTable::draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0){
 		Fl::lock();
 		static char s[40];
@@ -92,7 +98,7 @@ private:
 			//DrawHeader(s, X, Y, W, H);
 			return;
 		case CONTEXT_CELL:
-			if (ROW <= tableSize && noDraw == 0)
+			if (ROW <= tableSize && noDraw == 0) //very important drawing when the array is being written to.
 				DrawData(data[ROW].c_str(), X, Y, W, H);
 			return;
 		default:
@@ -102,41 +108,40 @@ private:
 		Fl::unlock();
 		return;
 	}
-
-
 };
-
+//Update cells locks the array from being drawn
 void RDNSTable::updateCells()
 {
 	noDraw = 1;
 	waitForData();
 	noDraw = 0;
 }
+//for filling the array with rdns data
 void RDNSTable::waitForData()
 {
 	int haveData = 0;
-	while (haveData == 0)
-	{
+	while (haveData == 0){
 			fillDataArray();
 			haveData = 1;
 		
 	}
 }
+//fills the array to be drawn with the dns server names
 void RDNSTable::fillDataArray()
 {
-	tcpList = curTable->getTableCopy();
-	tcpListSize = curTable->getCopyTableSize();
-	data = rDNS->getHostList(tcpList, tcpListSize);
-	tableSize = rDNS->getTableSize();
+	tcpList = curTable->getTableCopy(); //gets an actual copy of the tcparray
+	tcpListSize = curTable->getCopyTableSize(); //gets the size of the tcp list that was copied
+	data = rDNS->getHostList(tcpList, tcpListSize); //sends this list and its size to the ReverseDNS object
+	tableSize = rDNS->getTableSize(); //gets the size of the reverse dns array that was computed in previous function
 }
-
+//redraws the RDNS table
 void RDNSTable::redrawTable(RDNSTable *curTable)
 { 
 	int tempzero = 0;
 	rows(tempzero); //to force a redraw from rows table size needs to change
 	rows(tableSize);
 }
-
+//deconstructor
 RDNSTable::~RDNSTable() { }
 
 #endif
