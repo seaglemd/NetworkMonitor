@@ -14,10 +14,10 @@ using namespace std;
 
 /*
  *accesses the connections in the tcp table
- *many of the connections are local ones and because of that
- * the address shows up as all zeros
+ *many of the connections are local open ones and because of that
+ * some of the address show up as all zeros
  */
-
+//Default constructor which initializes everything and starts the thread
 TcpTableAccess::TcpTableAccess()
 {
 	for (int i = 0; i < 13; i++){
@@ -53,7 +53,7 @@ void TcpTableAccess::getNetworkParameters()
         if (pFixedInfo)
             free(pFixedInfo);
     }
-
+	//placed in variables for useful retrieval
     hostName = pFixedInfo->HostName;
     domainName = pFixedInfo->DomainName;
     dnsServerList = pFixedInfo->DnsServerList.IpAddress.String;
@@ -112,25 +112,23 @@ void TcpTableAccess::getTcpTable()
 		// the actual data we require
 
 		if ((dwRetVal = GetTcpTable(pTcpTable, &dwSize, TRUE)) == NO_ERROR) {			
-			if (tcpTableEntryCount > 0){
+			if (tcpTableEntryCount > 0){ //cleans up from repeated calls
 				for (int i = 0; i < tcpTableEntryCount; i++){
 					delete[]tcpConnectionList[i];
 				}
 				delete[]tcpConnectionList;
 			}
-
+			//number of entries
 			tcpTableEntryCount = (int)pTcpTable->dwNumEntries;
 			tcpConnectionList = new string *[tcpTableEntryCount];
 			for (int i = 0; i < tcpTableEntryCount; i++){
 				tcpConnectionList[i] = new string[3];
 			}
 			for (int i = 0; i < tcpTableEntryCount; i++) {
-				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;
-				//strcpy_s(szLocalAddr, sizeof(szLocalAddr), inet_ntoa(IpAddr)); //local address
+				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;//local address info
 				inet_ntop(2, &IpAddr, (PSTR)szLocalAddr, sizeof(szLocalAddr));
-				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr;
+				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr; //remote address info
 				inet_ntop(2, &IpAddr, (PSTR)szRemoteAddr, sizeof(szRemoteAddr));
-				//strcpy_s(szRemoteAddr, sizeof(szRemoteAddr), inet_ntoa(IpAddr)); //remote address
 
 				switch (pTcpTable->table[i].dwState) { //switch statement gets state of connection
 				case MIB_TCP_STATE_CLOSED:
@@ -213,11 +211,11 @@ void TcpTableAccess::getTcpTable()
 			free(pTcpTable);
 			pTcpTable = NULL;
 		}
-		
+		//this code checks to see if any of the data has changed which will then 
+		//trigger the data state to inform there is new data to be drawn
 		for (int z = 0; z < 13; z++){
 			if (lCurrentConnectionStatusNums[z] != currentConnectionStatusNums[z]){
 				changeTheDataState = 1;
-				numoftimes++;
 				currentConnectionStatusNums[z] = lCurrentConnectionStatusNums[z];
 			}
 		}
@@ -227,42 +225,40 @@ void TcpTableAccess::getTcpTable()
 		}
 		if (consChanged == 1){
 			dataState = 1;
-			numoftimes++;
 			curTcpTableEntryCount = tcpTableEntryCount;
 			consChanged = 0;
 		}
 	}
 }
-
-
-
+//returns host name
 const char *TcpTableAccess::getHostName()
 {
 	getNetworkParameters();
 	return hostName.c_str();
 }
-
+//returns domain name
 const char *TcpTableAccess::getDomainName() {
 	getNetworkParameters();
 	return domainName.c_str();
 }
-
+//returns the dns server
 const char *TcpTableAccess::getDnsServerList() {
 	getNetworkParameters();
 	return dnsServerList.c_str();
 }
-
+//returns the number of connections
 const char *TcpTableAccess::getNumberOfConnections() {
 	numberOfConnections = "";
 	numberOfConnections += to_string(numofcon);
 
 	return numberOfConnections.c_str();
 }
-
+//returns the size of the table
 int TcpTableAccess::getTableSize()
 {
 	return curTcpTableEntryCount;
 }
+//returns the list if there is new data else returns an empty list (protection from read/write combo errors
 string **TcpTableAccess::passTcpTable()
 {
 	if (dataState == 1)
@@ -279,38 +275,39 @@ string **TcpTableAccess::passTcpTable()
 	}
 		
 }
-
+//starts the thread
 void TcpTableAccess::startThread()
 {
 	_beginthread(TcpTableAccess::enterThread, 0, this);
 }
-
+//now from a next context
 void TcpTableAccess::enterThread(void *p)
 {
 	((TcpTableAccess *)p)->threadBody();
 	_endthread();
 	return;
 }
-
+//goes until the thread is told to stop
 void TcpTableAccess::threadBody()
 {
 	while (stop == 0){
 		getTcpTable();
 	}
 }
-
+//after data is processed for display we can tell it to resume looking for new data
 void TcpTableAccess::setDataState(int nDataState){
 	dataState = nDataState;
 }
-
+//for checking if new data should be displayed
 int TcpTableAccess::getDataState(){
 	return dataState;
 }
-
+//sets the stop variable so the thread will stop
 void TcpTableAccess::stopUpdates()
 {
 	stop = 1;
 }
+//starts the thread again
 void TcpTableAccess::startUpdates()
 {
 	stop = 0;
