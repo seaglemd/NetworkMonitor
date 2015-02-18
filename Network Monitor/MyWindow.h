@@ -1,3 +1,7 @@
+/******************************************************************
+*Main window and essetial hub for making the program a cohesive   *
+*working unit.                                                    *
+******************************************************************/
 #ifndef MYWINDOW_H
 #define MYWINDOW_H
 
