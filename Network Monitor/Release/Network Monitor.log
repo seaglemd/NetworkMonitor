@@ -1,6 +1,9 @@
-﻿Build started 2/16/2015 8:19:06 PM.
+﻿Build started 2/17/2015 7:33:15 PM.
      1>Project "C:\Users\Matt\Desktop\NSM\NetworkMonitor\Network Monitor\Network Monitor.vcxproj" on node 2 (Build target(s)).
-     1>Link:
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         main.cpp
+       Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\Network Monitor.exe" /INCREMENTAL:NO /NOLOGO fltk.lib fltkimages.lib fltkjpeg.lib fltkpng.lib fltkzlib.lib curllib.lib curllib_static.lib libcurl_imp.lib libeay32.lib openldap.lib ssleay32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\Network Monitor.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\Network Monitor.lib" /MACHINE:X86 /SAFESEH "Release\Network Monitor.res"
          Release\BlacklistIpChecker.obj
          Release\main.obj
@@ -111,4 +114,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.10
+Time Elapsed 00:00:02.29

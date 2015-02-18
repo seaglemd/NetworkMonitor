@@ -1,13 +1,14 @@
 #ifndef MYWINDOW_H
 #define MYWINDOW_H
 
+//includes for various tasks the program runs
 #include "wfStatusAccess.h"
 #include "tcpTableCellDisplay.h"
 #include "reverseDnsCellDisplay.h"
 #include "udpTableCellDisplay.h"
 
-
-class MyWindow;
+//Forward declarations for FLTK callbacks and the main class
+class MyWindow; 
 void redrawBoxes_cb(void *u);
 void rdns_button_cb(Fl_Widget *widget, void *u);
 void stop_button_tcp_cb(Fl_Widget *widget, void *u);
@@ -17,40 +18,53 @@ void resume_button_udp_cb(Fl_Widget *widget, void *u);
 void iplookup_button_cb(Fl_Widget *widget, void *u);
 void event_cb(void*);
 
+//because no one really actually enjoys writing std:: before everything
 using namespace std;
-
-int redrawRDNSTable;
-int button = 0;
-int stopTcp;
+/*************************************************
+*global variables used for callback/gui control  *
+*************************************************/
+int redrawRDNSTable; //triggered when the rds table should be drawn/redrawn
+//triggers the start and stop of the TCP thread
+int stopTcp;  
 int startTcp;
+//triggers the start and stop of the UDP thread
 int stopUdp;
 int startUdp;
+//to trigger the start of good/bad/blacklisted ips
 int startIpLookup;
+//triggers change in status text for in gui information
 int changeStopTcpLabel;
 int changeResumeTcpLabel;
 int changeIpLookupLabel;
 int changeRDNSLabel;
 
+//These objects must all be referenced outside of the main class, including the
+//main window class itself in order to be redrawn properly from child to main
+//threads
 MyWindow *theWindow;
 TCPTable *table;
 UDPTable *uTable;
 RDNSTable *rTable;
+//status text bar/text
 Fl_Box *refreshButtonTextLabel;
 Fl_Box *textStatusBox;
-
+//buttons used in callbacks to status text
 Fl_Button *stopButtonTcp;
-Fl_Button *refreshButtonBox;
 Fl_Button *resumeButtonTcp;
+Fl_Button *stopButtonUdp; //UDP here for future implementation
+Fl_Button *resumeButtonUdp;
+Fl_Button *refreshButtonBox;
 Fl_Button *ipLookupButton;
 
-
+/**********************************************
+*MyWindow extends/inherits Fl_Double_Window   *
+**********************************************/
 class MyWindow : public Fl_Double_Window
 {
 	public:
 		MyWindow(int w, int h, const char* title);
-		void MyWindow::startRDNSThread();
+		void MyWindow::startRDNSThread(); //Starts the thread for reverse DNS lookups
 		~MyWindow();
-		int refreshCount = 0;
 	private:
 		/*
 		Tab group setup and tab sections setup
@@ -58,54 +72,39 @@ class MyWindow : public Fl_Double_Window
 		Fl_Tabs *tabGroup;
 		Fl_Group *tabSectionFirewall;
 		Fl_Group *tabSectionTCPTable;
-		Fl_Group *tabSectionUDPTable;
-
-		Fl_Box *hostNameTextBox;
-		Fl_Box *domainNameTextBox;
-		Fl_Box *dnsServerListTextBox;
-		Fl_Box *numberOfConnectionsTextBox;
-
+		Fl_Group *tabSectionUDPTable;		
 		/*
 		Text and image boxes for firewall
 		*/
 		Fl_Box *privateFirewallBox;
 		Fl_Box *publicFirewallBox;
 		Fl_Box *privateFirewallTextBox;
-		Fl_Box *publicFirewallTextBox;
-		
+		Fl_Box *publicFirewallTextBox;		
 		/*
-		Text boxes for TCP Table information
+		Boxes for labels and results
 		*/
 		Fl_Box *hostNameTextBoxLabel;
-
+		Fl_Box *hostNameTextBox;
 		Fl_Box *domainNameTextBoxLabel;
-
+		Fl_Box *domainNameTextBox;
 		Fl_Box *dnsServerListTextBoxLabel;
+		Fl_Box *dnsServerListTextBox;
 		Fl_Box *numberOfConnectionsTextBoxLabel;
+		Fl_Box *numberOfConnectionsTextBox;
 		/*
-		Text boxes for UDP Table information
+		Boxes for labels and results
 		*/
 		Fl_Box *numberOfUdpTableEntriesTextBoxLabel;
 		Fl_Box *numberOfDatagramsTextBoxLabel;
-
 		Fl_Box *numberOfUdpTableEntriesTextBox;
 		Fl_Box *numberOfDatagramsTextBox;
-
 		/*
-		Text Box for Status
-		*/
-		
-		/*
-		Images
+		Images used in display
 		*/
 		Fl_PNG_Image *firewallOn;
 		Fl_PNG_Image *firewallOff;
 		Fl_PNG_Image *refreshImage;		
-
-		Fl_Button *stopButtonUdp;
-		Fl_Button *resumeButtonUdp;		
-		
-		//Firewall class
+		//Firewall object pointer
 		WFStatus *firewallStatus;
 		//Connection information
 		TcpTableAccess *tcpConnectionInfo;
@@ -114,26 +113,25 @@ class MyWindow : public Fl_Double_Window
 		void MyWindow::startThread();
 		void MyWindow::threadBody();		
 		static void enterThread(void *p);
-		//reverse dns thread
-		//reverse dns has it's own thread because of conflicts
-		//with the time it takes to get the results and 
-		//the speed at which the ui should react.
-		
+		/*
+		Reverse dns thread.
+		Reverse dns has it's own thread because of conflicts
+		with the time it takes to get the results and
+		the speed at which the ui should react.
+		*/				
 		void MyWindow::rdnsThreadBody();
 		static void enterRDNSThread(void *p);
 		
-		MyWindow *MyWindow::getWindow();
-		void MyWindow::checkControlStatus();
-		void MyWindow::setCurrentFirewallStatus();
-		void MyWindow::getCurrentTCPTableInfo();
-		void MyWindow::getCurrentUDPTableInfo();
-
-		void MyWindow::initializeObjects();
-
+		MyWindow *MyWindow::getWindow(); //returns the MyWindow object, useful for redraws in global scope
+		void MyWindow::checkControlStatus(); //function which monitors button callback and status bar info
+		void MyWindow::setCurrentFirewallStatus(); //sets the display to the current firewall status
+		void MyWindow::getCurrentTCPTableInfo();//gets the TCPTable information
+		void MyWindow::getCurrentUDPTableInfo();//gets the UDPTable information
 };
 
 MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title)
 {
+	//global variable initialization
 	stopTcp = 0;
 	startTcp = 0;
 	stopUdp = 0;
@@ -143,15 +141,15 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	changeResumeTcpLabel = 0;
 	changeIpLookupLabel = 0;
 	changeRDNSLabel = 0;
-	firewallStatus = new WFStatus();
-	firewallOn = new Fl_PNG_Image("fWOn.png");
+	firewallStatus = new WFStatus(); //firewall status object created
+	firewallOn = new Fl_PNG_Image("fWOn.png"); //images assigned
 	firewallOff = new Fl_PNG_Image("fwoff.png");
 	refreshImage = new Fl_PNG_Image("refresh.png");
-	begin();
+	begin(); //starts the window layout
 	
-	   tabGroup = new Fl_Tabs(10, 10, 900 - 20, 500 - 20);
-	      tabSectionFirewall = new Fl_Group(30, 55, 900 - 20, 500 - 45, "Firewall");
-		  
+	   tabGroup = new Fl_Tabs(10, 10, 900 - 20, 500 - 20); //starts tab layout
+	      tabSectionFirewall = new Fl_Group(30, 55, 900 - 20, 500 - 45, "Firewall"); //starts firewall tab
+			 //boxes are initially drawn
 		     publicFirewallTextBox = new Fl_Box(50,70,75,25);
 		     publicFirewallTextBox->label("Public Firewall Status: ");
 		     privateFirewallTextBox = new Fl_Box(50,135,75,25);
@@ -159,10 +157,12 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 		     publicFirewallBox = new Fl_Box(150, 35, 100, 100);
 	         privateFirewallBox = new Fl_Box(150, 100, 100, 100);	         
 
-	      tabSectionFirewall->end();
-	      tabSectionTCPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "TCP Table");
-		     table = new TCPTable(35, 65, 535, 350);
-
+	      tabSectionFirewall->end(); //ends firewall tab
+	      tabSectionTCPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "TCP Table"); //starts TCP Tab
+		     table = new TCPTable(35, 65, 535, 350); //calls display/retrieval of the TCP table
+			 rTable = new RDNSTable(table, 600, 200, 270, 215); //starts the table for RDNS lookups
+			 tcpConnectionInfo = table->getTcpObject(); //gets the tcp connection info
+			 //buttons placed and initial states decided
 			 stopButtonTcp = new Fl_Button(35, 420, 25, 25);
 			 stopButtonTcp->labelcolor(FL_RED);
 			 stopButtonTcp->labeltype(FL_SHADOW_LABEL);
@@ -183,10 +183,10 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 ipLookupButton->deactivate();
 			 ipLookupButton->callback(iplookup_button_cb);
 
-			 tcpConnectionInfo = table->getTcpObject();
-
-
-			 rTable = new RDNSTable(table, 600, 200, 270, 215);
+			 refreshButtonBox = new Fl_Button(845, 420, 25, 25);
+			 refreshButtonBox->image(refreshImage);
+			 refreshButtonBox->callback(rdns_button_cb);
+			 //labels for information and results placed
 			 hostNameTextBoxLabel = new Fl_Box(600, 65, 100, 25);
 			 hostNameTextBoxLabel->label("Host Name: ");
 			 hostNameTextBox = new Fl_Box(700, 65, 150, 25);
@@ -210,23 +210,19 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 numberOfConnectionsTextBox = new Fl_Box(700, 170, 75, 25);
 			 numberOfConnectionsTextBox->box(FL_DOWN_BOX);
 			 numberOfConnectionsTextBox->label("Pending...");
-
-			 refreshButtonBox = new Fl_Button(845, 420, 25, 25);
-			 refreshButtonBox->image(refreshImage);
-			 refreshButtonBox->callback(rdns_button_cb);
-
+			 //shows status of reverse dns lookup (can take a while depending on connection #)
 			 refreshButtonTextLabel = new Fl_Box(775, 420, 40, 25);
 			 refreshButtonTextLabel->label("");
-
+			 //status bar
 			 textStatusBox = new Fl_Box(35, 450, 450, 25);
 			 textStatusBox->box(FL_DOWN_BOX);
 			 textStatusBox->align(FL_ALIGN_INSIDE);
 			 textStatusBox->label("");
-
-	      tabSectionTCPTable->end();
-		  tabSectionUDPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "UDP Table");
-		     uTable = new UDPTable(35, 65, 365, 350);
-
+	      tabSectionTCPTable->end();//ends TCP Table tab
+		  tabSectionUDPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "UDP Table");//starts UDP Table tab
+		     uTable = new UDPTable(35, 65, 365, 350);//calls display/retrieval of the UDP table
+			 udpConnectionInfo = uTable->getUdpObject();//gets the udp connection info
+			 //buttons placed and initial states decided
 			 stopButtonUdp = new Fl_Button(35, 420, 25, 25);
 			 stopButtonUdp->labelcolor(FL_RED);
 			 stopButtonUdp->labeltype(FL_SHADOW_LABEL);
@@ -239,8 +235,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 resumeButtonUdp->label("@+2>");
 			 resumeButtonUdp->callback(resume_button_udp_cb);
 			 resumeButtonUdp->deactivate();
-		     udpConnectionInfo = uTable->getUdpObject();
-
+			 //labels for information and results placed
 			 numberOfUdpTableEntriesTextBoxLabel = new Fl_Box(400, 65, 100, 25);
 			 numberOfUdpTableEntriesTextBoxLabel->label("Udp Entries: ");
 			 numberOfUdpTableEntriesTextBox = new Fl_Box(500, 65, 50, 25);
@@ -252,19 +247,18 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 		     numberOfDatagramsTextBox = new Fl_Box(500, 100, 75, 25);
 		     numberOfDatagramsTextBox->box(FL_DOWN_BOX);
 		     numberOfDatagramsTextBox->label("Pending...");
-
-		  tabSectionUDPTable->end();
-	   tabGroup->end();
-	end();
-	setCurrentFirewallStatus();
-	resizable(this);
-	this->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(101)));
-	show();
-	theWindow = this;
-	Fl::add_check(event_cb);
-	startThread();
+		  tabSectionUDPTable->end();//end of the udp tab
+	   tabGroup->end();//end of tabs
+	end();//end of MyWindow layout
+	setCurrentFirewallStatus(); //sets the proper images according to firewall status
+	resizable(this); //says the window can be resized
+	this->icon((char*)LoadIcon(fl_display, MAKEINTRESOURCE(101))); //assigns window icon from resource 
+	show(); //MyWindow is shown
+	theWindow = this;//sets global variable to this for outside class reference
+	Fl::add_check(event_cb);//starts callback for event checking such as mouseovers/status etc
+	startThread(); //starts the thread to check for updates that should be processed in the main thread
 }
-
+//Assignes proper images for firewall
 void MyWindow::setCurrentFirewallStatus() 
 {
 	if (!firewallStatus->getPrivateProfile())
@@ -277,7 +271,7 @@ void MyWindow::setCurrentFirewallStatus()
 	else
 		publicFirewallBox->image(firewallOn);
 }
-
+//gets the current TCP/connection information
 void MyWindow::getCurrentTCPTableInfo() 
 {
 		hostNameTextBox->label(tcpConnectionInfo->getHostName());
@@ -285,25 +279,25 @@ void MyWindow::getCurrentTCPTableInfo()
 		dnsServerListTextBox->label(tcpConnectionInfo->getDnsServerList());
 		numberOfConnectionsTextBox->label(tcpConnectionInfo->getNumberOfConnections());
 }
-
+//gets the udp table information
 void MyWindow::getCurrentUDPTableInfo() 
 {
 	numberOfUdpTableEntriesTextBox->label(udpConnectionInfo->getDisplayedTableSize());
 	numberOfDatagramsTextBox->label(udpConnectionInfo->getDatagrams());
 }
-
+//start of thread
 void MyWindow::startThread()
 {
 	_beginthread(MyWindow::enterThread, 0, this);
 }
-
+//needs to be from out of conext to run another thread
 void MyWindow::enterThread(void *p)
 {
 	((MyWindow *)p)->threadBody();
 	_endthread();
 	return;
 }
-
+//thread runs forever and checks for information changes and asks for appropriate redraws
 void MyWindow::threadBody()
 {
 	while (true){
@@ -320,15 +314,15 @@ void MyWindow::threadBody()
 			udpConnectionInfo->setDataState(0);
 		}
 		Fl::awake();
-		Fl::awake(redrawBoxes_cb);
+		Fl::awake(redrawBoxes_cb);//tells the gui to queue for new redraw events
 	}
 }
-
+//returns the MyWindow object that was created upon startup
 MyWindow *MyWindow::getWindow()
 {
 	return this;
 }
-
+//function controls status of buttons, what has been clicked, and status bar text
 void MyWindow::checkControlStatus()
 {
 	if (stopTcp == 1){
@@ -412,6 +406,7 @@ void MyWindow::checkControlStatus()
 		changeRDNSLabel = 0;
 	}
 }
+//function in the main thread which redraws everything based on certain perameters
 void redrawBoxes_cb(void *u)
 {
 	Fl::lock();
@@ -427,51 +422,56 @@ void redrawBoxes_cb(void *u)
 	Fl::unlock();
 	Fl::awake();
 }
-
-
-
+//seperate thread for reverse dns lookups
 void MyWindow::startRDNSThread()
 {
 	_beginthread(MyWindow::enterRDNSThread, 0, this);
 }
-
+//tells it to enter from the new context
 void MyWindow::enterRDNSThread(void *p)
 {
 	((MyWindow *)p)->rdnsThreadBody();
 	_endthread();
 	return;
 }
-
+//tells the rdns class to update the cells and sets variable to trigger for RDNSTable redraw
 void MyWindow::rdnsThreadBody()
 {
 	rTable->updateCells();
 	redrawRDNSTable = 1;
 }
+//watches to start the rdns lookup
 void rdns_button_cb(Fl_Widget *widget, void *u)
 {
 	refreshButtonTextLabel->label("Refreshing...");
 	theWindow->startRDNSThread();
 }
+//tcp stop button callback
 void stop_button_tcp_cb(Fl_Widget *widget, void *u)
 {
 	stopTcp = 1;
 }
+//tcp resume button callback
 void resume_button_tcp_cb(Fl_Widget *widget, void *u)
 {
 	startTcp = 1;
 }
+//udp stop button callback
 void stop_button_udp_cb(Fl_Widget *widget, void *u)
 {
 	stopUdp = 1;
 }
+//udp resume button callback
 void resume_button_udp_cb(Fl_Widget *widget, void *u)
 {
 	startUdp = 1;
 }
+//callback for triggering iplookup
 void iplookup_button_cb(Fl_Widget *widget, void *u)
 {
 	startIpLookup = 1;
 }
+//checks for mouseover events to display the prper status text
 void event_cb(void*)
 {
 	if (Fl::event_inside(stopButtonTcp) != 0){
@@ -511,6 +511,7 @@ void event_cb(void*)
 		changeRDNSLabel = 2;
 	}
 }
+//deconstructor
 MyWindow::~MyWindow(){}
 
 #endif
