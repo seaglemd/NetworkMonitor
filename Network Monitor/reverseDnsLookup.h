@@ -1,3 +1,7 @@
+/*******************************************************************
+*This class performce a reverse DNS lookup to try and retrieve an  *
+*actual server name from the TCP connections on this computer      *
+*******************************************************************/
 #ifndef REVERSEDNSLOOKUP_H
 #define REVERSEDNSLOOKUP_H
 #define WIN32_LEAN_AND_MEAN
@@ -15,7 +19,6 @@
 #include <mutex>
 #include <thread>
 
-//#include "tcpTableCellDisplay.h"
 // link with ws2_32.lib
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -24,16 +27,16 @@ using namespace std;
 class ReverseDnsLookup
 {
 public:
-	string *ReverseDnsLookup::getHostList(string **nTcpList, int nTcpListSize);
-	int ReverseDnsLookup::getTableSize();
+	//function will return an array filled with the names from the DNS server
+	string *ReverseDnsLookup::getHostList(string **nTcpList, int nTcpListSize); 
+	int ReverseDnsLookup::getTableSize(); //returns size of the array previous created
 
 private:
-	int tcpListSize = 0;
-	int hostNameListSize = 0;
-	const char *c;
+	int tcpListSize = 0; //initial sizing
+	int hostNameListSize = 0; //initial sizing
 	string hostNames;
-	string *tcpHostList;
-	string **tcpList;
+	string *tcpHostList; //list of hosts created
+	string **tcpList; //tcp list to be checked against
 };
 
 #endif // REVERSEDNSLOOKUP_H
