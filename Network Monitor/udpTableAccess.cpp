@@ -1,7 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 #include "udpTableAccess.h"
-
+//constructor which sets up initial data
 UdpTableAccess::UdpTableAccess()
 {
 	for (int i = 0; i < 13; i++){
@@ -85,7 +85,7 @@ void UdpTableAccess::getUdpTable()
 
 	}
 }
-
+//gets the number of datagrams received
 const char *UdpTableAccess::getDatagrams()
 {
 	FIXED_INFO *pFixedInfo; //object passed to the function
@@ -111,11 +111,12 @@ const char *UdpTableAccess::getDatagrams()
 
 	return numberOfDatagrams.c_str();
 }
-
+//get the size of the current table
 int UdpTableAccess::getTableSize()
 {
 	return curUdpTableEntryCount;
 }
+//get the size of the displayed table
 const char *UdpTableAccess::getDisplayedTableSize()
 {
 	displayTableSize = "";
@@ -123,6 +124,7 @@ const char *UdpTableAccess::getDisplayedTableSize()
 
 	return displayTableSize.c_str();
 }
+//returns the data table, protects from reading/writing same time
 string **UdpTableAccess::passUdpTable()
 {
 	if (dataState == 1)
@@ -139,38 +141,39 @@ string **UdpTableAccess::passUdpTable()
 	}
 
 }
-
+//starts the thread
 void UdpTableAccess::startThread()
 {
 	_beginthread(UdpTableAccess::enterThread, 0, this);
 }
-
+//enters the next context for threading
 void UdpTableAccess::enterThread(void *p)
 {
 	((UdpTableAccess *)p)->threadBody();
 	_endthread();
 	return;
 }
-
+//gets the udp table until it is told to stop the thread
 void UdpTableAccess::threadBody()
 {
 	while (stop == 0){
 		getUdpTable();
 	}
 }
-
+//for telling it the data has been retrieved
 void UdpTableAccess::setDataState(int nDataState){
 	dataState = nDataState;
 }
-
+//sends whether there is new data to be pocessed to display
 int UdpTableAccess::getDataState(){
 	return dataState;
 }
-
+//stops the thread
 void UdpTableAccess::stopUpdates()
 {
 	stop = 1;
 }
+//starts the thread
 void UdpTableAccess::startUpdates()
 {
 	stop = 0;
