@@ -1,3 +1,10 @@
+/******************************************************************
+*This calls extends Fl_Table which is how the tables are created  *
+*in FLTK. It takes the informationg gathered from tcpTableAccess  *
+*and displays it. There is also control for copying the TCPTable  *
+*and sending it to other classes such as the reverse DNS lookup   *
+*and the Blacklist ip lookup.                                     *                                   
+******************************************************************/
 #ifndef TCPTABLECELLDISPLAY_H
 #define TCPTABLECELLDISPLAY_H
 
@@ -24,8 +31,9 @@ class TCPTable : public Fl_Table
 {
 
 public:	
+	//inline declaration of the TCP table constructor, standard for this inhereted class
 	TCPTable::TCPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L){
-		firstTime = 1;
+		firstTime = 1; 
 		tableSize = 0;
 		copyTableSize = 0;
 		haveStatusList = 0;
@@ -53,21 +61,21 @@ public:
 		col_resize(1);              // enable column resizing
 		end();                        // end the Fl_Table group
 	};
-	void TCPTable::updateCells();
-	TcpTableAccess *TCPTable::getTcpObject();
-	void TCPTable::redrawTable(TCPTable *curTable);
-	int TCPTable::getDrawState();
-	string **TCPTable::getDataTable();
-	int TCPTable::getDataTableSize();
-	string **TCPTable::getTableCopy();
-	int TCPTable::getCopyTableSize();
-	void TCPTable::stopTableRefill();
-	void TCPTable::startTableRefill();
-	void TCPTable::blacklistChecker();
+	void TCPTable::updateCells(); //calls fillDataArray safely
+	TcpTableAccess *TCPTable::getTcpObject(); //passes tcp connection information
+	void TCPTable::redrawTable(TCPTable *curTable); //redraws the table within the main thread
+	int TCPTable::getDrawState(); //whether or not the table is being drawn
+	string **TCPTable::getDataTable(); //actual TCP data being used
+	int TCPTable::getDataTableSize(); //size of actual TCP data
+	string **TCPTable::getTableCopy(); //copies the TCP Information
+	int TCPTable::getCopyTableSize(); //size of the copy created
+	void TCPTable::stopTableRefill(); //stops the table from collecting new data
+	void TCPTable::startTableRefill(); //starts the table from collecting new data
+	void TCPTable::blacklistChecker(); //checks for blips
 	TCPTable::~TCPTable();
 private:
-	int firstTime;
-	int tableSize;
+	int firstTime; //for cleaning
+	int tableSize; 
 	int copyTableSize;
 	int noDraw;
 	int noRefill;
@@ -75,7 +83,7 @@ private:
 	int drawStatusList;
 	int ipStatusListSize;
 	int curDrawRow;
-	int *ipStatusList;
+	int *ipStatusList; //ip status list
 	string **data;  // data array for cells
 	string headings[MAX_COLST];
 	string **tcpList;
@@ -83,7 +91,7 @@ private:
 	BlacklistIpChecker *blipl;
 	void TCPTable::fillDataArray();
 	
-
+	//draws the table headers, inline as expected
 	void TCPTable::DrawHeader(const char *s, int X, int Y, int W, int H){
 		fl_push_clip(X, Y, W, H);
 		fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
@@ -91,12 +99,13 @@ private:
 		fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
 		fl_pop_clip();
 	}
+	//draws the data, inline as expected
 	void TCPTable::DrawData(const char *s, int X, int Y, int W, int H) {
 		fl_push_clip(X, Y, W, H);
 		// Draw cell bg
 		fl_color(FL_WHITE); fl_rectf(X, Y, W, H);
 		// Draw cell data
-		if (haveStatusList == 1)
+		if (haveStatusList == 1) //if blisted ips were checked for use this
 		{
 			if (ipStatusList[curDrawRow] == 0){				
 				fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
@@ -108,13 +117,14 @@ private:
 				fl_color(FL_RED); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
 			}
 		}
-		else if (haveStatusList == 0){
+		else if (haveStatusList == 0){ //if there has been no check for blips
 			fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
 		}
 		// Draw box border
 		fl_color(color()); fl_rect(X, Y, W, H);
 		fl_pop_clip();
 	}
+	//draws the cells
 	void TCPTable::draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0){
 		Fl::lock();
 		static char s[40];
@@ -146,7 +156,7 @@ private:
 	
 	
 };
-
+//prevents reading and writing from the data array at the same time
 void TCPTable::updateCells()
 {
 	noDraw = 1;
@@ -154,7 +164,7 @@ void TCPTable::updateCells()
 		fillDataArray();
 	noDraw = 0;
 }
-
+//fills the array that is actually drawn from the data received from the tcp table
 void TCPTable::fillDataArray()
 {
 
@@ -193,33 +203,33 @@ void TCPTable::fillDataArray()
 		firstTime = 0;
 	}
 }
-
+//redraws the table
 void TCPTable::redrawTable(TCPTable *curTable)
 {
 	curTable->rows(tableSize);
 	curTable->redraw();
 }
-
+//returns if permission to drawn is available
 int TCPTable::getDrawState()
 {
 	return noDraw;
 }
-
+//returns size of data table
 int TCPTable::getDataTableSize()
 {
 	return tableSize;
 }
-
+//returns the currently drawn data array
 string **TCPTable::getDataTable()
 {
 	return data;
 }
-
+//returns the connection object
 TcpTableAccess *TCPTable::getTcpObject()
 {
 	return tcpConnections;
 }
-
+//copies the data table
 string **TCPTable::getTableCopy()
 {
 	noRefill = 1;
@@ -235,22 +245,23 @@ string **TCPTable::getTableCopy()
 
 	return listCopy;
 }
-
+//prevents the table from being refilled
 void TCPTable::stopTableRefill()
 {
 	noRefill = 1;
 }
-
+//enables the table to be refilled
 void TCPTable::startTableRefill()
 {
 	noRefill = 0;
 	haveStatusList = 0;
 }
+//gets the size of any previous copied data table
 int TCPTable::getCopyTableSize()
 {
 	return copyTableSize;
 }
-
+//runs the routines for checking for blips
 void TCPTable::blacklistChecker()
 {
 	getTableCopy();
@@ -261,6 +272,7 @@ void TCPTable::blacklistChecker()
 	haveStatusList = 1;
 	noRefill = 1;
 }
+//destructor
 TCPTable::~TCPTable() { }
 
 #endif
