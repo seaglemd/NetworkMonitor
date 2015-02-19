@@ -67,17 +67,18 @@ void BlacklistIpChecker::getBlacklistResult(string **nTcpList, int nTcpListSize)
 				curl_easy_setopt(curl, CURLOPT_POSTFIELDS, (searchIpFull.c_str())); //data must be pasted in a c style terminated string, so string is c_str() now
 				result = curl_easy_perform(curl); //perform lookup
 				//uses a general text data to determine ip status in the following if-else clauses
-				if (htmlReturned.find("We don't have data on this IP currently. If you know something, you may") != string::npos){
-					ipStatusList[i] = 1; //good 
+				if (htmlReturned.find("The Project Honey Pot system") != string::npos){
+					ipStatusList[i] = 2; //bad					
 				}
-				else if (htmlReturned.find("The Project Honey Pot system") != string::npos){
-					ipStatusList[i] = 2; //bad
+				if (htmlReturned.find("(Not yet scored. Check again soon.)") != string::npos){
+					ipStatusList[i] = 1; //good 					
 				}
-				else if (htmlReturned.find("none of its visits") != string::npos){
-					ipStatusList[i] = 1; //good
+				
+				if (htmlReturned.find("This IP addresses has been seen by at least one Honey Pot. However, none of its visits have resulted in any bad events yet. It's possible that this IP is just a harmless web spider or Internet user.") != string::npos){
+					ipStatusList[i] = 1; //good					
 				}
-				else if (htmlReturned.find("search engine") != string::npos){
-					ipStatusList[i] = 1; //good
+				if (htmlReturned.find("If you know something about this search engine IP") != string::npos){
+					ipStatusList[i] = 1; //good					
 				}
 				htmlReturned.clear(); //clears html string and loop returns to stop and run next address
 			}

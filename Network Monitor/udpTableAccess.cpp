@@ -52,19 +52,20 @@ void UdpTableAccess::getUdpTable()
 
 			udpTableEntryCount = (int)pUdpTable->dwNumEntries;
 			udpConnectionList = new string *[udpTableEntryCount];
+			int udpTablePosition = udpTableEntryCount;
 			for (int i = 0; i < udpTableEntryCount; i++){
 				udpConnectionList[i] = new string[2];
 			}
 
-			for (int i = 0; i < udpTableEntryCount; i++) {
-				IpAddr.S_un.S_addr = (u_long)pUdpTable->table[i].dwLocalAddr;
+			for (int i = 0; i < udpTableEntryCount; i++, udpTablePosition--) {
+				IpAddr.S_un.S_addr = (u_long)pUdpTable->table[udpTablePosition].dwLocalAddr;
 				inet_ntop(2, &IpAddr, (PSTR)szLocalAddr, sizeof(szLocalAddr));
 
 				localIp = szLocalAddr;
 				udpConnectionList[i][0] = localIp;
 
 				localPort = "";
-				localPort += std::to_string(ntohs((u_short)pUdpTable->table[i].dwLocalPort));
+				localPort += std::to_string(ntohs((u_short)pUdpTable->table[udpTablePosition].dwLocalPort));
 				udpConnectionList[i][1] = localPort;
 			}
 		}

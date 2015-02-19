@@ -124,10 +124,11 @@ void TcpTableAccess::getTcpTable()
 			for (int i = 0; i < tcpTableEntryCount; i++){
 				tcpConnectionList[i] = new string[3];
 			}
-			for (int i = 0; i < tcpTableEntryCount; i++) {
-				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwLocalAddr;//local address info
+			int tcpTablePosition = tcpTableEntryCount;
+			for (int i = 0; i < tcpTableEntryCount; i++, tcpTablePosition--) {
+				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[tcpTablePosition].dwLocalAddr;//local address info
 				inet_ntop(2, &IpAddr, (PSTR)szLocalAddr, sizeof(szLocalAddr));
-				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[i].dwRemoteAddr; //remote address info
+				IpAddr.S_un.S_addr = (u_long)pTcpTable->table[tcpTablePosition].dwRemoteAddr; //remote address info
 				inet_ntop(2, &IpAddr, (PSTR)szRemoteAddr, sizeof(szRemoteAddr));
 
 				switch (pTcpTable->table[i].dwState) { //switch statement gets state of connection
@@ -189,12 +190,12 @@ void TcpTableAccess::getTcpTable()
 				//separate string conversion is then added to a parent string
 				localIpPort = szLocalAddr;
 				localIpPort += ":";
-				localIpPort += std::to_string(ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+				localIpPort += std::to_string(ntohs((u_short)pTcpTable->table[tcpTablePosition].dwLocalPort));
 				tcpConnectionList[i][0] = localIpPort;
 
 				remoteIpPort = szRemoteAddr;
 				remoteIpPort += ":";
-				remoteIpPort += std::to_string(ntohs((u_short)pTcpTable->table[i].dwRemotePort));
+				remoteIpPort += std::to_string(ntohs((u_short)pTcpTable->table[tcpTablePosition].dwRemotePort));
 				tcpConnectionList[i][1] = remoteIpPort;
 
 				tcpConnectionList[i][2] = connectionState;
