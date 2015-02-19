@@ -1,3 +1,8 @@
+/*******************************************************************
+*This class inherits Fl_Table to draw the data retrieved from      *
+*the udp table. Start and stop functionality with threading is     *
+*implemented. Overall basic compared to TCP so far                 *
+*******************************************************************/
 #ifndef UDPTABLECELLDISPLAY_H
 #define UDPTABLECELLDISPLAY_H
 
@@ -23,6 +28,7 @@ class UDPTable : public Fl_Table
 {
 
 public:
+	//inherits from Fl_Table as is normal, inline as is standard
 	UDPTable::UDPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L) {
 		firstTime = 1;
 		tableSize = 0;
@@ -60,7 +66,7 @@ private:
 	string **udpList;
 	UdpTableAccess *udpConnections;
 	void UDPTable::fillDataArray();
-
+	//draws the headers, inline as is standard
 	void UDPTable::DrawHeader(const char *s, int X, int Y, int W, int H) {
 		fl_push_clip(X, Y, W, H);
 		fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
@@ -68,6 +74,7 @@ private:
 		fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
 		fl_pop_clip();
 	}
+	//draws the current cell, inline as is standard
 	void UDPTable::DrawData(const char *s, int X, int Y, int W, int H) {
 		fl_push_clip(X, Y, W, H);
 		// Draw cell bg
@@ -78,6 +85,7 @@ private:
 		fl_color(color()); fl_rect(X, Y, W, H);
 		fl_pop_clip();
 	}
+	//draws the cells, inline as is normal
 	void UDPTable::draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0) {
 		Fl::lock();
 		static char s[40];
@@ -93,7 +101,7 @@ private:
 			//DrawHeader(s, X, Y, W, H);
 			return;
 		case CONTEXT_CELL:
-			if (ROW <= tableSize && noDraw == 0)
+			if (ROW <= tableSize && noDraw == 0) //protection from read/writing at same time
 				DrawData(data[ROW][COL].c_str(), X, Y, W, H);
 			return;
 		default:
@@ -104,14 +112,14 @@ private:
 		return;
 	}
 };
-
+//fills the data array with new data and protects from read/writes as the same time
 void UDPTable::updateCells()
 {
 	noDraw = 1;
 	fillDataArray();
 	noDraw = 0;
 }
-
+//fills the data array with any new data that has come in
 void UDPTable::fillDataArray()
 {
 
@@ -150,18 +158,18 @@ void UDPTable::fillDataArray()
 		firstTime = 0;
 	}
 }
-
+//redraws the udp table
 void UDPTable::redrawTable(UDPTable *curTable)
 {
 	curTable->rows(tableSize);
 	curTable->redraw();
 }
-
+//returns the udp object used to gather udp information
 UdpTableAccess *UDPTable::getUdpObject()
 {
 	return udpConnections;
 }
-
+//destructor
 UDPTable::~UDPTable() { }
 
 #endif

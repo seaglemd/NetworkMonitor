@@ -1,3 +1,8 @@
+/***********************************************************
+*This class retrieves information about the current        *
+*firewall status for the different policies on this system *
+*and warns if the firewall is down.                        *
+***********************************************************/
 #ifndef WFSTATUSACCESS_H
 #define WFSTATUSACCESS_H
 #define WIN32_LEAN_AND_MEAN

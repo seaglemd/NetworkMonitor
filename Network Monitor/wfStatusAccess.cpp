@@ -10,11 +10,12 @@ using namespace std;
  * warns if the firewall is off
  * changes dynamically
  */
+//threading for firewall observance
 void WFStatus::startThread()
 {
     _beginthread(WFStatus::enterThread, 0, this);
 }
-
+//next context for threading
 void WFStatus::enterThread(void *p)
 {
     ((WFStatus *) p)->threadBody();
@@ -77,7 +78,7 @@ Cleanup:
 }
 
 // Forward declarations
-
+//sets bool values about the private firewall profile
 void WFStatus::Get_FirewallSettings_PrivateProfileType(NET_FW_PROFILE_TYPE2 ProfileTypePassed, INetFwPolicy2* pNetFwPolicy2)
 {
     VARIANT_BOOL bIsEnabled = FALSE;
@@ -91,7 +92,7 @@ void WFStatus::Get_FirewallSettings_PrivateProfileType(NET_FW_PROFILE_TYPE2 Prof
 			privateProfile = false;
     }
 }
-
+//sets bool values about the public firewall profile
 void WFStatus::Get_FirewallSettings_PublicProfileType(NET_FW_PROFILE_TYPE2 ProfileTypePassed, INetFwPolicy2* pNetFwPolicy2)
 {
     VARIANT_BOOL bIsEnabled = FALSE;
@@ -105,6 +106,7 @@ void WFStatus::Get_FirewallSettings_PublicProfileType(NET_FW_PROFILE_TYPE2 Profi
 			publicProfile = false;
 	}
 }
+//initializes checks for policies
 HRESULT WFStatus::WFCOMInitialize(INetFwPolicy2** ppNetFwPolicy2)
 {
     HRESULT hr = S_OK;
@@ -125,12 +127,13 @@ HRESULT WFStatus::WFCOMInitialize(INetFwPolicy2** ppNetFwPolicy2)
 Cleanup:
     return hr;
 }
-
+//returns the requested private firewall info
 bool WFStatus::getPrivateProfile()
 {
     getFirewallInfo();
     return privateProfile;
 }
+//returns the requested public firewall info
 bool WFStatus::getPublicProfile()
 {
 	getFirewallInfo();
