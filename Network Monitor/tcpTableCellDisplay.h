@@ -40,6 +40,7 @@ public:
 		drawStatusList = 0;
 		ipStatusListSize = 0;
 		curDrawRow = 0;
+		ipStatusLookup = 0;
 		tcpConnections = new TcpTableAccess();
 		blipl = new BlacklistIpChecker();
 		tcpList = tcpConnections->passTcpTable();
@@ -69,6 +70,8 @@ public:
 	int TCPTable::getDataTableSize(); //size of actual TCP data
 	string **TCPTable::getTableCopy(); //copies the TCP Information
 	int TCPTable::getCopyTableSize(); //size of the copy created
+	int TCPTable::getIpStatusLookup(); //returns status of ipLookup progress for gui updates
+	void TCPTable::setIpStatusLookup();
 	void TCPTable::stopTableRefill(); //stops the table from collecting new data
 	void TCPTable::startTableRefill(); //starts the table from collecting new data
 	void TCPTable::blacklistChecker(); //checks for blips
@@ -84,12 +87,17 @@ private:
 	int ipStatusListSize;
 	int curDrawRow;
 	int *ipStatusList; //ip status list
+	int ipStatusLookup;
 	string **data;  // data array for cells
 	string headings[MAX_COLST];
 	string **tcpList;
 	TcpTableAccess *tcpConnections;
 	BlacklistIpChecker *blipl;
 	void TCPTable::fillDataArray();
+
+	void TCPTable::startBlipThread();
+	void TCPTable::threadBlipBody();
+	static void enterBlipThread(void *p);
 	
 	//draws the table headers, inline as expected
 	void TCPTable::DrawHeader(const char *s, int X, int Y, int W, int H){
@@ -261,16 +269,42 @@ int TCPTable::getCopyTableSize()
 {
 	return copyTableSize;
 }
+//returns status of the ipLookup for gui function
+int TCPTable::getIpStatusLookup()
+{
+	return ipStatusLookup;
+}
+void TCPTable::setIpStatusLookup()
+{
+	ipStatusLookup = 0;
+}
 //runs the routines for checking for blips
 void TCPTable::blacklistChecker()
 {
+	startBlipThread();
+}
+//enters the new context for the thread
+void TCPTable::startBlipThread()
+{
+	_beginthread(TCPTable::enterBlipThread, 0, this);
+}
+//makes object calls to lookup ips
+void TCPTable::threadBlipBody()
+{
 	getTableCopy();
 	blipl->getBlacklistResult(getTableCopy(), getCopyTableSize());
-	noRefill = 1;	
+	noRefill = 1;
 	ipStatusList = blipl->getStatusList();
 	ipStatusListSize = blipl->getStatusListSize();
 	haveStatusList = 1;
 	noRefill = 1;
+	ipStatusLookup = 1;	
+}
+void TCPTable::enterBlipThread(void *p)
+{
+	((TCPTable *)p)->threadBlipBody();
+	_endthread();
+	return;
 }
 //destructor
 TCPTable::~TCPTable() { }

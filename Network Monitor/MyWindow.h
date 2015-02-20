@@ -367,15 +367,21 @@ void MyWindow::checkControlStatus()
 		stopButtonUdp->activate();
 		startUdp = 0;
 	}
-	if (startIpLookup == 1){
-		startIpLookup = 0;
-		table->stopTableRefill();
-		tcpConnectionInfo->stopUpdates();
-		resumeButtonTcp->labelcolor(FL_GRAY);
-		resumeButtonTcp->deactivate();
-		table->blacklistChecker();
-		resumeButtonTcp->labelcolor(FL_GREEN);
-		resumeButtonTcp->activate();		
+	if (startIpLookup == 1 || startIpLookup == 2){
+		if (startIpLookup != 2){
+			table->stopTableRefill();
+			tcpConnectionInfo->stopUpdates();
+			resumeButtonTcp->labelcolor(FL_GRAY);
+			resumeButtonTcp->deactivate();
+			table->blacklistChecker();
+			startIpLookup = 2;
+		}
+		if (startIpLookup == 2 && table->getIpStatusLookup() == 1){
+			resumeButtonTcp->labelcolor(FL_GREEN);
+			resumeButtonTcp->activate();
+			startIpLookup = 0;
+			table->setIpStatusLookup();
+		}
 	}
 	if (changeStopTcpLabel == 1){
 		textStatusBox->label("Stops Watching for TCP table updates.");
