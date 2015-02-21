@@ -45,6 +45,7 @@ public:
 		blipl = new BlacklistIpChecker();
 		tcpList = tcpConnections->passTcpTable();
 		tableSize = tcpConnections->getTableSize();
+		initializeHeaderInformation();
 		fillDataArray();
 
 		headings[0] = "Local IP:Port";
@@ -67,6 +68,7 @@ public:
 	void TCPTable::redrawTable(TCPTable *curTable); //redraws the table within the main thread
 	int TCPTable::getDrawState(); //whether or not the table is being drawn
 	string **TCPTable::getDataTable(); //actual TCP data being used
+	int **TCPTable::getHeaderSizeInformation();
 	int TCPTable::getDataTableSize(); //size of actual TCP data
 	string **TCPTable::getTableCopy(); //copies the TCP Information
 	int TCPTable::getCopyTableSize(); //size of the copy created
@@ -88,13 +90,17 @@ private:
 	int curDrawRow;
 	int *ipStatusList; //ip status list
 	int ipStatusLookup;
+	int **headerInformation;
 	string **data;  // data array for cells
 	string headings[MAX_COLST];
 	string **tcpList;
 	TcpTableAccess *tcpConnections;
 	BlacklistIpChecker *blipl;
+	void TCPTable::initializeHeaderInformation();
 	void TCPTable::fillDataArray();
-
+	//debug purposes
+	void TCPTable::printHeaderInformation();
+	//
 	void TCPTable::startBlipThread();
 	void TCPTable::threadBlipBody();
 	static void enterBlipThread(void *p);
@@ -142,6 +148,10 @@ private:
 			return;
 		case CONTEXT_COL_HEADER:
 			//sprintf(s, &(headings[COL])[0]);               // "A", "B", "C", etc.
+			headerInformation[COL][0] = X;
+			headerInformation[COL][1] = Y;
+			headerInformation[COL][2] = W;
+			headerInformation[COL][3] = H;
 			DrawHeader(headings[COL].c_str(), X, Y, W, H);
 			return;
 		case CONTEXT_ROW_HEADER:                  // Draw row headers
@@ -171,6 +181,18 @@ void TCPTable::updateCells()
 	if (noRefill == 0)
 		fillDataArray();
 	noDraw = 0;
+}
+//initializes header information array, used to store location data for events
+void TCPTable::initializeHeaderInformation()
+{
+	headerInformation = new int*[3];
+	for (int i = 0; i < 3; i++){
+			headerInformation[i] = new int[4];
+			headerInformation[i][0] = 0;
+			headerInformation[i][1] = 0;
+			headerInformation[i][2] = 0;
+			headerInformation[i][3] = 0;
+		}
 }
 //fills the array that is actually drawn from the data received from the tcp table
 void TCPTable::fillDataArray()
@@ -211,9 +233,20 @@ void TCPTable::fillDataArray()
 		firstTime = 0;
 	}
 }
+//prints header informaton for debug purposes
+void TCPTable::printHeaderInformation()
+{
+	for (int i = 0; i < 3; i++){
+		for (int j = 0; j < 4; j++){
+			cout << headerInformation[i][j] << " ";
+		}
+		cout << endl;
+	}
+}
 //redraws the table
 void TCPTable::redrawTable(TCPTable *curTable)
 {
+	printHeaderInformation();
 	curTable->rows(tableSize);
 	curTable->redraw();
 }
@@ -231,6 +264,11 @@ int TCPTable::getDataTableSize()
 string **TCPTable::getDataTable()
 {
 	return data;
+}
+//returns the bounds for mouse events on the table
+int **TCPTable::getHeaderSizeInformation()
+{
+	return headerInformation;
 }
 //returns the connection object
 TcpTableAccess *TCPTable::getTcpObject()

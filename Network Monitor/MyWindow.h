@@ -41,7 +41,8 @@ int changeStopTcpLabel;
 int changeResumeTcpLabel;
 int changeIpLookupLabel;
 int changeRDNSLabel;
-
+//Array for header bounds for cb events
+int **headerSizeInformation;
 //These objects must all be referenced outside of the main class, including the
 //main window class itself in order to be redrawn properly from child to main
 //threads
@@ -127,6 +128,7 @@ class MyWindow : public Fl_Double_Window
 		static void enterRDNSThread(void *p);
 		
 		MyWindow *MyWindow::getWindow(); //returns the MyWindow object, useful for redraws in global scope
+		void MyWindow::initializeHeaderSizes();
 		void MyWindow::checkControlStatus(); //function which monitors button callback and status bar info
 		void MyWindow::setCurrentFirewallStatus(); //sets the display to the current firewall status
 		void MyWindow::getCurrentTCPTableInfo();//gets the TCPTable information
@@ -149,6 +151,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	firewallOn = new Fl_PNG_Image("fWOn.png"); //images assigned
 	firewallOff = new Fl_PNG_Image("fwoff.png");
 	refreshImage = new Fl_PNG_Image("refresh.png");
+	initializeHeaderSizes();
 	begin(); //starts the window layout
 	
 	   tabGroup = new Fl_Tabs(10, 10, 900 - 20, 500 - 20); //starts tab layout
@@ -309,6 +312,7 @@ void MyWindow::threadBody()
 		setCurrentFirewallStatus();
 		getCurrentTCPTableInfo();
 		getCurrentUDPTableInfo();
+		headerSizeInformation = table->getHeaderSizeInformation();
 		if (tcpConnectionInfo->getDataState() == 1){			
 			table->updateCells();
 			tcpConnectionInfo->setDataState(0);
@@ -325,6 +329,19 @@ void MyWindow::threadBody()
 MyWindow *MyWindow::getWindow()
 {
 	return this;
+}
+//initializes the header size array in order to prevent crashes at start due to events
+void MyWindow::initializeHeaderSizes()
+{
+	headerSizeInformation = new int*[3];
+	for (int i = 0; i < 3; i++){
+			headerSizeInformation[i] = new int[4];
+			headerSizeInformation[i][0] = 0;
+			headerSizeInformation[i][1] = 0;
+			headerSizeInformation[i][2] = 0;
+			headerSizeInformation[i][3] = 0;
+
+		}
 }
 //function controls status of buttons, what has been clicked, and status bar text
 void MyWindow::checkControlStatus()
@@ -428,7 +445,7 @@ void redrawBoxes_cb(void *u)
 	}
 	   table->redrawTable(table);
 	   uTable->redrawTable(uTable);
-	   theWindow->redraw();
+	   theWindow->redraw();	   
 	Fl::unlock();
 	Fl::awake();
 }
@@ -484,6 +501,21 @@ void iplookup_button_cb(Fl_Widget *widget, void *u)
 //checks for mouseover events to display the prper status text
 void event_cb(void*)
 {
+	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[0][0], headerSizeInformation[0][1],
+						 headerSizeInformation[0][2], headerSizeInformation[0][3]) != 0){
+		Fl::event_is_click(0);
+		cout << "inside" << endl;
+	}
+	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[1][0], headerSizeInformation[1][1],
+		headerSizeInformation[1][2], headerSizeInformation[1][3]) != 0){
+		Fl::event_is_click(0);
+		cout << "inside2" << endl;
+	}
+	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[2][0], headerSizeInformation[2][1],
+		headerSizeInformation[2][2], headerSizeInformation[2][3]) != 0){
+		Fl::event_is_click(0);
+		cout << "inside3" << endl;
+	}
 	if (Fl::event_inside(stopButtonTcp) != 0){
 		changeStopTcpLabel = 1;
 	}
