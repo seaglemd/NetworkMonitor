@@ -31,6 +31,7 @@ int redrawRDNSTable; //triggered when the rds table should be drawn/redrawn
 //triggers the start and stop of the TCP thread
 int stopTcp;  
 int startTcp;
+int tcpStopped;
 //triggers the start and stop of the UDP thread
 int stopUdp;
 int startUdp;
@@ -43,6 +44,8 @@ int changeIpLookupLabel;
 int changeRDNSLabel;
 //Array for header bounds for cb events
 int **headerSizeInformation;
+//triggers for sorts
+int localIpSortTcp;
 //These objects must all be referenced outside of the main class, including the
 //main window class itself in order to be redrawn properly from child to main
 //threads
@@ -147,6 +150,8 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	changeResumeTcpLabel = 0;
 	changeIpLookupLabel = 0;
 	changeRDNSLabel = 0;
+	localIpSortTcp = 0;
+	tcpStopped = 0;
 	firewallStatus = new WFStatus(); //firewall status object created
 	firewallOn = new Fl_PNG_Image("fWOn.png"); //images assigned
 	firewallOff = new Fl_PNG_Image("fwoff.png");
@@ -347,6 +352,7 @@ void MyWindow::initializeHeaderSizes()
 void MyWindow::checkControlStatus()
 {
 	if (stopTcp == 1){
+		tcpStopped = 1;
 		tcpConnectionInfo->stopUpdates();
 		table->stopTableRefill();
 		stopButtonTcp->labelcolor(FL_GRAY);
@@ -358,6 +364,7 @@ void MyWindow::checkControlStatus()
 		stopTcp = 0;
 	}
 	if (startTcp == 1){
+		tcpStopped = 0;
 		table->startTableRefill();
 		tcpConnectionInfo->startUpdates();
 		resumeButtonTcp->labelcolor(FL_GRAY);
@@ -388,12 +395,14 @@ void MyWindow::checkControlStatus()
 		if (startIpLookup != 2){
 			table->stopTableRefill();
 			tcpConnectionInfo->stopUpdates();
+			tcpStopped = 1;
 			resumeButtonTcp->labelcolor(FL_GRAY);
 			resumeButtonTcp->deactivate();
 			table->blacklistChecker();
 			startIpLookup = 2;
 		}
 		if (startIpLookup == 2 && table->getIpStatusLookup() == 1){
+			tcpStopped = 0;
 			resumeButtonTcp->labelcolor(FL_GREEN);
 			resumeButtonTcp->activate();
 			startIpLookup = 0;
@@ -436,13 +445,12 @@ void MyWindow::checkControlStatus()
 //function in the main thread which redraws everything based on certain perameters
 void redrawBoxes_cb(void *u)
 {
-	Fl::lock();
-	
+	Fl::lock();	
 	if (redrawRDNSTable == 1){
 		refreshButtonTextLabel->label("Complete");
 		rTable->redrawTable(rTable);
 		redrawRDNSTable = 0;
-	}
+	}	   
 	   table->redrawTable(table);
 	   uTable->redrawTable(uTable);
 	   theWindow->redraw();	   
@@ -504,7 +512,9 @@ void event_cb(void*)
 	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[0][0], headerSizeInformation[0][1],
 						 headerSizeInformation[0][2], headerSizeInformation[0][3]) != 0){
 		Fl::event_is_click(0);
-		cout << "inside" << endl;
+		if (tcpStopped == 1){
+			table->flipData();
+		}
 	}
 	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[1][0], headerSizeInformation[1][1],
 		headerSizeInformation[1][2], headerSizeInformation[1][3]) != 0){

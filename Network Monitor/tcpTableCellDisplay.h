@@ -29,7 +29,6 @@ using namespace std;
 
 class TCPTable : public Fl_Table 
 {
-
 public:	
 	//inline declaration of the TCP table constructor, standard for this inhereted class
 	TCPTable::TCPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L){
@@ -41,6 +40,8 @@ public:
 		ipStatusListSize = 0;
 		curDrawRow = 0;
 		ipStatusLookup = 0;
+		sortDirection = 0;
+		noRefill = 0;
 		tcpConnections = new TcpTableAccess();
 		blipl = new BlacklistIpChecker();
 		tcpList = tcpConnections->passTcpTable();
@@ -73,6 +74,7 @@ public:
 	string **TCPTable::getTableCopy(); //copies the TCP Information
 	int TCPTable::getCopyTableSize(); //size of the copy created
 	int TCPTable::getIpStatusLookup(); //returns status of ipLookup progress for gui updates
+	void TCPTable::flipData();
 	void TCPTable::setIpStatusLookup();
 	void TCPTable::stopTableRefill(); //stops the table from collecting new data
 	void TCPTable::startTableRefill(); //starts the table from collecting new data
@@ -91,11 +93,14 @@ private:
 	int *ipStatusList; //ip status list
 	int ipStatusLookup;
 	int **headerInformation;
+	int sortDirection;
 	string **data;  // data array for cells
 	string headings[MAX_COLST];
 	string **tcpList;
 	TcpTableAccess *tcpConnections;
 	BlacklistIpChecker *blipl;
+	void TCPTable::mergeSortArrayLocal();
+	void TCPTable::mergeHelper(int *input, int left, int right, int *scratch);
 	void TCPTable::initializeHeaderInformation();
 	void TCPTable::fillDataArray();
 	//debug purposes
@@ -108,7 +113,10 @@ private:
 	//draws the table headers, inline as expected
 	void TCPTable::DrawHeader(const char *s, int X, int Y, int W, int H){
 		fl_push_clip(X, Y, W, H);
-		fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
+		if (noRefill != 1)
+			fl_draw_box(FL_THIN_DOWN_BOX, X, Y, W, H, row_header_color());
+		else if (noRefill == 1)
+			fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
 		fl_color(FL_BLACK);
 		fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
 		fl_pop_clip();
@@ -182,6 +190,7 @@ void TCPTable::updateCells()
 		fillDataArray();
 	noDraw = 0;
 }
+//sets the sort directions
 //initializes header information array, used to store location data for events
 void TCPTable::initializeHeaderInformation()
 {
@@ -216,6 +225,8 @@ void TCPTable::fillDataArray()
 		for (int i = 0; i < tableSize; i++)
 			for (int j = 0; j < 3; j++)
 				data[i][j] = tcpList[i][j];
+
+			mergeSortArrayLocal();
 	}
 	else{
 		data = new string*[tableSize];
@@ -231,17 +242,111 @@ void TCPTable::fillDataArray()
 			for (int j = 0; j < 3; j++)
 				data[i][j] = tcpList[i][j];
 		firstTime = 0;
+		mergeSortArrayLocal();
 	}
 }
+//sorts array
+void TCPTable::mergeSortArrayLocal()
+{
+	int locationA = 0;
+	int ipAddress = 0;
+	string curSubstring;
+	int *sortArrayLocal = new int[tableSize];
+	int *sortArrayRemote = new int[tableSize];
+	int *scratchArray = new int[tableSize * 3];
+	int *dataScratch = new int[tableSize * 3];
+	for (int i = 0; i < tableSize; i++){
+		curSubstring = data[i][0];
+		while (curSubstring.find(".") != string::npos){
+			locationA = curSubstring.find(".");
+			curSubstring.erase(locationA, 1);
+		}
+		locationA = curSubstring.find(":");
+		curSubstring.erase(locationA, 1);
+		sortArrayLocal[i] = atoi(curSubstring.c_str());
+	}
+
+	for (int i = 0; i < tableSize; i++){
+		curSubstring = data[i][1];
+		while (curSubstring.find(".") != string::npos){
+			locationA = curSubstring.find(".");
+			curSubstring.erase(locationA, 1);
+		}
+		locationA = curSubstring.find(":");
+		curSubstring.erase(locationA, 1);
+		sortArrayRemote[i] = atoi(curSubstring.c_str());
+	}
+	mergeHelper(sortArrayRemote, 0, tableSize, dataScratch);
+	for (int i = 0; i < tableSize; i++){
+		cout << sortArrayRemote[i] << endl;
+	}
+}
+void TCPTable::mergeHelper(int *input, int left, int right, int *scratch)
+{
+	/* base case: one element */
+	if (right == left + 1)
+	{
+		return;
+	}
+	else
+	{
+		int i = 0;
+		int length = right - left;
+		int midpoint_distance = length / 2;
+		/* l and r are to the positions in the left and right subarrays */
+		int l = left, r = left + midpoint_distance;
+
+		/* sort each subarray */
+		mergeHelper(input, left, left + midpoint_distance, scratch);
+		mergeHelper(input, left + midpoint_distance, right, scratch);
+
+		/* merge the arrays together using scratch for temporary storage */
+		for (i = 0; i < length; i++)
+		{
+			/* Check to see if any elements remain in the left array; if so,
+			* we check if there are any elements left in the right array; if
+			* so, we compare them.  Otherwise, we know that the merge must
+			* use take the element from the left array */
+			if (l < left + midpoint_distance &&
+				(r == right || max(input[l], input[r]) == input[l]))
+			{
+				scratch[i] = input[l];
+				l++;
+			}
+			else
+			{
+				scratch[i] = input[r];
+				r++;
+			}
+		}
+		/* Copy the sorted subarray back to the input */
+		for (i = left; i < right; i++)
+		{
+			input[i] = scratch[i - left];
+		}
+	}
+}
+//switch table direction
+void TCPTable::flipData()
+{
+	string *temp;
+	for (int i = 0; i < tableSize / 2; i++){
+		temp = data[tableSize - i - 1];
+		data[tableSize - i - 1] = data[i];
+		data[i] = temp;
+	}
+	mergeSortArrayLocal();
+}
+
 //prints header informaton for debug purposes
 void TCPTable::printHeaderInformation()
 {
-	for (int i = 0; i < 3; i++){
+	/*for (int i = 0; i < 3; i++){
 		for (int j = 0; j < 4; j++){
 			cout << headerInformation[i][j] << " ";
 		}
 		cout << endl;
-	}
+	}*/
 }
 //redraws the table
 void TCPTable::redrawTable(TCPTable *curTable)
