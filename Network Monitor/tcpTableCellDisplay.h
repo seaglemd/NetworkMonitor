@@ -44,8 +44,6 @@ public:
 		noRefill = 0;
 		tcpConnections = new TcpTableAccess();
 		blipl = new BlacklistIpChecker();
-		tcpList = tcpConnections->passTcpTable();
-		tableSize = tcpConnections->getTableSize();
 		initializeHeaderInformation();
 		fillDataArray();
 
@@ -100,7 +98,7 @@ private:
 	TcpTableAccess *tcpConnections;
 	BlacklistIpChecker *blipl;
 	void TCPTable::mergeSortArrayLocal();
-	void TCPTable::mergeHelper(int *input, int left, int right, int *scratch);
+	void TCPTable::mergeHelper(string *input, int left, int right, string *scratch, string **dataScratch);
 	void TCPTable::initializeHeaderInformation();
 	void TCPTable::fillDataArray();
 	//debug purposes
@@ -182,15 +180,7 @@ private:
 	
 	
 };
-//prevents reading and writing from the data array at the same time
-void TCPTable::updateCells()
-{
-	noDraw = 1;
-	if (noRefill == 0)
-		fillDataArray();
-	noDraw = 0;
-}
-//sets the sort directions
+
 //initializes header information array, used to store location data for events
 void TCPTable::initializeHeaderInformation()
 {
@@ -201,49 +191,44 @@ void TCPTable::initializeHeaderInformation()
 			headerInformation[i][1] = 0;
 			headerInformation[i][2] = 0;
 			headerInformation[i][3] = 0;
-		}
+	}
+}
+//prevents reading and writing from the data array at the same time
+void TCPTable::updateCells()
+{
+	noDraw = 1;
+	if (noRefill == 0)
+		fillDataArray();
+	noDraw = 0;
 }
 //fills the array that is actually drawn from the data received from the tcp table
 void TCPTable::fillDataArray()
 {
-
 	if (firstTime != 1){
-		for (int i = 0; i < tableSize; i++){
+		for (int i = 0; i < tableSize; i++)
 			delete[]data[i];
-		}
 		delete[] data;
-		tcpList = tcpConnections->passTcpTable();
-		tableSize = tcpConnections->getTableSize();
-		data = new string*[tableSize];
-		for (int i = 0; i < tableSize; i++)
-			data[i] = new string[3];
-
-		for (int i = 0; i < tableSize; i++)
-			for (int j = 0; j < 3; j++)
-				data[i][j] = " ";
-
-		for (int i = 0; i < tableSize; i++)
-			for (int j = 0; j < 3; j++)
-				data[i][j] = tcpList[i][j];
-
-			mergeSortArrayLocal();
 	}
-	else{
-		data = new string*[tableSize];
-		for (int i = 0; i < tableSize; i++){
-			data[i] = new string[3];
-		}
+	
+	tcpList = tcpConnections->passTcpTable();
+	tableSize = tcpConnections->getTableSize();
 
-		for (int i = 0; i < tableSize; i++)
-			for (int j = 0; j < 3; j++)
-				data[i][j] = " ";
+	data = new string*[tableSize];
+	for (int i = 0; i < tableSize; i++)
+		data[i] = new string[3];
 
-		for (int i = 0; i < tableSize; i++)
-			for (int j = 0; j < 3; j++)
-				data[i][j] = tcpList[i][j];
+	for (int i = 0; i < tableSize; i++)
+		for (int j = 0; j < 3; j++)
+			data[i][j] = " ";
+
+	for (int i = 0; i < tableSize; i++)
+		for (int j = 0; j < 3; j++)
+			data[i][j] = tcpList[i][j];
+
+	if (firstTime == 1)
 		firstTime = 0;
-		mergeSortArrayLocal();
-	}
+
+	mergeSortArrayLocal();
 }
 //sorts array
 void TCPTable::mergeSortArrayLocal()
@@ -251,10 +236,13 @@ void TCPTable::mergeSortArrayLocal()
 	int locationA = 0;
 	int ipAddress = 0;
 	string curSubstring;
-	int *sortArrayLocal = new int[tableSize];
-	int *sortArrayRemote = new int[tableSize];
-	int *scratchArray = new int[tableSize * 3];
-	int *dataScratch = new int[tableSize * 3];
+	string *sortArrayLocal = new string[tableSize];
+	string *sortArrayRemote = new string[tableSize];
+	string *sortScratch = new string[tableSize * 3];
+	string **dataScratch = new string*[tableSize * 3];
+	for (int i = 0; i < tableSize * 3; i++)
+		dataScratch[i] = new string[3];
+
 	for (int i = 0; i < tableSize; i++){
 		curSubstring = data[i][0];
 		while (curSubstring.find(".") != string::npos){
@@ -263,7 +251,7 @@ void TCPTable::mergeSortArrayLocal()
 		}
 		locationA = curSubstring.find(":");
 		curSubstring.erase(locationA, 1);
-		sortArrayLocal[i] = atoi(curSubstring.c_str());
+		sortArrayLocal[i] = curSubstring;
 	}
 
 	for (int i = 0; i < tableSize; i++){
@@ -274,14 +262,19 @@ void TCPTable::mergeSortArrayLocal()
 		}
 		locationA = curSubstring.find(":");
 		curSubstring.erase(locationA, 1);
-		sortArrayRemote[i] = atoi(curSubstring.c_str());
+		sortArrayRemote[i] = curSubstring;
 	}
-	mergeHelper(sortArrayRemote, 0, tableSize, dataScratch);
 	for (int i = 0; i < tableSize; i++){
-		cout << sortArrayRemote[i] << endl;
+		cout << sortArrayLocal[i] << " " << sortArrayRemote[i] << endl;
 	}
+	mergeHelper(sortArrayRemote, 0, tableSize, sortScratch, dataScratch);
+
+	for (int i = 0; i < tableSize * 3; i++)
+		delete dataScratch[i];
+	delete []dataScratch;
+
 }
-void TCPTable::mergeHelper(int *input, int left, int right, int *scratch)
+void TCPTable::mergeHelper(string *input, int left, int right, string *scratch, string **dataScratch)
 {
 	/* base case: one element */
 	if (right == left + 1)
@@ -297,8 +290,8 @@ void TCPTable::mergeHelper(int *input, int left, int right, int *scratch)
 		int l = left, r = left + midpoint_distance;
 
 		/* sort each subarray */
-		mergeHelper(input, left, left + midpoint_distance, scratch);
-		mergeHelper(input, left + midpoint_distance, right, scratch);
+		mergeHelper(input, left, left + midpoint_distance, scratch, dataScratch);
+		mergeHelper(input, left + midpoint_distance, right, scratch, dataScratch);
 
 		/* merge the arrays together using scratch for temporary storage */
 		for (i = 0; i < length; i++)
@@ -311,11 +304,13 @@ void TCPTable::mergeHelper(int *input, int left, int right, int *scratch)
 				(r == right || max(input[l], input[r]) == input[l]))
 			{
 				scratch[i] = input[l];
+				dataScratch[i] = data[l];
 				l++;
 			}
 			else
 			{
 				scratch[i] = input[r];
+				dataScratch[i] = data[r];
 				r++;
 			}
 		}
@@ -323,6 +318,7 @@ void TCPTable::mergeHelper(int *input, int left, int right, int *scratch)
 		for (i = left; i < right; i++)
 		{
 			input[i] = scratch[i - left];
+			data[i] = dataScratch[i - left];
 		}
 	}
 }
@@ -335,7 +331,6 @@ void TCPTable::flipData()
 		data[tableSize - i - 1] = data[i];
 		data[i] = temp;
 	}
-	mergeSortArrayLocal();
 }
 
 //prints header informaton for debug purposes
