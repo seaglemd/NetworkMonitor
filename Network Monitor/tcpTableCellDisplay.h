@@ -40,8 +40,9 @@ public:
 		ipStatusListSize = 0;
 		curDrawRow = 0;
 		ipStatusLookup = 0;
-		sortDirection = 0;
+		colToSort = 0;
 		noRefill = 0;
+		oppositeDir = 0;
 		tcpConnections = new TcpTableAccess();
 		blipl = new BlacklistIpChecker();
 		initializeHeaderInformation();
@@ -72,7 +73,7 @@ public:
 	string **TCPTable::getTableCopy(); //copies the TCP Information
 	int TCPTable::getCopyTableSize(); //size of the copy created
 	int TCPTable::getIpStatusLookup(); //returns status of ipLookup progress for gui updates
-	void TCPTable::flipData();
+	void TCPTable::flipData(int colClicked);
 	void TCPTable::setIpStatusLookup();
 	void TCPTable::stopTableRefill(); //stops the table from collecting new data
 	void TCPTable::startTableRefill(); //starts the table from collecting new data
@@ -91,13 +92,14 @@ private:
 	int *ipStatusList; //ip status list
 	int ipStatusLookup;
 	int **headerInformation;
-	int sortDirection;
+	int colToSort;
+	int oppositeDir;
 	string **data;  // data array for cells
 	string headings[MAX_COLST];
 	string **tcpList;
 	TcpTableAccess *tcpConnections;
 	BlacklistIpChecker *blipl;
-	void TCPTable::mergeSortArrayLocal();
+	void TCPTable::prepMergeSort();
 	void TCPTable::mergeHelper(string *input, int left, int right, string *scratch, string **dataScratch);
 	void TCPTable::initializeHeaderInformation();
 	void TCPTable::fillDataArray();
@@ -228,50 +230,61 @@ void TCPTable::fillDataArray()
 	if (firstTime == 1)
 		firstTime = 0;
 
-	mergeSortArrayLocal();
 }
 //sorts array
-void TCPTable::mergeSortArrayLocal()
+void TCPTable::prepMergeSort()
 {
+	cout << "here in prepMergeSort " << colToSort << endl;
 	int locationA = 0;
 	int ipAddress = 0;
 	string curSubstring;
 	string *sortArrayLocal = new string[tableSize];
 	string *sortArrayRemote = new string[tableSize];
+	string *sortArrayStatus = new string[tableSize];
+
 	string *sortScratch = new string[tableSize * 3];
 	string **dataScratch = new string*[tableSize * 3];
 	for (int i = 0; i < tableSize * 3; i++)
 		dataScratch[i] = new string[3];
 
-	for (int i = 0; i < tableSize; i++){
-		curSubstring = data[i][0];
-		while (curSubstring.find(".") != string::npos){
-			locationA = curSubstring.find(".");
+	if (colToSort == 1){
+		for (int i = 0; i < tableSize; i++){
+			curSubstring = data[i][0];
+			while (curSubstring.find(".") != string::npos){
+				locationA = curSubstring.find(".");
+				curSubstring.erase(locationA, 1);
+			}
+			locationA = curSubstring.find(":");
 			curSubstring.erase(locationA, 1);
+			sortArrayLocal[i] = curSubstring;
 		}
-		locationA = curSubstring.find(":");
-		curSubstring.erase(locationA, 1);
-		sortArrayLocal[i] = curSubstring;
+		mergeHelper(sortArrayLocal, 0, tableSize, sortScratch, dataScratch);
+		colToSort = 0;
 	}
-
-	for (int i = 0; i < tableSize; i++){
-		curSubstring = data[i][1];
-		while (curSubstring.find(".") != string::npos){
-			locationA = curSubstring.find(".");
+	if (colToSort == 2){
+		cout << "haer in remote!" << endl;
+		for (int i = 0; i < tableSize; i++){
+			curSubstring = data[i][1];
+			while (curSubstring.find(".") != string::npos){
+				locationA = curSubstring.find(".");
+				curSubstring.erase(locationA, 1);
+			}
+			locationA = curSubstring.find(":");
 			curSubstring.erase(locationA, 1);
+			sortArrayRemote[i] = curSubstring;
 		}
-		locationA = curSubstring.find(":");
-		curSubstring.erase(locationA, 1);
-		sortArrayRemote[i] = curSubstring;
+		mergeHelper(sortArrayRemote, 0, tableSize, sortScratch, dataScratch);
+		colToSort = 0;
 	}
-	for (int i = 0; i < tableSize; i++){
-		cout << sortArrayLocal[i] << " " << sortArrayRemote[i] << endl;
+	if (colToSort == 3){
+		for (int i = 0; i < tableSize; i++){
+			sortArrayStatus[i] = data[i][2];
+		}
+		mergeHelper(sortArrayStatus, 0, tableSize, sortScratch, dataScratch);
+		colToSort = 0;
 	}
-	mergeHelper(sortArrayRemote, 0, tableSize, sortScratch, dataScratch);
-
-	for (int i = 0; i < tableSize * 3; i++)
-		delete dataScratch[i];
-	delete []dataScratch;
+	//issues with deleting dataScratch at this point, investigate.
+	//Literally worked yesterday and doesn't work today, no other changes (3/2/2015)
 
 }
 void TCPTable::mergeHelper(string *input, int left, int right, string *scratch, string **dataScratch)
@@ -323,14 +336,25 @@ void TCPTable::mergeHelper(string *input, int left, int right, string *scratch, 
 	}
 }
 //switch table direction
-void TCPTable::flipData()
+void TCPTable::flipData(int colClicked)
 {
-	string *temp;
-	for (int i = 0; i < tableSize / 2; i++){
-		temp = data[tableSize - i - 1];
-		data[tableSize - i - 1] = data[i];
-		data[i] = temp;
+	noDraw = 1;
+	colToSort = colClicked;
+	prepMergeSort();
+	if (oppositeDir == 1){
+		string *temp;
+		for (int i = 0; i < tableSize / 2; i++){
+			temp = data[tableSize - i - 1];
+			data[tableSize - i - 1] = data[i];
+			data[i] = temp;
+		}
+		oppositeDir = 0;
 	}
+	else if (oppositeDir == 0){ //this is an else if specifically to continue logic from last if
+		oppositeDir = 1;
+	}
+	noDraw = 0;	
+	updateCells();
 }
 
 //prints header informaton for debug purposes

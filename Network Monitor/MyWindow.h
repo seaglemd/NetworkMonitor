@@ -268,7 +268,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	show(); //MyWindow is shown
 	theWindow = this;//sets global variable to this for outside class reference
 	Fl::add_check(event_cb);//starts callback for event checking such as mouseovers/status etc
-	startThread(); //starts the thread to check for updates that should be processed in the main thread
+	startThread(); //starts the thread to check for updates that should be processed in the main thread 
 }
 //Assignes proper images for firewall
 void MyWindow::setCurrentFirewallStatus() 
@@ -513,18 +513,22 @@ void event_cb(void*)
 						 headerSizeInformation[0][2], headerSizeInformation[0][3]) != 0){
 		Fl::event_is_click(0);
 		if (tcpStopped == 1){
-			table->flipData();
+			table->flipData(1);
 		}
 	}
 	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[1][0], headerSizeInformation[1][1],
 		headerSizeInformation[1][2], headerSizeInformation[1][3]) != 0){
 		Fl::event_is_click(0);
-		cout << "inside2" << endl;
+		if (tcpStopped == 1){
+			table->flipData(2);
+		}
 	}
 	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[2][0], headerSizeInformation[2][1],
 		headerSizeInformation[2][2], headerSizeInformation[2][3]) != 0){
 		Fl::event_is_click(0);
-		cout << "inside3" << endl;
+		if (tcpStopped == 1){
+			table->flipData(3);
+		}
 	}
 	if (Fl::event_inside(stopButtonTcp) != 0){
 		changeStopTcpLabel = 1;
