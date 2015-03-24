@@ -152,6 +152,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	changeRDNSLabel = 0;
 	localIpSortTcp = 0;
 	tcpStopped = 0;
+	this->color(FL_WHITE, FL_WHITE);
 	firewallStatus = new WFStatus(); //firewall status object created
 	firewallOn = new Fl_PNG_Image("fWOn.png"); //images assigned
 	firewallOff = new Fl_PNG_Image("fwoff.png");
@@ -160,7 +161,11 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	begin(); //starts the window layout
 	
 	   tabGroup = new Fl_Tabs(10, 10, 900 - 20, 500 - 20); //starts tab layout
+	   tabGroup->color(FL_WHITE, FL_WHITE);
 	      tabSectionFirewall = new Fl_Group(30, 55, 900 - 20, 500 - 45, "Firewall"); //starts firewall tab
+		  tabSectionFirewall->color(FL_WHITE, FL_DARK_BLUE);
+		  tabSectionFirewall->labelcolor(FL_WHITE);
+		  tabSectionFirewall->labelfont(FL_BOLD);
 			 //boxes are initially drawn
 		     publicFirewallTextBox = new Fl_Box(50,70,75,25);
 		     publicFirewallTextBox->label("Public Firewall Status: ");
@@ -170,7 +175,10 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	         privateFirewallBox = new Fl_Box(150, 100, 100, 100);	         
 
 	      tabSectionFirewall->end(); //ends firewall tab
-	      tabSectionTCPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "TCP Table"); //starts TCP Tab
+	      tabSectionTCPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "TCP Table");//starts TCP Tab
+		  tabSectionTCPTable->color(FL_WHITE, FL_DARK_BLUE);
+		  tabSectionTCPTable->labelcolor(FL_WHITE);
+		  tabSectionTCPTable->labelfont(FL_BOLD);
 		     table = new TCPTable(35, 65, 535, 350); //calls display/retrieval of the TCP table
 			 rTable = new RDNSTable(table, 600, 200, 270, 215); //starts the table for RDNS lookups
 			 tcpConnectionInfo = table->getTcpObject(); //gets the tcp connection info
@@ -178,60 +186,79 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 stopButtonTcp = new Fl_Button(35, 420, 25, 25);
 			 stopButtonTcp->labelcolor(FL_RED);
 			 stopButtonTcp->labeltype(FL_SHADOW_LABEL);
-			 stopButtonTcp->label("@square");
+			 stopButtonTcp->label("@+2square");
+			 stopButtonTcp->box(FL_NO_BOX);
 			 stopButtonTcp->callback(stop_button_tcp_cb);
 
 			 resumeButtonTcp = new Fl_Button(65, 420, 25, 25);
 			 resumeButtonTcp->labelcolor(FL_GRAY);
 			 resumeButtonTcp->labeltype(FL_SHADOW_LABEL);
-			 resumeButtonTcp->label("@+2>");
+			 resumeButtonTcp->label("@+6>");
+			 resumeButtonTcp->box(FL_NO_BOX);
 			 resumeButtonTcp->deactivate();
 			 resumeButtonTcp->callback(resume_button_tcp_cb);
 
 			 ipLookupButton = new Fl_Button(95, 420, 25, 25);
 			 ipLookupButton->labelcolor(FL_GRAY);
 			 ipLookupButton->labeltype(FL_SHADOW_LABEL);
-			 ipLookupButton->label("@+28>");
+			 ipLookupButton->label("@+68>");
+			 ipLookupButton->box(FL_NO_BOX);
 			 ipLookupButton->deactivate();
 			 ipLookupButton->callback(iplookup_button_cb);
 
 			 refreshButtonBox = new Fl_Button(845, 420, 25, 25);
+			 refreshButtonBox->box(FL_BORDER_BOX);
+			 refreshButtonBox->color(FL_WHITE, FL_WHITE);
 			 refreshButtonBox->image(refreshImage);
 			 refreshButtonBox->callback(rdns_button_cb);
 			 //labels for information and results placed
 			 hostNameTextBoxLabel = new Fl_Box(600, 65, 100, 25);
 			 hostNameTextBoxLabel->label("Host Name: ");
+			 hostNameTextBoxLabel->labelfont(FL_BOLD);
 			 hostNameTextBox = new Fl_Box(700, 65, 150, 25);
-			 hostNameTextBox->box(FL_DOWN_BOX);
+			 hostNameTextBox->box(FL_BORDER_BOX);
+			 hostNameTextBox->color(FL_WHITE, FL_WHITE);
 			 hostNameTextBox->label("Pending...");		
 
 			 domainNameTextBoxLabel = new Fl_Box(600, 100, 100, 25);
 			 domainNameTextBoxLabel->label("Domain Name: ");
+			 domainNameTextBoxLabel->labelfont(FL_BOLD);
 			 domainNameTextBox = new Fl_Box(700, 100, 100, 25);
-			 domainNameTextBox->box(FL_DOWN_BOX);
+			 domainNameTextBox->box(FL_BORDER_BOX);
+			 domainNameTextBox->color(FL_WHITE, FL_WHITE);
 			 domainNameTextBox->label("Pending...");
 
 			 dnsServerListTextBoxLabel = new Fl_Box(600, 135, 100, 25);
 			 dnsServerListTextBoxLabel->label("DNS Servers: ");
+			 dnsServerListTextBoxLabel->labelfont(FL_BOLD);
 			 dnsServerListTextBox = new Fl_Box(700, 135, 100, 25);
-			 dnsServerListTextBox->box(FL_DOWN_BOX);
+			 dnsServerListTextBox->box(FL_BORDER_BOX);
+			 dnsServerListTextBox->color(FL_WHITE, FL_WHITE);
 			 dnsServerListTextBox->label("Pending...");
 
 			 numberOfConnectionsTextBoxLabel = new Fl_Box(600, 170, 100, 25);
 			 numberOfConnectionsTextBoxLabel->label("Num of Cons: ");
+			 numberOfConnectionsTextBoxLabel->labelfont(FL_BOLD);
 			 numberOfConnectionsTextBox = new Fl_Box(700, 170, 75, 25);
-			 numberOfConnectionsTextBox->box(FL_DOWN_BOX);
+			 numberOfConnectionsTextBox->box(FL_BORDER_BOX);
+			 numberOfConnectionsTextBox->color(FL_WHITE, FL_WHITE);
 			 numberOfConnectionsTextBox->label("Pending...");
 			 //shows status of reverse dns lookup (can take a while depending on connection #)
 			 refreshButtonTextLabel = new Fl_Box(775, 420, 40, 25);
 			 refreshButtonTextLabel->label("");
+			 refreshButtonTextLabel->labelfont(FL_BOLD);
 			 //status bar
-			 textStatusBox = new Fl_Box(35, 450, 450, 25);
-			 textStatusBox->box(FL_DOWN_BOX);
+			 textStatusBox = new Fl_Box(35, 450, 500, 25);
+			 textStatusBox->box(FL_BORDER_BOX);
+			 textStatusBox->color(FL_WHITE, FL_WHITE);
 			 textStatusBox->align(FL_ALIGN_INSIDE);
 			 textStatusBox->label("");
+			 textStatusBox->labelfont(FL_BOLD);
 	      tabSectionTCPTable->end();//ends TCP Table tab
 		  tabSectionUDPTable = new Fl_Group(30, 55, 900 - 20, 500 - 45, "UDP Table");//starts UDP Table tab
+		  tabSectionUDPTable->color(FL_WHITE, FL_DARK_BLUE);
+		  tabSectionUDPTable->labelcolor(FL_WHITE);
+		  tabSectionUDPTable->labelfont(FL_BOLD);
 		     uTable = new UDPTable(35, 65, 365, 350);//calls display/retrieval of the UDP table
 			 udpConnectionInfo = uTable->getUdpObject();//gets the udp connection info
 			 //buttons placed and initial states decided
@@ -239,6 +266,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 stopButtonUdp->labelcolor(FL_RED);
 			 stopButtonUdp->labeltype(FL_SHADOW_LABEL);
 			 stopButtonUdp->label("@square");
+			 stopButtonUdp->box(FL_NO_BOX);
 			 stopButtonUdp->callback(stop_button_udp_cb);
 
 			 resumeButtonUdp = new Fl_Button(65, 420, 25, 25);
@@ -321,13 +349,16 @@ void MyWindow::threadBody()
 		if (tcpConnectionInfo->getDataState() == 1){			
 			table->updateCells();
 			tcpConnectionInfo->setDataState(0);
+			Fl::awake();
+			Fl::awake(redrawBoxes_cb);
 		}
 		if (udpConnectionInfo->getDataState() == 1){
 			uTable->updateCells();
 			udpConnectionInfo->setDataState(0);
+			Fl::awake();
+			Fl::awake(redrawBoxes_cb);
 		}
-		Fl::awake();
-		Fl::awake(redrawBoxes_cb);//tells the gui to queue for new redraw events
+		//tells the gui to queue for new redraw events
 	}
 }
 //returns the MyWindow object that was created upon startup
@@ -512,6 +543,14 @@ void event_cb(void*)
 	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[0][0], headerSizeInformation[0][1],
 						 headerSizeInformation[0][2], headerSizeInformation[0][3]) != 0){
 		Fl::event_is_click(0);
+		/*cout << table->callback_col() << endl;
+		if (table->is_selected(0, 0)==0){
+			table->set_selection(0, 0, 0, 0);
+		}
+		else{
+			table->set_selection(-1, -1, -1, -1);
+		}
+		cout << "Here" << endl;*/
 		if (tcpStopped == 1){
 			table->flipData(1);
 		}

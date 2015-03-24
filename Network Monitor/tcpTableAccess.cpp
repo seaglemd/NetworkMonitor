@@ -228,6 +228,7 @@ void TcpTableAccess::getTcpTable()
 			dataState = 1;
 			curTcpTableEntryCount = tcpTableEntryCount;
 			consChanged = 0;
+			changeTheDataState = 0;
 		}
 	}
 }

@@ -15,7 +15,7 @@
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_PNG_Image.H>
-#include <FL/Fl_Table.H>
+#include <FL/Fl_Table_Row.H>
 #include <FL/fl_draw.H>
 #include <string>
 
@@ -27,11 +27,16 @@
 
 using namespace std;
 
-class TCPTable : public Fl_Table 
+class TCPTable : public Fl_Table_Row 
 {
 public:	
 	//inline declaration of the TCP table constructor, standard for this inhereted class
-	TCPTable::TCPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L){
+	TCPTable::TCPTable(int X, int Y, int W, int H, const char *L = 0) : Fl_Table_Row(X, Y, W, H, L){
+		this->color(FL_WHITE);
+		this->vscrollbar->slider(FL_BORDER_BOX);
+		this->vscrollbar->color(FL_GRAY, FL_WHITE);
+		this->vscrollbar->labelcolor(FL_BLACK);
+		this->vscrollbar->labelfont(FL_BOLD);
 		firstTime = 1; 
 		tableSize = 0;
 		copyTableSize = 0;
@@ -43,6 +48,8 @@ public:
 		colToSort = 0;
 		noRefill = 0;
 		oppositeDir = 0;
+		curSelectedRow = -1;
+		colCount = 0;
 		tcpConnections = new TcpTableAccess();
 		blipl = new BlacklistIpChecker();
 		initializeHeaderInformation();
@@ -51,14 +58,15 @@ public:
 		headings[0] = "Local IP:Port";
 		headings[1] = "Remote IP:Port";
 		headings[2] = "State";
-
+		type(SELECT_SINGLE);
 		rows(tableSize);
 		row_header(0);              // enable row headers (along left)
-		row_height_all(20);         // default height of rows
+		row_height_all(25);         // default height of rows
 		row_resize(1);              // disable row resizing
 
-		cols(MAX_COLST);             // how many columns
+		cols(MAX_COLST);
 		col_header(1);              // enable column headers (along top)
+		col_header_color(FL_DARK_BLUE);
 		col_width_all(165);          // default width of columns
 		col_resize(1);              // enable column resizing
 		end();                        // end the Fl_Table group
@@ -94,6 +102,8 @@ private:
 	int **headerInformation;
 	int colToSort;
 	int oppositeDir;
+	int curSelectedRow;
+	int colCount;
 	string **data;  // data array for cells
 	string headings[MAX_COLST];
 	string **tcpList;
@@ -114,15 +124,15 @@ private:
 	void TCPTable::DrawHeader(const char *s, int X, int Y, int W, int H){
 		fl_push_clip(X, Y, W, H);
 		if (noRefill != 1)
-			fl_draw_box(FL_THIN_DOWN_BOX, X, Y, W, H, row_header_color());
+			fl_draw_box(FL_BORDER_BOX, X, Y, W, H, col_header_color());
 		else if (noRefill == 1)
-			fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
-		fl_color(FL_BLACK);
+			fl_draw_box(FL_BORDER_BOX, X, Y, W, H, col_header_color());
+		fl_color(FL_WHITE);
 		fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
 		fl_pop_clip();
 	}
 	//draws the data, inline as expected
-	void TCPTable::DrawData(const char *s, int X, int Y, int W, int H) {
+	void TCPTable::DrawData(const char *s, int X, int Y, int W, int H,int sel) {
 		fl_push_clip(X, Y, W, H);
 		// Draw cell bg
 		fl_color(FL_WHITE); fl_rectf(X, Y, W, H);
@@ -133,17 +143,33 @@ private:
 				fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
 			}
 			else if(ipStatusList[curDrawRow] == 1){
-				fl_color(FL_GREEN); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+				if (sel == 1){
+					fl_draw_box(FL_SHADOW_BOX, X, Y, W, H, FL_BLUE);
+					fl_color(FL_WHITE); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+				}
+				else {
+					fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, FL_DARK_GREEN);
+					fl_color(FL_WHITE); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+				}
 			}
 			else if(ipStatusList[curDrawRow] == 2){
 				fl_color(FL_RED); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
 			}
 		}
 		else if (haveStatusList == 0){ //if there has been no check for blips
-			fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+			if (sel == 1){
+				fl_draw_box(FL_SHADOW_BOX, X, Y, W, H, FL_BLUE);
+				fl_color(FL_WHITE);
+				fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+			}
+			else if (sel == 0){
+				fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, FL_WHITE);
+				fl_color(FL_BLACK);
+				fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+			}
 		}
 		// Draw box border
-		fl_color(color()); fl_rect(X, Y, W, H);
+		fl_color(FL_BLACK); fl_rect(X, Y, W, H);
 		fl_pop_clip();
 	}
 	//draws the cells
@@ -169,8 +195,17 @@ private:
 		case CONTEXT_CELL:
 			if (haveStatusList == 1)
 				curDrawRow = ROW;
-			if (ROW <= tableSize && noDraw == 0)
-				DrawData(data[ROW][COL].c_str(), X, Y, W, H);			
+
+			
+			if (ROW <= tableSize && noDraw == 0){
+				
+				if (row_selected(ROW) == 1){
+					DrawData(data[ROW][COL].c_str(), X, Y, W, H, 1); 
+				}
+				else{
+					DrawData(data[ROW][COL].c_str(), X, Y, W, H, 0);
+				}
+			}
 			return;
 		default:
 			return;
@@ -234,7 +269,6 @@ void TCPTable::fillDataArray()
 //sorts array
 void TCPTable::prepMergeSort()
 {
-	cout << "here in prepMergeSort " << colToSort << endl;
 	int locationA = 0;
 	int ipAddress = 0;
 	string curSubstring;
@@ -262,7 +296,6 @@ void TCPTable::prepMergeSort()
 		colToSort = 0;
 	}
 	if (colToSort == 2){
-		cout << "haer in remote!" << endl;
 		for (int i = 0; i < tableSize; i++){
 			curSubstring = data[i][1];
 			while (curSubstring.find(".") != string::npos){
