@@ -176,6 +176,7 @@ private:
 	void TCPTable::draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0){
 		Fl::lock();
 		static char s[40];
+		int justRedrawn = 0;
 		switch (context) {
 		case CONTEXT_STARTPAGE:                   // before page is drawn..
 			fl_font(FL_HELVETICA, 16);              // set the font for our drawing operations
@@ -197,10 +198,28 @@ private:
 				curDrawRow = ROW;
 
 			
-			if (ROW <= tableSize && noDraw == 0){
-				
+			if (ROW <= tableSize && noDraw == 0){				
 				if (row_selected(ROW) == 1){
-					DrawData(data[ROW][COL].c_str(), X, Y, W, H, 1); 
+					if (curSelectedRow == ROW){
+						DrawData(data[ROW][COL].c_str(), X, Y, W, H, 0);
+						if (COL == 2){
+							curSelectedRow = -1;
+							justRedrawn = 1;
+						}
+					}
+					if (curSelectedRow != ROW && curSelectedRow != -1){
+						DrawData(data[ROW][COL].c_str(), X, Y, W, H, 1);
+						if (COL == 2)
+							curSelectedRow = ROW;
+						justRedrawn = 0;
+					}
+					if (curSelectedRow == -1 && justRedrawn == 0){
+						DrawData(data[ROW][COL].c_str(), X, Y, W, H, 1);
+						if (COL == 2)
+							curSelectedRow = ROW;						
+					}
+					if (COL == 2 && justRedrawn == 1)
+						justRedrawn = 0;					
 				}
 				else{
 					DrawData(data[ROW][COL].c_str(), X, Y, W, H, 0);

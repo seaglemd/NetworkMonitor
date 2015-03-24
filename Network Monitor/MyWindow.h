@@ -510,6 +510,8 @@ void MyWindow::rdnsThreadBody()
 void rdns_button_cb(Fl_Widget *widget, void *u)
 {
 	refreshButtonTextLabel->label("Refreshing...");
+	refreshButtonTextLabel->redraw_label();
+	theWindow->redraw();
 	theWindow->startRDNSThread();
 }
 //tcp stop button callback

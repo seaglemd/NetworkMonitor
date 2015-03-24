@@ -13,7 +13,7 @@
 #include <FL/Fl_Box.H>
 #include <FL/Fl_Button.H>
 #include <FL/Fl_PNG_Image.H>
-#include <FL/Fl_Table.H>
+#include <FL/Fl_Table_Row.H>
 #include <FL/fl_draw.H>
 
 
@@ -23,11 +23,20 @@
 
 using namespace std;
 //Extending Fl_Table is how tables are made in FLTK
-class RDNSTable : public Fl_Table
+class RDNSTable : public Fl_Table_Row
 {
 public:
 	//inline constructor declartion is typcal for inherited classes in this way
-	RDNSTable::RDNSTable(TCPTable *nCurTable, int X, int Y, int W, int H, const char *L = 0) : Fl_Table(X, Y, W, H, L){
+	RDNSTable::RDNSTable(TCPTable *nCurTable, int X, int Y, int W, int H, const char *L = 0) : Fl_Table_Row(X, Y, W, H, L){
+		this->color(FL_WHITE);
+		this->hscrollbar->slider(FL_BORDER_BOX);
+		this->vscrollbar->slider(FL_BORDER_BOX);
+		this->hscrollbar->color(FL_GRAY, FL_WHITE);
+		this->vscrollbar->color(FL_GRAY, FL_WHITE);
+		this->hscrollbar->labelcolor(FL_BLACK);
+		this->vscrollbar->labelcolor(FL_BLACK);
+		this->hscrollbar->labelfont(FL_BOLD);
+		this->vscrollbar->labelfont(FL_BOLD);
 		firstTime = 1;
 		tableSize = 0;
 		curTable = nCurTable; //current table reference for moving out of local scope
@@ -42,6 +51,7 @@ public:
 
 		cols(MAX_COLSR);             // how many columns
 		col_header(1);              // enable column headers (along top)
+		col_header_color(FL_DARK_BLUE);
 		col_width_all(450);          // default width of columns
 		col_resize(1);              // enable column resizing
 		end();                        // end the Fl_Table group
@@ -65,8 +75,8 @@ private:
 	//table header, inline as normal
 	void RDNSTable::DrawHeader(const char *s, int X, int Y, int W, int H){
 		fl_push_clip(X, Y, W, H);
-		fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, row_header_color());
-		fl_color(FL_BLACK);
+		fl_draw_box(FL_BORDER_BOX, X, Y, W, H, col_header_color());
+		fl_color(FL_WHITE);
 		fl_draw(s, X, Y, W, H, FL_ALIGN_LEFT);
 		fl_pop_clip();
 	}

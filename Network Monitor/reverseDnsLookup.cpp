@@ -28,7 +28,6 @@ string *ReverseDnsLookup::getHostList(string **nTcpList, int nTcpListSize)
     u_short port = 27015;
 
         // Validate the parameters
-
         // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) { //checks for a good connection on hostnames with winsock2
@@ -62,7 +61,6 @@ string *ReverseDnsLookup::getHostList(string **nTcpList, int nTcpListSize)
 			else {
 				tempHostNameList[i] = hostname;
 			}
-
 	}
 	//fills the actual list that will be used without all the unreachables
 		for (int i = 0; i < tcpListSize; i++){
