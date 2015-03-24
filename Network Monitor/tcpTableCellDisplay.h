@@ -232,9 +232,7 @@ private:
 
 		Fl::unlock();
 		return;
-	}
-	
-	
+	}	
 };
 
 //initializes header information array, used to store location data for events
@@ -337,7 +335,6 @@ void TCPTable::prepMergeSort()
 	}
 	//issues with deleting dataScratch at this point, investigate.
 	//Literally worked yesterday and doesn't work today, no other changes (3/2/2015)
-
 }
 void TCPTable::mergeHelper(string *input, int left, int right, string *scratch, string **dataScratch)
 {

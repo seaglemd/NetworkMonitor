@@ -32,6 +32,7 @@ int redrawRDNSTable; //triggered when the rds table should be drawn/redrawn
 int stopTcp;  
 int startTcp;
 int tcpStopped;
+int udpStopped;
 //triggers the start and stop of the UDP thread
 int stopUdp;
 int startUdp;
@@ -44,6 +45,7 @@ int changeIpLookupLabel;
 int changeRDNSLabel;
 //Array for header bounds for cb events
 int **headerSizeInformation;
+int **uHeaderSizeInformation;
 //triggers for sorts
 int localIpSortTcp;
 //These objects must all be referenced outside of the main class, including the
@@ -63,6 +65,14 @@ Fl_Button *stopButtonUdp; //UDP here for future implementation
 Fl_Button *resumeButtonUdp;
 Fl_Button *refreshButtonBox;
 Fl_Button *ipLookupButton;
+/*
+Tab group setup and tab sections setup
+needs to be global for click callbacks
+*/
+Fl_Tabs *tabGroup;
+Fl_Group *tabSectionFirewall;
+Fl_Group *tabSectionTCPTable;
+Fl_Group *tabSectionUDPTable;
 
 /**********************************************
 *MyWindow extends/inherits Fl_Double_Window   *
@@ -73,14 +83,7 @@ class MyWindow : public Fl_Double_Window
 		MyWindow(int w, int h, const char* title);
 		void MyWindow::startRDNSThread(); //Starts the thread for reverse DNS lookups
 		~MyWindow();
-	private:
-		/*
-		Tab group setup and tab sections setup
-		*/
-		Fl_Tabs *tabGroup;
-		Fl_Group *tabSectionFirewall;
-		Fl_Group *tabSectionTCPTable;
-		Fl_Group *tabSectionUDPTable;		
+	private:		
 		/*
 		Text and image boxes for firewall
 		*/
@@ -152,6 +155,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	changeRDNSLabel = 0;
 	localIpSortTcp = 0;
 	tcpStopped = 0;
+	udpStopped = 0;
 	this->color(FL_WHITE, FL_WHITE);
 	firewallStatus = new WFStatus(); //firewall status object created
 	firewallOn = new Fl_PNG_Image("fWOn.png"); //images assigned
@@ -162,6 +166,7 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 	
 	   tabGroup = new Fl_Tabs(10, 10, 900 - 20, 500 - 20); //starts tab layout
 	   tabGroup->color(FL_WHITE, FL_WHITE);
+	   tabGroup->box(FL_BORDER_BOX);
 	      tabSectionFirewall = new Fl_Group(30, 55, 900 - 20, 500 - 45, "Firewall"); //starts firewall tab
 		  tabSectionFirewall->color(FL_WHITE, FL_DARK_BLUE);
 		  tabSectionFirewall->labelcolor(FL_WHITE);
@@ -265,27 +270,32 @@ MyWindow::MyWindow(int w, int h, const char* title):Fl_Double_Window(w, h, title
 			 stopButtonUdp = new Fl_Button(35, 420, 25, 25);
 			 stopButtonUdp->labelcolor(FL_RED);
 			 stopButtonUdp->labeltype(FL_SHADOW_LABEL);
-			 stopButtonUdp->label("@square");
+			 stopButtonUdp->label("@+2square");
 			 stopButtonUdp->box(FL_NO_BOX);
 			 stopButtonUdp->callback(stop_button_udp_cb);
 
 			 resumeButtonUdp = new Fl_Button(65, 420, 25, 25);
 			 resumeButtonUdp->labelcolor(FL_GRAY);
 			 resumeButtonUdp->labeltype(FL_SHADOW_LABEL);
-			 resumeButtonUdp->label("@+2>");
+			 resumeButtonUdp->label("@+6>");
+			 resumeButtonUdp->box(FL_NO_BOX);
 			 resumeButtonUdp->callback(resume_button_udp_cb);
 			 resumeButtonUdp->deactivate();
 			 //labels for information and results placed
 			 numberOfUdpTableEntriesTextBoxLabel = new Fl_Box(400, 65, 100, 25);
+			 numberOfUdpTableEntriesTextBoxLabel->labelfont(FL_BOLD);
 			 numberOfUdpTableEntriesTextBoxLabel->label("Udp Entries: ");
 			 numberOfUdpTableEntriesTextBox = new Fl_Box(500, 65, 50, 25);
-			 numberOfUdpTableEntriesTextBox->box(FL_DOWN_BOX);
+			 numberOfUdpTableEntriesTextBox->box(FL_BORDER_BOX);
+			 numberOfUdpTableEntriesTextBox->color(FL_WHITE);
 			 numberOfUdpTableEntriesTextBox->label("Pending...");
 
 		     numberOfDatagramsTextBoxLabel = new Fl_Box(400, 100, 100, 25);
+			 numberOfDatagramsTextBoxLabel->labelfont(FL_BOLD);
 		     numberOfDatagramsTextBoxLabel->label("Datagrams: ");
 		     numberOfDatagramsTextBox = new Fl_Box(500, 100, 75, 25);
-		     numberOfDatagramsTextBox->box(FL_DOWN_BOX);
+		     numberOfDatagramsTextBox->box(FL_BORDER_BOX);
+			 numberOfDatagramsTextBox->color(FL_WHITE);
 		     numberOfDatagramsTextBox->label("Pending...");
 		  tabSectionUDPTable->end();//end of the udp tab
 	   tabGroup->end();//end of tabs
@@ -346,6 +356,7 @@ void MyWindow::threadBody()
 		getCurrentTCPTableInfo();
 		getCurrentUDPTableInfo();
 		headerSizeInformation = table->getHeaderSizeInformation();
+		uHeaderSizeInformation = uTable->getHeaderSizeInformation();
 		if (tcpConnectionInfo->getDataState() == 1){			
 			table->updateCells();
 			tcpConnectionInfo->setDataState(0);
@@ -376,8 +387,15 @@ void MyWindow::initializeHeaderSizes()
 			headerSizeInformation[i][1] = 0;
 			headerSizeInformation[i][2] = 0;
 			headerSizeInformation[i][3] = 0;
-
-		}
+	}
+	uHeaderSizeInformation = new int*[2];
+	for (int i = 0; i < 2; i++){
+		uHeaderSizeInformation[i] = new int[4];
+		uHeaderSizeInformation[i][0] = 0;
+		uHeaderSizeInformation[i][1] = 0;
+		uHeaderSizeInformation[i][2] = 0;
+		uHeaderSizeInformation[i][3] = 0;
+	}
 }
 //function controls status of buttons, what has been clicked, and status bar text
 void MyWindow::checkControlStatus()
@@ -407,6 +425,7 @@ void MyWindow::checkControlStatus()
 		startTcp = 0;
 	}
 	if (stopUdp == 1){
+		udpStopped = 1;
 		udpConnectionInfo->stopUpdates();
 		stopButtonUdp->labelcolor(FL_GRAY);
 		stopButtonUdp->deactivate();
@@ -415,6 +434,7 @@ void MyWindow::checkControlStatus()
 		stopUdp = 0;
 	}
 	if (startUdp == 1){
+		udpStopped = 0;
 		udpConnectionInfo->startUpdates();
 		resumeButtonUdp->labelcolor(FL_GRAY);
 		resumeButtonUdp->deactivate();
@@ -543,32 +563,40 @@ void iplookup_button_cb(Fl_Widget *widget, void *u)
 void event_cb(void*)
 {
 	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[0][0], headerSizeInformation[0][1],
-						 headerSizeInformation[0][2], headerSizeInformation[0][3]) != 0){
+		headerSizeInformation[0][2], headerSizeInformation[0][3]) != 0 && tabGroup->value() == tabSectionTCPTable){
+		cout << "here" << endl;
 		Fl::event_is_click(0);
-		/*cout << table->callback_col() << endl;
-		if (table->is_selected(0, 0)==0){
-			table->set_selection(0, 0, 0, 0);
-		}
-		else{
-			table->set_selection(-1, -1, -1, -1);
-		}
-		cout << "Here" << endl;*/
 		if (tcpStopped == 1){
 			table->flipData(1);
 		}
 	}
 	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[1][0], headerSizeInformation[1][1],
-		headerSizeInformation[1][2], headerSizeInformation[1][3]) != 0){
+		headerSizeInformation[1][2], headerSizeInformation[1][3]) != 0 && tabGroup->value() == tabSectionTCPTable){
 		Fl::event_is_click(0);
 		if (tcpStopped == 1){
 			table->flipData(2);
 		}
 	}
 	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[2][0], headerSizeInformation[2][1],
-		headerSizeInformation[2][2], headerSizeInformation[2][3]) != 0){
+		headerSizeInformation[2][2], headerSizeInformation[2][3]) != 0 && tabGroup->value() == tabSectionTCPTable){
 		Fl::event_is_click(0);
 		if (tcpStopped == 1){
 			table->flipData(3);
+		}
+	}
+	if (Fl::event_is_click() != 0 && Fl::event_inside(uHeaderSizeInformation[0][0], uHeaderSizeInformation[0][1],
+		uHeaderSizeInformation[0][2], uHeaderSizeInformation[0][3]) != 0 && tabGroup->value() == tabSectionUDPTable){
+		cout << "here" << endl;
+		Fl::event_is_click(0);
+		if (udpStopped == 1){
+			uTable->flipData(1);
+		}
+	}
+	if (Fl::event_is_click() != 0 && Fl::event_inside(uHeaderSizeInformation[1][0], uHeaderSizeInformation[1][1],
+		uHeaderSizeInformation[1][2], uHeaderSizeInformation[1][3]) != 0 && tabGroup->value() == tabSectionUDPTable){
+		Fl::event_is_click(0);
+		if (udpStopped == 1){
+			uTable->flipData(2);
 		}
 	}
 	if (Fl::event_inside(stopButtonTcp) != 0){
