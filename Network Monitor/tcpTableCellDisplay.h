@@ -50,6 +50,7 @@ public:
 		oppositeDir = 0;
 		curSelectedRow = -1;
 		colCount = 0;
+		tcpStop = 0;
 		tcpConnections = new TcpTableAccess();
 		blipl = new BlacklistIpChecker();
 		initializeHeaderInformation();
@@ -86,6 +87,8 @@ public:
 	void TCPTable::stopTableRefill(); //stops the table from collecting new data
 	void TCPTable::startTableRefill(); //starts the table from collecting new data
 	void TCPTable::blacklistChecker(); //checks for blips
+	int TCPTable::tcpStopped();
+	void TCPTable::tcpStopped(int stopped);
 	TCPTable::~TCPTable();
 private:
 	int firstTime; //for cleaning
@@ -104,6 +107,7 @@ private:
 	int oppositeDir;
 	int curSelectedRow;
 	int colCount;
+	int tcpStop;
 	string **data;  // data array for cells
 	string headings[MAX_COLST];
 	string **tcpList;
@@ -199,7 +203,7 @@ private:
 
 			
 			if (ROW <= tableSize && noDraw == 0){				
-				if (row_selected(ROW) == 1){
+				if (row_selected(ROW) == 1 && tcpStopped() != 0){
 					if (curSelectedRow == ROW){
 						DrawData(data[ROW][COL].c_str(), X, Y, W, H, 0);
 						if (COL == 2){
@@ -517,6 +521,14 @@ void TCPTable::enterBlipThread(void *p)
 	((TCPTable *)p)->threadBlipBody();
 	_endthread();
 	return;
+}
+int TCPTable::tcpStopped()
+{
+	return tcpStop;
+}
+void TCPTable::tcpStopped(int stopped)
+{
+	tcpStop = stopped;
 }
 //destructor
 TCPTable::~TCPTable() { }

@@ -40,6 +40,8 @@ public:
 		colToSort = 0;
 		noRefill = 0;
 		oppositeDir = 1;
+		curSelectedRow = -1;
+		udpStop = 0;
 		udpConnections = new UdpTableAccess();
 		udpList = udpConnections->passUdpTable();
 		tableSize = udpConnections->getTableSize();
@@ -68,6 +70,8 @@ public:
 	void UDPTable::redrawTable(UDPTable *curTable);
 	int **UDPTable::getHeaderSizeInformation();
 	void UDPTable::flipData(int colClicked);
+	int UDPTable::udpStopped();
+	void UDPTable::udpStopped(int stopped);
 	UDPTable::~UDPTable();
 private:
 	int firstTime;
@@ -77,6 +81,8 @@ private:
 	int **headerInformation;
 	int colToSort;
 	int oppositeDir;
+	int curSelectedRow;
+	int udpStop;
 	string **data;
 	string headings[MAX_COLS];
 	string **udpList;
@@ -97,12 +103,21 @@ private:
 		fl_pop_clip();
 	}
 	//draws the current cell, inline as is standard
-	void UDPTable::DrawData(const char *s, int X, int Y, int W, int H) {
+	void UDPTable::DrawData(const char *s, int X, int Y, int W, int H, int sel) {
 		fl_push_clip(X, Y, W, H);
 		// Draw cell bg
 		fl_color(FL_WHITE); fl_rectf(X, Y, W, H);
 		// Draw cell data
-		fl_color(FL_GRAY0); fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+		if (sel == 1){
+			fl_draw_box(FL_SHADOW_BOX, X, Y, W, H, FL_BLUE);
+			fl_color(FL_WHITE);
+			fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+		}
+		else if (sel == 0){
+			fl_draw_box(FL_THIN_UP_BOX, X, Y, W, H, FL_WHITE);
+			fl_color(FL_BLACK);
+			fl_draw(s, X, Y, W, H, FL_ALIGN_CENTER);
+		}
 		// Draw box border
 		fl_color(FL_BLACK); fl_rect(X, Y, W, H);
 		fl_pop_clip();
@@ -110,6 +125,7 @@ private:
 	//draws the cells, inline as is normal
 	void UDPTable::draw_cell(TableContext context, int ROW = 0, int COL = 0, int X = 0, int Y = 0, int W = 0, int H = 0) {
 		Fl::lock();
+		int justRedrawn = 0;
 		static char s[40];
 		switch (context) {
 		case CONTEXT_STARTPAGE:                   // before page is drawn..
@@ -127,8 +143,34 @@ private:
 			//DrawHeader(s, X, Y, W, H);
 			return;
 		case CONTEXT_CELL:
-			if (ROW <= tableSize && noDraw == 0) //protection from read/writing at same time
-				DrawData(data[ROW][COL].c_str(), X, Y, W, H);
+			if (ROW <= tableSize && noDraw == 0){ //protection from read/writing at same time
+				if (row_selected(ROW) == 1 && udpStopped() == 1){
+					cout << udpStopped() << endl;
+					if (curSelectedRow == ROW){
+						DrawData(data[ROW][COL].c_str(), X, Y, W, H, 0);
+						if (COL == 1){
+							curSelectedRow = -1;
+							justRedrawn = 1;
+						}
+					}
+					if (curSelectedRow != ROW && curSelectedRow != -1){
+						DrawData(data[ROW][COL].c_str(), X, Y, W, H, 1);
+						if (COL == 1)
+							curSelectedRow = ROW;
+						justRedrawn = 0;
+					}
+					if (curSelectedRow == -1 && justRedrawn == 0){
+						DrawData(data[ROW][COL].c_str(), X, Y, W, H, 1);
+						if (COL == 1)
+							curSelectedRow = ROW;
+					}
+					if (COL == 1 && justRedrawn == 1)
+						justRedrawn = 0;
+				}
+				else{
+					DrawData(data[ROW][COL].c_str(), X, Y, W, H, 0);
+				}
+			}
 			return;
 		default:
 			return;
@@ -278,9 +320,7 @@ void UDPTable::flipData(int colClicked)
 	noDraw = 1;
 	colToSort = colClicked;
 	prepMergeSort();
-	cout << " in u flip " << endl;
 	if (oppositeDir == 1){
-		cout << " chere " << endl;
 		string *temp;
 		for (int i = 0; i < tableSize / 2; i++){
 			temp = data[tableSize - i - 1];
@@ -318,6 +358,14 @@ int **UDPTable::getHeaderSizeInformation()
 UdpTableAccess *UDPTable::getUdpObject()
 {
 	return udpConnections;
+}
+int UDPTable::udpStopped()
+{
+	return udpStop;
+}
+void UDPTable::udpStopped(int stopped)
+{
+	udpStop = stopped;
 }
 //destructor
 UDPTable::~UDPTable() { }

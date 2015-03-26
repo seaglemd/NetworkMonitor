@@ -403,6 +403,7 @@ void MyWindow::checkControlStatus()
 {
 	if (stopTcp == 1){
 		tcpStopped = 1;
+		table->tcpStopped(tcpStopped);
 		tcpConnectionInfo->stopUpdates();
 		table->stopTableRefill();
 		stopButtonTcp->labelcolor(FL_GRAY);
@@ -415,6 +416,7 @@ void MyWindow::checkControlStatus()
 	}
 	if (startTcp == 1){
 		tcpStopped = 0;
+		table->tcpStopped(tcpStopped);
 		table->startTableRefill();
 		tcpConnectionInfo->startUpdates();
 		resumeButtonTcp->labelcolor(FL_GRAY);
@@ -427,6 +429,7 @@ void MyWindow::checkControlStatus()
 	}
 	if (stopUdp == 1){
 		udpStopped = 1;
+		uTable->udpStopped(udpStopped);
 		udpConnectionInfo->stopUpdates();
 		stopButtonUdp->labelcolor(FL_GRAY);
 		stopButtonUdp->deactivate();
@@ -436,6 +439,7 @@ void MyWindow::checkControlStatus()
 	}
 	if (startUdp == 1){
 		udpStopped = 0;
+		uTable->udpStopped(udpStopped);
 		udpConnectionInfo->startUpdates();
 		resumeButtonUdp->labelcolor(FL_GRAY);
 		resumeButtonUdp->deactivate();
