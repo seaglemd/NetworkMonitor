@@ -1,21 +1,101 @@
-﻿Build started 3/24/2015 1:24:43 AM.
-     1>Project "D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\Network Monitor\Network Monitor.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         H:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
-         main.cpp
-       Link:
-         H:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\Release\Network Monitor.exe" /INCREMENTAL:NO /NOLOGO fltk.lib fltkimages.lib fltkjpeg.lib fltkpng.lib fltkzlib.lib curllib.lib curllib_static.lib libcurl_imp.lib libeay32.lib openldap.lib ssleay32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /NODEFAULTLIB:libcd.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\Release\Network Monitor.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\Release\Network Monitor.lib" /MACHINE:X86 /SAFESEH "Release\Network Monitor.res"
-         Release\BlacklistIpChecker.obj
-         Release\main.obj
-         Release\reverseDnsLookup.obj
-         Release\tcpTableAccess.obj
-         Release\udpTableAccess.obj
-         Release\wfStatusAccess.obj
-         Generating code
-         Finished generating code
-         Network Monitor.vcxproj -> D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\Release\Network Monitor.exe
-     1>Done Building Project "D:\Users\Matthew\Desktop\Network Monitor\NetworkMonitor\Network Monitor\Network Monitor.vcxproj" (Build target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:02.52
+﻿  main.cpp
+  Generating code
+  Finished generating code
+fltk.lib(case.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(case.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(filename_list.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(filename_list.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(filename_match.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(filename_match.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_abort.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_abort.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_arc.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_arc.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_arci.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_arci.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_ask.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_ask.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Bitmap.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Bitmap.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Box.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Box.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_boxtype.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_boxtype.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Button.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Button.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_color.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_color.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_compose.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_compose.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_cursor.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_cursor.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_curve.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_curve.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Device.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Device.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_dnd.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_dnd.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Double_Window.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Double_Window.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_draw.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_draw.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_draw_image.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_draw_image.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_draw_pixmap.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_draw_pixmap.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_engraved_label.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_engraved_label.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_font.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_font.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_get_system_colors.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_get_system_colors.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_grab.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_grab.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Group.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Group.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_gtk.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_gtk.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_gleam.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_gleam.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Image.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Image.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Input.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Input.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Input_.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Input_.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_labeltype.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_labeltype.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_line_style.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_line_style.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_lock.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_lock.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Menu.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Menu.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Menu_.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Menu_.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Menu_add.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Menu_add.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Menu_Button.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Menu_Button.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Menu_Window.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Menu_Window.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Overlay_Window.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Overlay_Window.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Pixmap.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Pixmap.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_plastic.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_plastic.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Preferences.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Preferences.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_read_image.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_read_image.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_rect.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_rect.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Repeat_Button.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Repeat_Button.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Return_Button.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Return_Button.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_round_box.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_round_box.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Scroll.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Scroll.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_scroll_area.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_scroll_area.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Scrollbar.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Scrollbar.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_shadow_box.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_shadow_box.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Shared_Image.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Shared_Image.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_shortcut.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_shortcut.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Single_Window.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Single_Window.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Slider.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Slider.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_symbols.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_symbols.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Table.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Table.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Table_Row.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Table_Row.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Tabs.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Tabs.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Tiled_Image.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Tiled_Image.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Tooltip.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Tooltip.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_utf.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_utf.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_utf8.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_utf8.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Valuator.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Valuator.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(fl_vertex.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(fl_vertex.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Widget.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Widget.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Window.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Window.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Window_fullscreen.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Window_fullscreen.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Window_hotspot.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Window_hotspot.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_Window_shape.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_Window_shape.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_XBM_Image.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_XBM_Image.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(Fl_XPM_Image.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(Fl_XPM_Image.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(flstring.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(flstring.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(is_spacing.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(is_spacing.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(numericsort.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(numericsort.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(scandir.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(scandir.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(screen_xywh.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(screen_xywh.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltk.lib(vsnprintf.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltk.lib(vsnprintf.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkimages.lib(Fl_PNG_Image.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkimages.lib(Fl_PNG_Image.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(png.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(png.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(pngerror.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(pngerror.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(pngget.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(pngget.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(pngmem.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(pngmem.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(pngread.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(pngread.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(pngrio.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(pngrio.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(pngrtran.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(pngrtran.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(pngrutil.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(pngrutil.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(pngset.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(pngset.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkpng.lib(pngtrans.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkpng.lib(pngtrans.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkzlib.lib(adler32.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkzlib.lib(adler32.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkzlib.lib(crc32.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkzlib.lib(crc32.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkzlib.lib(inffast.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkzlib.lib(inffast.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkzlib.lib(inflate.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkzlib.lib(inflate.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkzlib.lib(inftrees.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkzlib.lib(inftrees.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+fltkzlib.lib(zutil.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'fltkzlib.lib(zutil.obj)' or at 'C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\vc120.pdb'; linking object as if no debug info
+  Network Monitor.vcxproj -> C:\Users\Matt\Desktop\NSM\NetworkMonitor\Release\Network Monitor.exe

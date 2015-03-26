@@ -39,7 +39,7 @@ public:
 		tableSize = 0;
 		colToSort = 0;
 		noRefill = 0;
-		oppositeDir = 0;
+		oppositeDir = 1;
 		udpConnections = new UdpTableAccess();
 		udpList = udpConnections->passUdpTable();
 		tableSize = udpConnections->getTableSize();
@@ -154,7 +154,6 @@ void UDPTable::initializeHeaderInformation()
 void UDPTable::updateCells()
 {
 	noDraw = 1;
-	if (noRefill == 0)
 		fillDataArray();
 	noDraw = 0;
 }
@@ -207,8 +206,6 @@ void UDPTable::prepMergeSort()
 				locationA = curSubstring.find(".");
 				curSubstring.erase(locationA, 1);
 			}
-			locationA = curSubstring.find(":");
-			curSubstring.erase(locationA, 1);
 			sortArrayLocal[i] = curSubstring;
 		}
 		mergeHelper(sortArrayLocal, 0, tableSize, sortScratch, dataScratch);
@@ -217,12 +214,6 @@ void UDPTable::prepMergeSort()
 	if (colToSort == 2){
 		for (int i = 0; i < tableSize; i++){
 			curSubstring = data[i][1];
-			while (curSubstring.find(".") != string::npos){
-				locationA = curSubstring.find(".");
-				curSubstring.erase(locationA, 1);
-			}
-			locationA = curSubstring.find(":");
-			curSubstring.erase(locationA, 1);
 			sortArrayRemote[i] = curSubstring;
 		}
 		mergeHelper(sortArrayRemote, 0, tableSize, sortScratch, dataScratch);
@@ -230,6 +221,8 @@ void UDPTable::prepMergeSort()
 	}
 	//issues with deleting dataScratch at this point, investigate.
 	//Literally worked yesterday and doesn't work today, no other changes (3/2/2015)
+	
+	redrawTable(this);
 }
 void UDPTable::mergeHelper(string *input, int left, int right, string *scratch, string **dataScratch)
 {
@@ -285,20 +278,30 @@ void UDPTable::flipData(int colClicked)
 	noDraw = 1;
 	colToSort = colClicked;
 	prepMergeSort();
+	cout << " in u flip " << endl;
 	if (oppositeDir == 1){
+		cout << " chere " << endl;
 		string *temp;
 		for (int i = 0; i < tableSize / 2; i++){
 			temp = data[tableSize - i - 1];
 			data[tableSize - i - 1] = data[i];
 			data[i] = temp;
 		}
+		
 		oppositeDir = 0;
+		for (int i = 0; i < tableSize; i++){
+			for (int j = 0; j < 2; j++){
+				cout << data[i][j];
+			}
+			cout << endl;
+		}
 	}
 	else if (oppositeDir == 0){ //this is an else if specifically to continue logic from last if
 		oppositeDir = 1;
 	}
 	noDraw = 0;
-	updateCells();
+	//updateCells();
+	redrawTable(this);
 }
 //redraws the udp table
 void UDPTable::redrawTable(UDPTable *curTable)

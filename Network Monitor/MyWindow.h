@@ -366,6 +366,7 @@ void MyWindow::threadBody()
 		if (udpConnectionInfo->getDataState() == 1){
 			uTable->updateCells();
 			udpConnectionInfo->setDataState(0);
+			cout << udpConnectionInfo->getDataState() << endl;
 			Fl::awake();
 			Fl::awake(redrawBoxes_cb);
 		}
@@ -564,7 +565,6 @@ void event_cb(void*)
 {
 	if (Fl::event_is_click() != 0 && Fl::event_inside(headerSizeInformation[0][0], headerSizeInformation[0][1],
 		headerSizeInformation[0][2], headerSizeInformation[0][3]) != 0 && tabGroup->value() == tabSectionTCPTable){
-		cout << "here" << endl;
 		Fl::event_is_click(0);
 		if (tcpStopped == 1){
 			table->flipData(1);
@@ -586,7 +586,6 @@ void event_cb(void*)
 	}
 	if (Fl::event_is_click() != 0 && Fl::event_inside(uHeaderSizeInformation[0][0], uHeaderSizeInformation[0][1],
 		uHeaderSizeInformation[0][2], uHeaderSizeInformation[0][3]) != 0 && tabGroup->value() == tabSectionUDPTable){
-		cout << "here" << endl;
 		Fl::event_is_click(0);
 		if (udpStopped == 1){
 			uTable->flipData(1);

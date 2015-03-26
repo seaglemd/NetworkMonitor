@@ -333,6 +333,7 @@ void TCPTable::prepMergeSort()
 		mergeHelper(sortArrayStatus, 0, tableSize, sortScratch, dataScratch);
 		colToSort = 0;
 	}
+	redrawTable(this);
 	//issues with deleting dataScratch at this point, investigate.
 	//Literally worked yesterday and doesn't work today, no other changes (3/2/2015)
 }
@@ -395,15 +396,15 @@ void TCPTable::flipData(int colClicked)
 		for (int i = 0; i < tableSize / 2; i++){
 			temp = data[tableSize - i - 1];
 			data[tableSize - i - 1] = data[i];
-			data[i] = temp;
+			data[i] = temp;			
 		}
+		redrawTable(this);
 		oppositeDir = 0;
 	}
 	else if (oppositeDir == 0){ //this is an else if specifically to continue logic from last if
 		oppositeDir = 1;
 	}
-	noDraw = 0;	
-	updateCells();
+	noDraw = 0;
 }
 
 //prints header informaton for debug purposes
